@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Match Pairs</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #f3f4f6);
+            --text-color: var(--tg-theme-text-color, #111827);
+            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+            --primary: var(--tg-theme-button-color, #3b82f6);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            perspective: 1000px;
+        }
+        .card {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            cursor: pointer;
+        }
+        .card.flipped, .card.matched {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 5px;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            hyphens: auto;
+        }
+        .card-front {
+            background-color: var(--primary);
+            color: white;
+            font-size: 2rem;
+        }
+        .card-back {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transform: rotateY(180deg);
+            border: 2px solid var(--primary);
+        }
+        .card.matched .card-back {
+            background-color: #10b981; /* Зеленый при совпадении */
+            color: white;
+            border-color: #10b981;
+        }
+        #win-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        #win-screen h1 { margin: 0; font-size: 2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div id="timer">⏱ 00:00</div>
+        <div id="score">Пары: 0/8</div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div id="win-screen">
+        <h1>🎉 Отлично!</h1>
+        <p>Время: <span id="final-time"></span></p>
+        <p>Возвращаем в Telegram...</p>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Расширяем на весь экран
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let matchedPairs = 0;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+
+        // Получаем слова из URL: ?data=[{"w":"Apple","t":"Яблоко"},...]
+        const urlParams = new URLSearchParams(window.location.search);
+        let gameData = [];
+        try {
+            const dataStr = urlParams.get('data');
+            if (dataStr) {
+                gameData = JSON.parse(decodeURIComponent(dataStr));
+            } else {
+                // Демо-данные для локального тестирования
+                gameData = [
+                    {w: "Hund", t: "Собака"}, {w: "Katze", t: "Кошка"},
+                    {w: "Haus", t: "Дом"}, {w: "Auto", t: "Машина"},
+                    {w: "Baum", t: "Дерево"}, {w: "Apfel", t: "Яблоко"},
+                    {w: "Wasser", t: "Вода"}, {w: "Brot", t: "Хлеб"}
+                ];
+            }
+        } catch (e) {
+            console.error("Data error", e);
+        }
+
+        // Создаем массив из 16 карточек (8 оригиналов + 8 переводов)
+        let cardsArray = [];
+        gameData.forEach((pair, index) => {
+            cardsArray.push({ id: index, text: pair.w, type: 'target' });
+            cardsArray.push({ id: index, text: pair.t, type: 'ru' });
+        });
+
+        // Перемешиваем (Fisher-Yates)
+        cardsArray.sort(() => 0.5 - Math.random());
+
+        const grid = document.getElementById('grid');
+        const timerDisplay = document.getElementById('timer');
+        const scoreDisplay = document.getElementById('score');
+
+        // Отрисовка сетки
+        cardsArray.forEach(item => {
+            const cardEl = document.createElement('div');
+            cardEl.classList.add('card');
+            cardEl.dataset.id = item.id;
+
+            cardEl.innerHTML = `
+                <div class="card-face card-front">🧠</div>
+                <div class="card-face card-back">${item.text}</div>
+            `;
+            
+            cardEl.addEventListener('click', flipCard);
+            grid.appendChild(cardEl);
+        });
+
+        // Таймер
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                const m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+                const s = String(secondsElapsed % 60).padStart(2, '0');
+                timerDisplay.innerText = `⏱ ${m}:${s}`;
+            }, 1000);
+        }
+
+        startTimer();
+
+        // Логика переворота
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flipped');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.id === secondCard.dataset.id;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+
+            matchedPairs++;
+            scoreDisplay.innerText = `Пары: ${matchedPairs}/8`;
+
+            resetBoard();
+
+            if (matchedPairs === 8) {
+                winGame();
+            }
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 1000); // 1 секунда чтобы запомнить
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        function winGame() {
+            clearInterval(timerInterval);
+            grid.style.display = 'none';
+            document.querySelector('.header').style.display = 'none';
+            document.getElementById('win-screen').style.display = 'flex';
+            
+            const m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+            const s = String(secondsElapsed % 60).padStart(2, '0');
+            document.getElementById('final-time').innerText = `${m}:${s}`;
+
+            tg.HapticFeedback.notificationOccurred('success');
+
+            // Отправляем данные в бота
+            const resultData = {
+                game: "match_pairs",
+                time_seconds: secondsElapsed,
+                pairs: 8
+            };
+
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(resultData));
+            }, 1500); // Закроется через 1.5 секунды
+        }
+    </script>
+</body>
+</html>
+
