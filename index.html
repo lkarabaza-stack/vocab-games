@@ -16,397 +16,415 @@
             --match-border: #10b981;
             --error:        #ef4444;
             --xp:           #f59e0b;
-            --xp-dark:      #d97706;
+            --sprint:       #8b5cf6;
+            --sprint-dark:  #7c3aed;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            user-select: none;
+            background: var(--bg); color: var(--text);
+            padding: 12px; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh; user-select: none;
         }
 
-        /* ── LEVEL SELECT ────────────────────────────── */
-        #level-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            min-height: 80vh;
-            width: 100%;
-            max-width: 380px;
-            animation: fadeUp 0.4s ease both;
+        /* ══════════════════════════════════════════════
+           START SCREEN
+        ══════════════════════════════════════════════ */
+        #start-screen {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 18px; width: 100%; max-width: 380px; padding-top: 24px;
+            animation: fadeUp .4s ease both;
+        }
+        #start-screen h1 { font-size: 2.1rem; text-align: center; }
+        #start-screen .tagline { font-size: .95rem; opacity: .55; text-align: center; }
+
+        /* Mode toggle */
+        .mode-toggle {
+            display: flex; width: 100%;
+            background: var(--card-bg); border-radius: 14px;
+            padding: 4px; gap: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.07);
+        }
+        .mode-btn {
+            flex: 1; padding: 11px 8px; border: none; border-radius: 10px;
+            font-size: .95rem; font-weight: 700; cursor: pointer;
+            background: transparent; color: var(--text); opacity: .5;
+            transition: background .2s, opacity .2s, color .2s;
+        }
+        .mode-btn.active-classic {
+            background: linear-gradient(135deg,#3b82f6,#6366f1);
+            color:#fff; opacity: 1;
+        }
+        .mode-btn.active-sprint {
+            background: linear-gradient(135deg,#8b5cf6,#ec4899);
+            color:#fff; opacity: 1;
         }
 
-        #level-screen h1 { font-size: 2rem; text-align: center; }
-        #level-screen p  { font-size: 1rem; opacity: 0.6; text-align: center; }
+        /* Mode description card */
+        .mode-desc {
+            width: 100%; background: var(--card-bg); border-radius: 14px;
+            padding: 14px 16px; font-size: .88rem; line-height: 1.55;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06); opacity: .8;
+        }
+        .mode-desc b { opacity: 1; }
 
-        .level-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-
+        /* Level buttons */
+        .level-section { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+        .section-label {
+            font-size: .72rem; font-weight: 700; letter-spacing: .07em;
+            text-transform: uppercase; opacity: .4; margin-bottom: 2px;
+        }
         .btn-level {
-            width: 100%;
-            padding: 18px 20px;
-            border: none;
-            border-radius: 16px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: transform 0.12s, box-shadow 0.12s;
+            width: 100%; padding: 16px 18px; border: none; border-radius: 14px;
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: transform .12s, box-shadow .12s;
         }
         .btn-level:active { transform: scale(0.97); }
-        .btn-level.lv1 { background: linear-gradient(135deg,#3b82f6,#6366f1); color:#fff; box-shadow:0 6px 18px rgba(99,102,241,.35); }
-        .btn-level.lv2 { background: linear-gradient(135deg,#8b5cf6,#ec4899); color:#fff; box-shadow:0 6px 18px rgba(139,92,246,.35); }
-        .btn-level.lv3 { background: linear-gradient(135deg,#f59e0b,#ef4444); color:#fff; box-shadow:0 6px 18px rgba(245,158,11,.35); }
-        .btn-level .lv-name { font-size: 1.1rem; }
-        .btn-level .lv-meta { display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
-        .btn-level .lv-desc { font-size: 0.78rem; opacity: 0.85; font-weight: 500; }
-        .btn-level .lv-xp  { font-size: 0.78rem; opacity: 0.95; font-weight: 700; background: rgba(255,255,255,.2); padding: 2px 8px; border-radius: 8px; }
+        .btn-level.lv1 { background: linear-gradient(135deg,#3b82f6,#6366f1); color:#fff; box-shadow:0 5px 16px rgba(99,102,241,.35); }
+        .btn-level.lv2 { background: linear-gradient(135deg,#8b5cf6,#ec4899); color:#fff; box-shadow:0 5px 16px rgba(139,92,246,.35); }
+        .btn-level.lv3 { background: linear-gradient(135deg,#f59e0b,#ef4444); color:#fff; box-shadow:0 5px 16px rgba(245,158,11,.35); }
+        .btn-level.sprint { background: linear-gradient(135deg,#8b5cf6,#6366f1); color:#fff; box-shadow:0 5px 16px rgba(139,92,246,.4); }
+        .btn-level .lv-left { display:flex; flex-direction:column; gap:2px; text-align:left; }
+        .btn-level .lv-name { font-size: 1rem; }
+        .btn-level .lv-sub  { font-size: .73rem; opacity: .8; font-weight: 500; }
+        .btn-level .lv-right { display:flex; flex-direction:column; align-items:flex-end; gap:3px; }
+        .btn-level .lv-xp  { font-size: .73rem; font-weight: 700; background:rgba(255,255,255,.2); padding:2px 8px; border-radius:8px; }
+        .btn-level .lv-record { font-size: .7rem; opacity: .9; font-weight: 600; }
 
-        /* ── HEADER ─────────────────────────────────── */
+        /* ══════════════════════════════════════════════
+           HEADER (in-game)
+        ══════════════════════════════════════════════ */
         .header {
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 440px;
-            margin-bottom: 12px;
-            padding: 10px 16px;
-            background: var(--card-bg);
-            border-radius: 14px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            font-size: 1.05rem;
-            font-weight: 700;
+            display: none; justify-content: space-between; align-items: center;
+            width: 100%; max-width: 440px; margin-bottom: 12px;
+            padding: 10px 16px; background: var(--card-bg);
+            border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            font-size: 1.05rem; font-weight: 700;
         }
         .header.visible { display: flex; }
 
-        /* ── GRID ────────────────────────────────────── */
+        /* Sprint timer colours */
+        #timer.warn   { color: #f59e0b; }
+        #timer.danger { color: var(--error); animation: blink .5s ease infinite alternate; }
+        @keyframes blink { to { opacity: .45; } }
+
+        /* Sprint score pill */
+        .sprint-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: linear-gradient(135deg,#8b5cf6,#6366f1);
+            color: #fff; border-radius: 20px; padding: 3px 12px;
+            font-size: .88rem; font-weight: 700;
+        }
+
+        /* ══════════════════════════════════════════════
+           CLASSIC GRID  (2-col)
+        ══════════════════════════════════════════════ */
         .grid {
-            display: none;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            width: 100%;
-            max-width: 440px;
+            display: none; grid-template-columns: 1fr 1fr;
+            gap: 10px; width: 100%; max-width: 440px;
         }
         .grid.visible { display: grid; }
+        .grid.lv3 .card { font-size: .92rem; min-height: 52px; }
 
-        /* ── CARD ────────────────────────────────────── */
-        .card {
-            width: 100%;
-            min-height: 60px;
-            padding: 12px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border-radius: 12px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            line-height: 1.3;
-            word-break: break-word;
-            hyphens: auto;
-            cursor: pointer;
-            border: 2px solid var(--primary);
-            background: var(--card-bg);
-            color: var(--text);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.07);
-            transition: background .18s, border-color .18s, color .18s, transform .13s, box-shadow .18s;
+        /* ══════════════════════════════════════════════
+           SPRINT GRID  (2 fixed cols: left=words right=translations)
+        ══════════════════════════════════════════════ */
+        #sprint-area {
+            display: none; width: 100%; max-width: 440px;
         }
-        .grid.lv3 .card { font-size: 0.92rem; min-height: 52px; }
-        .card:active:not(.matched):not(.dealing) { transform: scale(0.95); }
+        #sprint-area.visible { display: block; }
+        .sprint-cols {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+        }
+        .sprint-col-label {
+            font-size: .68rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .06em; opacity: .35; text-align: center;
+            margin-bottom: 5px;
+        }
+        .sprint-left, .sprint-right {
+            display: flex; flex-direction: column; gap: 7px;
+        }
+
+        /* ══════════════════════════════════════════════
+           CARDS (shared)
+        ══════════════════════════════════════════════ */
+        .card {
+            width: 100%; min-height: 56px; padding: 11px 9px;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; border-radius: 12px;
+            font-size: 1rem; font-weight: 600; line-height: 1.3;
+            word-break: break-word; hyphens: auto; cursor: pointer;
+            border: 2px solid var(--primary); background: var(--card-bg);
+            color: var(--text); box-shadow: 0 2px 6px rgba(0,0,0,.07);
+            transition: background .18s, border-color .18s, color .18s,
+                        transform .13s, box-shadow .18s;
+        }
+        /* Sprint left col: slightly tinted */
+        .sprint-left .card {
+            border-color: color-mix(in srgb,var(--sprint) 60%,transparent);
+            background: color-mix(in srgb,var(--sprint) 7%,var(--card-bg));
+        }
+        .card:active:not(.matched):not(.wrong):not(.dealing) { transform: scale(.95); }
         .card.selected {
             border-color: var(--primary-dark);
-            background: color-mix(in srgb, var(--primary) 14%, var(--card-bg));
-            box-shadow: 0 0 0 3px rgba(59,130,246,.25);
-            transform: scale(1.04);
+            background: color-mix(in srgb,var(--primary) 14%,var(--card-bg));
+            box-shadow: 0 0 0 3px rgba(59,130,246,.25); transform: scale(1.04);
+        }
+        .sprint-left .card.selected {
+            border-color: var(--sprint-dark);
+            background: color-mix(in srgb,var(--sprint) 18%,var(--card-bg));
+            box-shadow: 0 0 0 3px rgba(139,92,246,.25);
         }
         .card.matched {
-            background: var(--success); border-color: var(--match-border); color: #111827;
-            box-shadow: 0 4px 12px rgba(56,189,248,.4);
-            cursor: default;
-            animation: pop .32s cubic-bezier(.34,1.56,.64,1);
+            background: var(--success); border-color: var(--match-border);
+            color: #111827; box-shadow: 0 4px 12px rgba(56,189,248,.4);
+            cursor: default; animation: pop .32s cubic-bezier(.34,1.56,.64,1);
         }
         .card.wrong {
             background: var(--error); border-color: var(--error); color: #fff;
             animation: shake .38s ease;
         }
-        @keyframes pop    { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
-        @keyframes shake  { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-3px)} }
+        /* Sprint slide-in */
+        @keyframes slideIn  { from{opacity:0;transform:translateY(-14px) scale(.9)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes slideOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(10px) scale(.9)} }
+        .card.slide-in  { animation: slideIn  .28s cubic-bezier(.22,1,.36,1) both; }
+        .card.slide-out { animation: slideOut .2s ease both; pointer-events:none; }
+
+        @keyframes pop   { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-3px)} }
         @keyframes dealIn { 0%{opacity:0;transform:translateY(-28px) scale(.82) rotate(var(--r))} 65%{transform:translateY(5px) scale(1.05) rotate(0deg)} 100%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)} }
         .card.dealing { animation: dealIn .42s cubic-bezier(.22,1,.36,1) both; }
 
-        /* ── WIN SCREEN ─────────────────────────────── */
+        /* ══════════════════════════════════════════════
+           WIN / END SCREEN
+        ══════════════════════════════════════════════ */
         #win-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 14px;
-            margin-top: 40px;
-            animation: fadeUp .5s ease both;
-            text-align: center;
-            width: 100%;
-            max-width: 360px;
+            display: none; flex-direction: column; align-items: center;
+            gap: 14px; margin-top: 36px;
+            animation: fadeUp .5s ease both; text-align: center;
+            width: 100%; max-width: 360px;
         }
         @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-
         #win-screen h1 { font-size: 2.2rem; }
-        #win-screen .sub { font-size: 1rem; opacity: 0.7; }
 
-        /* XP карточка раунда */
         .xp-card {
-            width: 100%;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px 20px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            width: 100%; background: var(--card-bg); border-radius: 16px;
+            padding: 16px 20px; box-shadow: 0 4px 16px rgba(0,0,0,.08);
+            display: flex; flex-direction: column; gap: 10px;
         }
-
         .xp-card-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            opacity: .45;
+            font-size: .74rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .06em; opacity: .4;
         }
-
-        .xp-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.95rem;
-        }
-        .xp-row .label { opacity: .65; }
+        .xp-row { display:flex; justify-content:space-between; align-items:center; font-size:.94rem; }
+        .xp-row .label { opacity: .62; }
         .xp-row .val   { font-weight: 700; }
         .xp-row .val.bonus { color: var(--xp); }
-        .xp-row.total {
-            border-top: 1px solid rgba(0,0,0,.08);
-            padding-top: 8px;
-            font-size: 1.05rem;
-        }
+        .xp-row.total { border-top: 1px solid rgba(0,0,0,.08); padding-top: 8px; font-size: 1.04rem; }
         .xp-row.total .val { color: var(--match-border); font-size: 1.2rem; }
 
-        /* Накопленный XP за сессию */
         .session-xp {
-            width: 100%;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 14px;
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: #fff;
+            width: 100%; background: linear-gradient(135deg,#10b981,#059669);
+            border-radius: 14px; padding: 14px 20px;
+            display: flex; align-items: center; justify-content: space-between; color:#fff;
         }
-        .session-xp .s-label { font-size: 0.85rem; opacity: .85; }
-        .session-xp .s-total { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+        .session-xp .s-label { font-size: .84rem; opacity: .85; }
+        .session-xp .s-total { font-size: 1.8rem; font-weight: 800; line-height:1; }
 
-        /* Кнопка «Забрать XP» */
-        .btn-collect {
-            width: 100%;
-            padding: 16px 20px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            border: none;
-            border-radius: 14px;
-            font-size: 1.05rem;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(16,185,129,.4);
-            transition: transform .12s, box-shadow .12s;
-            letter-spacing: .01em;
+        .record-banner {
+            display: none; align-items: center; gap: 10px;
+            background: linear-gradient(135deg,#f59e0b,#ef4444);
+            color: #fff; border-radius: 12px; padding: 12px 16px;
+            font-weight: 800; font-size: 1rem; width: 100%;
         }
-        .btn-collect:active { transform: scale(0.97); box-shadow: 0 3px 10px rgba(16,185,129,.3); }
-
-        .level-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 14px; border-radius: 20px; font-size: .85rem; font-weight: 700; color: #fff;
-        }
-        .level-badge.lv1 { background: linear-gradient(135deg,#3b82f6,#6366f1); }
-        .level-badge.lv2 { background: linear-gradient(135deg,#8b5cf6,#ec4899); }
-        .level-badge.lv3 { background: linear-gradient(135deg,#f59e0b,#ef4444); }
+        .record-banner.show { display: flex; animation: recordPop .5s cubic-bezier(.34,1.56,.64,1) both; }
+        @keyframes recordPop { 0%{transform:scale(.7);opacity:0} 100%{transform:scale(1);opacity:1} }
+        .record-banner .rec-icon { font-size: 1.5rem; }
+        .record-banner .rec-text { display:flex; flex-direction:column; gap:1px; }
+        .record-banner .rec-title { font-size:.72rem; opacity:.85; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+        .record-banner .rec-val   { font-size:1.05rem; font-weight:800; }
 
         .win-buttons { display:flex; flex-direction:column; gap:10px; width:100%; }
 
-        .btn {
-            padding: 14px 20px; background: var(--primary); color: #fff;
-            border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
-            cursor: pointer; box-shadow: 0 4px 14px rgba(59,130,246,.38);
-            transition: background .18s, transform .1s;
+        .level-badge {
+            display:inline-flex; align-items:center; gap:6px;
+            padding:6px 14px; border-radius:20px; font-size:.85rem; font-weight:700; color:#fff;
         }
-        .btn:active { transform: scale(.95); background: var(--primary-dark); }
+        .level-badge.lv1    { background:linear-gradient(135deg,#3b82f6,#6366f1); }
+        .level-badge.lv2    { background:linear-gradient(135deg,#8b5cf6,#ec4899); }
+        .level-badge.lv3    { background:linear-gradient(135deg,#f59e0b,#ef4444); }
+        .level-badge.sprint { background:linear-gradient(135deg,#8b5cf6,#6366f1); }
+
+        .btn-collect {
+            width:100%; padding:15px 20px;
+            background:linear-gradient(135deg,#10b981,#059669);
+            color:#fff; border:none; border-radius:14px; font-size:1.04rem;
+            font-weight:800; cursor:pointer; box-shadow:0 6px 20px rgba(16,185,129,.4);
+            transition:transform .12s, box-shadow .12s; letter-spacing:.01em;
+        }
+        .btn-collect:active { transform:scale(.97); box-shadow:0 3px 10px rgba(16,185,129,.3); }
+
+        .btn {
+            padding:13px 20px; background:var(--primary); color:#fff;
+            border:none; border-radius:12px; font-size:.98rem; font-weight:700;
+            cursor:pointer; box-shadow:0 4px 14px rgba(59,130,246,.38);
+            transition:background .18s, transform .1s;
+        }
+        .btn:active { transform:scale(.95); background:var(--primary-dark); }
 
         .btn-outline {
-            padding: 12px 20px; background: transparent;
-            color: var(--primary); border: 2px solid var(--primary);
-            border-radius: 12px; font-size: .95rem; font-weight: 700;
-            cursor: pointer; transition: background .18s, transform .1s;
+            padding:11px 20px; background:transparent; color:var(--primary);
+            border:2px solid var(--primary); border-radius:12px;
+            font-size:.92rem; font-weight:700; cursor:pointer;
+            transition:background .18s, transform .1s;
         }
-        .btn-outline:active { transform: scale(.95); background: color-mix(in srgb,var(--primary) 8%,transparent); }
+        .btn-outline:active { transform:scale(.95); background:color-mix(in srgb,var(--primary) 8%,transparent); }
 
-
-        /* ── RECORD BADGE ───────────────────────────── */
-        .record-banner {
-            display: none;
-            align-items: center;
-            gap: 10px;
-            background: linear-gradient(135deg, #f59e0b, #ef4444);
-            color: #fff;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-weight: 800;
-            font-size: 1rem;
-            width: 100%;
-            animation: recordPop .5s cubic-bezier(.34,1.56,.64,1) both;
-        }
-        .record-banner.show { display: flex; }
-        @keyframes recordPop {
-            0%   { transform: scale(0.7); opacity: 0; }
-            100% { transform: scale(1);   opacity: 1; }
-        }
-        .record-banner .rec-icon { font-size: 1.5rem; }
-        .record-banner .rec-text { display: flex; flex-direction: column; gap: 1px; }
-        .record-banner .rec-title { font-size: 0.72rem; opacity: .85; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
-        .record-banner .rec-val   { font-size: 1.05rem; font-weight: 800; }
-
-
-        /* ── CONFETTI PARTICLE ──────────────────────── */
+        /* ══════════════════════════════════════════════
+           CONFETTI / BURST
+        ══════════════════════════════════════════════ */
         .confetti-piece {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            pointer-events: none;
-            z-index: 9999;
-            border-radius: 2px;
-            animation: confettiFall var(--dur) var(--ease) var(--delay) forwards;
+            position:fixed; pointer-events:none; z-index:9999; border-radius:2px;
+            animation:confettiFall var(--dur) var(--ease) var(--delay) forwards;
         }
         @keyframes confettiFall {
-            0%   { transform: translate(0,0) rotate(0deg) scale(1);    opacity: 1; }
-            80%  { opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.4); opacity: 0; }
+            0%  { transform:translate(0,0) rotate(0deg) scale(1); opacity:1; }
+            80% { opacity:1; }
+            100%{ transform:translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(.4); opacity:0; }
         }
-        /* Burst ring flash */
         .burst-ring {
-            position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            border: 3px solid var(--ring-color, #f59e0b);
-            animation: burstRing .6s ease-out forwards;
+            position:fixed; border-radius:50%; pointer-events:none; z-index:9998;
+            border:3px solid var(--ring-color,#f59e0b);
+            animation:burstRing .6s ease-out forwards;
         }
         @keyframes burstRing {
-            0%   { transform: translate(-50%,-50%) scale(0); opacity: .9; }
-            100% { transform: translate(-50%,-50%) scale(1);  opacity: 0; }
+            0%  { transform:translate(-50%,-50%) scale(0); opacity:.9; }
+            100%{ transform:translate(-50%,-50%) scale(1); opacity:0; }
         }
-        /* Stars burst */
         .star-burst {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            font-size: 1.4rem;
-            animation: starFly var(--dur) ease var(--delay) forwards;
+            position:fixed; pointer-events:none; z-index:9999; font-size:1.4rem;
+            animation:starFly var(--dur) ease var(--delay) forwards;
         }
         @keyframes starFly {
-            0%   { transform: translate(0,0) scale(0) rotate(0deg);    opacity: 1; }
-            40%  { transform: translate(var(--tx),var(--ty)) scale(1.3) rotate(var(--rot)); opacity: 1; }
-            100% { transform: translate(calc(var(--tx)*1.6), calc(var(--ty)*1.6)) scale(0) rotate(calc(var(--rot)*2)); opacity: 0; }
+            0%  { transform:translate(0,0) scale(0) rotate(0deg); opacity:1; }
+            40% { transform:translate(var(--tx),var(--ty)) scale(1.3) rotate(var(--rot)); opacity:1; }
+            100%{ transform:translate(calc(var(--tx)*1.6),calc(var(--ty)*1.6)) scale(0) rotate(calc(var(--rot)*2)); opacity:0; }
         }
-
-        /* ── XP FLOAT ANIMATION ─────────────────────── */
         .xp-float {
-            position: fixed;
-            pointer-events: none;
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--xp);
-            text-shadow: 0 1px 4px rgba(0,0,0,.15);
-            animation: floatUp .9s ease forwards;
-            z-index: 100;
+            position:fixed; pointer-events:none; font-size:1.1rem;
+            font-weight:800; color:var(--xp); text-shadow:0 1px 4px rgba(0,0,0,.15);
+            animation:floatUp .9s ease forwards; z-index:100;
         }
         @keyframes floatUp {
-            0%   { opacity: 1; transform: translateY(0) scale(1); }
-            80%  { opacity: 1; }
-            100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+            0%  { opacity:1; transform:translateY(0) scale(1); }
+            80% { opacity:1; }
+            100%{ opacity:0; transform:translateY(-60px) scale(1.2); }
         }
 
-        /* ── ERROR ──────────────────────────────────── */
+        /* ══════════════════════════════════════════════
+           ERROR
+        ══════════════════════════════════════════════ */
         #error-screen {
-            display: none; flex-direction: column; align-items: center;
-            gap: 10px; margin-top: 60px; color: var(--error);
-            font-size: 1rem; text-align: center;
+            display:none; flex-direction:column; align-items:center;
+            gap:10px; margin-top:60px; color:var(--error);
+            font-size:1rem; text-align:center;
         }
     </style>
 </head>
 <body>
 
-<!-- Выбор уровня -->
-<div id="level-screen">
+<!-- ══════════════════════════════════
+     START SCREEN
+═══════════════════════════════════ -->
+<div id="start-screen">
     <div>
         <h1>🧠 Match Pairs</h1>
-        <p style="margin-top:8px">Выбери уровень сложности</p>
+        <p class="tagline">Выбери режим и уровень</p>
     </div>
-    <div class="level-buttons">
-        <button class="btn-level lv1" data-pairs="4">
-            <span class="lv-name">⭐ Лёгкий</span>
-            <span class="lv-meta">
-                <span class="lv-desc">4 пары</span>
-                <span class="lv-xp">до 15 XP</span>
-            </span>
+
+    <!-- Переключатель режима -->
+    <div class="mode-toggle">
+        <button class="mode-btn active-classic" id="btn-mode-classic" onclick="setMode('classic')">🎯 Классика</button>
+        <button class="mode-btn"                id="btn-mode-sprint"  onclick="setMode('sprint')">⚡ Спринт</button>
+    </div>
+
+    <!-- Описание режима -->
+    <div class="mode-desc" id="mode-desc"></div>
+
+    <!-- Кнопки уровней -->
+    <div class="level-section" id="level-buttons-classic">
+        <div class="section-label">Уровень сложности</div>
+        <button class="btn-level lv1" data-pairs="4" data-mode="classic">
+            <span class="lv-left"><span class="lv-name">⭐ Лёгкий</span><span class="lv-sub">4 пары</span></span>
+            <span class="lv-right"><span class="lv-xp">до 15 XP</span><span class="lv-record" id="rec-c4"></span></span>
         </button>
-        <button class="btn-level lv2" data-pairs="6">
-            <span class="lv-name">⭐⭐ Средний</span>
-            <span class="lv-meta">
-                <span class="lv-desc">6 пар</span>
-                <span class="lv-xp">до 25 XP</span>
-            </span>
+        <button class="btn-level lv2" data-pairs="6" data-mode="classic">
+            <span class="lv-left"><span class="lv-name">⭐⭐ Средний</span><span class="lv-sub">6 пар</span></span>
+            <span class="lv-right"><span class="lv-xp">до 25 XP</span><span class="lv-record" id="rec-c6"></span></span>
         </button>
-        <button class="btn-level lv3" data-pairs="8">
-            <span class="lv-name">⭐⭐⭐ Сложный</span>
-            <span class="lv-meta">
-                <span class="lv-desc">8 пар</span>
-                <span class="lv-xp">до 35 XP</span>
-            </span>
+        <button class="btn-level lv3" data-pairs="8" data-mode="classic">
+            <span class="lv-left"><span class="lv-name">⭐⭐⭐ Сложный</span><span class="lv-sub">8 пар</span></span>
+            <span class="lv-right"><span class="lv-xp">до 35 XP</span><span class="lv-record" id="rec-c8"></span></span>
+        </button>
+    </div>
+
+    <div class="level-section" id="level-buttons-sprint" style="display:none">
+        <div class="section-label">Один режим — 60 секунд</div>
+        <button class="btn-level sprint" data-mode="sprint">
+            <span class="lv-left"><span class="lv-name">⚡ Спринт</span><span class="lv-sub">8 слов · бесконечный поток</span></span>
+            <span class="lv-right"><span class="lv-xp">до 50 XP</span><span class="lv-record" id="rec-sprint"></span></span>
         </button>
     </div>
 </div>
 
-<!-- Игровое поле -->
+<!-- ══════════════════════════════════
+     ИГРОВАЯ ШАПКА
+═══════════════════════════════════ -->
 <div class="header" id="header">
     <div id="timer">⏱ 00:00</div>
     <div id="level-label"></div>
     <div id="score">Пары: 0 / —</div>
 </div>
+
+<!-- ══════════════════════════════════
+     CLASSIC GRID
+═══════════════════════════════════ -->
 <div class="grid" id="grid"></div>
 
-<!-- Экран победы -->
+<!-- ══════════════════════════════════
+     SPRINT AREA
+═══════════════════════════════════ -->
+<div id="sprint-area">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:5px">
+        <div class="sprint-col-label">Слово</div>
+        <div class="sprint-col-label">Перевод</div>
+    </div>
+    <div class="sprint-cols">
+        <div class="sprint-left"  id="sprint-left"></div>
+        <div class="sprint-right" id="sprint-right"></div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     WIN / END SCREEN
+═══════════════════════════════════ -->
 <div id="win-screen">
-    <h1>🎉 Отлично!</h1>
+    <h1 id="win-title">🎉 Отлично!</h1>
     <div id="win-badge" class="level-badge"></div>
 
-    <!-- Разбивка XP за раунд -->
     <div class="xp-card">
         <div class="xp-card-title">XP за этот раунд</div>
-        <div class="xp-row">
+        <div class="xp-row" id="row-base">
             <span class="label">База (уровень)</span>
             <span class="val" id="xp-base">0 XP</span>
         </div>
-        <div class="xp-row">
+        <div class="xp-row" id="row-acc">
             <span class="label">× Точность (<span id="xp-acc-pct">0</span>%)</span>
             <span class="val" id="xp-acc-val">0 XP</span>
         </div>
-        <div class="xp-row">
-            <span class="label">⚡ Бонус за скорость</span>
+        <div class="xp-row" id="row-speed">
+            <span class="label" id="speed-label">⚡ Бонус за скорость</span>
             <span class="val bonus" id="xp-speed">+0 XP</span>
         </div>
         <div class="xp-row" id="xp-record-row" style="display:none">
@@ -419,7 +437,6 @@
         </div>
     </div>
 
-    <!-- Накоплено за сессию -->
     <div class="session-xp">
         <div>
             <div class="s-label">Накоплено за сессию</div>
@@ -428,22 +445,20 @@
         <div style="font-size:2rem">🏆</div>
     </div>
 
-    <p class="sub" id="final-stats"></p>
-
-    <!-- Новый рекорд -->
     <div class="record-banner" id="record-banner">
         <span class="rec-icon">🏆</span>
         <span class="rec-text">
-            <span class="rec-title">Новый рекорд уровня!</span>
+            <span class="rec-title">Новый рекорд!</span>
             <span class="rec-val" id="record-val"></span>
         </span>
     </div>
 
+    <p style="font-size:.95rem;opacity:.7" id="final-stats"></p>
+
     <div class="win-buttons">
-        <!-- Забрать XP — главная зелёная кнопка -->
         <button class="btn-collect" id="btn-collect">🎁 Забрать <span id="collect-xp-label">0</span> XP и выйти</button>
-        <button class="btn"         id="btn-restart">▶ Сыграть снова (тот же уровень)</button>
-        <button class="btn-outline" id="btn-change-level">Сменить уровень</button>
+        <button class="btn"         id="btn-restart">▶ Сыграть снова</button>
+        <button class="btn-outline" id="btn-menu">← В меню</button>
     </div>
 </div>
 
@@ -452,460 +467,654 @@
 </div>
 
 <script>
-    /* ── Telegram SDK ────────────────────────────── */
-    const tg = window.Telegram?.WebApp;
-    if (tg) tg.expand();
+/* ══════════════════════════════════════════════════
+   TELEGRAM SDK
+══════════════════════════════════════════════════ */
+const tg = window.Telegram?.WebApp;
+if (tg) tg.expand();
 
-    /* ── Данные игры ─────────────────────────────── */
-    const urlParams = new URLSearchParams(window.location.search);
-    let allData = [];
-    try {
-        const raw = urlParams.get('data');
-        if (raw) {
-            allData = JSON.parse(decodeURIComponent(raw));
-            if (!Array.isArray(allData) || !allData.length) throw new Error('empty');
-        } else {
-            allData = [
-                { w:'Hund',    t:'Собака'  }, { w:'Katze',   t:'Кошка'   },
-                { w:'Haus',    t:'Дом'     }, { w:'Auto',    t:'Машина'  },
-                { w:'Baum',    t:'Дерево'  }, { w:'Apfel',   t:'Яблоко'  },
-                { w:'Wasser',  t:'Вода'    }, { w:'Brot',    t:'Хлеб'    },
-                { w:'Schule',  t:'Школа'   }, { w:'Buch',    t:'Книга'   },
-                { w:'Kind',    t:'Ребёнок' }, { w:'Freund',  t:'Друг'    },
-            ];
-        }
-    } catch(e) {
-        console.error('Data error:', e);
-        document.getElementById('level-screen').style.display = 'none';
-        document.getElementById('error-screen').style.display = 'flex';
+/* ══════════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════════ */
+const urlParams = new URLSearchParams(window.location.search);
+let allData = [];
+try {
+    const raw = urlParams.get('data');
+    if (raw) {
+        allData = JSON.parse(decodeURIComponent(raw));
+        if (!Array.isArray(allData) || !allData.length) throw new Error('empty');
+    } else {
+        allData = [
+            { w:'Hund',    t:'Собака'  }, { w:'Katze',   t:'Кошка'   },
+            { w:'Haus',    t:'Дом'     }, { w:'Auto',    t:'Машина'  },
+            { w:'Baum',    t:'Дерево'  }, { w:'Apfel',   t:'Яблоко'  },
+            { w:'Wasser',  t:'Вода'    }, { w:'Brot',    t:'Хлеб'    },
+            { w:'Schule',  t:'Школа'   }, { w:'Buch',    t:'Книга'   },
+            { w:'Kind',    t:'Ребёнок' }, { w:'Freund',  t:'Друг'    },
+            { w:'Tisch',   t:'Стол'    }, { w:'Stuhl',   t:'Стул'    },
+            { w:'Stadt',   t:'Город'   }, { w:'Land',    t:'Страна'  },
+        ];
     }
+} catch(e) {
+    console.error('Data error:', e);
+    document.getElementById('start-screen').style.display  = 'none';
+    document.getElementById('error-screen').style.display  = 'flex';
+}
 
-    /* ── XP конфиг ───────────────────────────────── */
-    const XP_CONFIG = {
-        4: { base: 10, speedBonus: 5,  speedSec: 15 },
-        6: { base: 15, speedBonus: 10, speedSec: 25 },
-        8: { base: 20, speedBonus: 15, speedSec: 35 },
-    };
+/* ══════════════════════════════════════════════════
+   XP CONFIG
+══════════════════════════════════════════════════ */
+const XP_CLASSIC = {
+    4: { base:10, speedBonus:5,  speedSec:15 },
+    6: { base:15, speedBonus:10, speedSec:25 },
+    8: { base:20, speedBonus:15, speedSec:35 },
+};
+const XP_SPRINT = { base:30, recordBonus:20 }; // + pairs*1 XP
 
+/* ══════════════════════════════════════════════════
+   RECORDS  (localStorage)
+══════════════════════════════════════════════════ */
+const RKEY = 'match_pairs_records_v2';
+function getRecords()    { try { return JSON.parse(localStorage.getItem(RKEY)) || {}; } catch { return {}; } }
+function saveRecord(k,v) { const r=getRecords(); r[k]=v; localStorage.setItem(RKEY,JSON.stringify(r)); }
+function getBest(k)      { return getRecords()[k] ?? null; }
 
-    /* ── Рекорды времени (localStorage) ─────────── */
-    const RECORDS_KEY = 'match_pairs_records';
+/* ══════════════════════════════════════════════════
+   SESSION STATE
+══════════════════════════════════════════════════ */
+let sessionXP = 0;
 
-    function getRecords() {
-        try { return JSON.parse(localStorage.getItem(RECORDS_KEY)) || {}; }
-        catch { return {}; }
+/* ══════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════ */
+function shuffle(arr) {
+    const a=[...arr];
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    return a;
+}
+function pickWords(n) { return shuffle(allData).slice(0,Math.min(n,allData.length)); }
+function fmt(sec) { return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`; }
+function rnd(a,b) { return a+Math.random()*(b-a); }
+
+function levelInfo(pairs) {
+    if(pairs<=4) return {cls:'lv1', label:'⭐ Лёгкий',     gridCls:''};
+    if(pairs<=6) return {cls:'lv2', label:'⭐⭐ Средний',   gridCls:''};
+    return             {cls:'lv3', label:'⭐⭐⭐ Сложный', gridCls:'lv3'};
+}
+
+/* ══════════════════════════════════════════════════
+   MODE DESCRIPTIONS
+══════════════════════════════════════════════════ */
+const MODE_DESCS = {
+    classic: '<b>🎯 Классика</b> — найди все пары. Считается время и точность. Чем быстрее и точнее — тем больше XP.',
+    sprint:  '<b>⚡ Спринт</b> — 60 секунд, бесконечный поток слов (8 видимых). Угадай как можно больше пар. После каждой угаданной пары приходит новое слово.',
+};
+
+let currentMode  = 'classic';
+
+function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('btn-mode-classic').className = 'mode-btn' + (mode==='classic' ? ' active-classic' : '');
+    document.getElementById('btn-mode-sprint').className  = 'mode-btn' + (mode==='sprint'  ? ' active-sprint'  : '');
+    document.getElementById('mode-desc').innerHTML = MODE_DESCS[mode];
+    document.getElementById('level-buttons-classic').style.display = mode==='classic' ? '' : 'none';
+    document.getElementById('level-buttons-sprint').style.display  = mode==='sprint'  ? '' : 'none';
+}
+setMode('classic');
+updateAllRecordLabels();
+
+/* ══════════════════════════════════════════════════
+   RECORD LABELS on start screen
+══════════════════════════════════════════════════ */
+function updateAllRecordLabels() {
+    const map = { 'rec-c4':'classic-4', 'rec-c6':'classic-6', 'rec-c8':'classic-8', 'rec-sprint':'sprint' };
+    for(const [id,key] of Object.entries(map)) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const v = getBest(key);
+        el.textContent = v !== null ? `🏆 ${key.startsWith('sprint') ? v+' пар' : fmt(v)}` : '';
     }
+}
 
-    function saveRecord(pairs, seconds) {
-        const records = getRecords();
-        records[pairs] = seconds;
-        localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
-    }
-
-    function getBestTime(pairs) {
-        return getRecords()[pairs] ?? null;
-    }
-
-    // Обновить отображение рекорда на кнопках уровня
-    function updateLevelButtons() {
-        document.querySelectorAll('.btn-level').forEach(btn => {
-            const pairs = parseInt(btn.dataset.pairs);
-            const best  = getBestTime(pairs);
-            let rec = btn.querySelector('.lv-record');
-            if (!rec) {
-                rec = document.createElement('span');
-                rec.classList.add('lv-record');
-                btn.querySelector('.lv-meta').appendChild(rec);
-            }
-            rec.textContent = best !== null ? `🏆 ${fmt(best)}` : '';
-        });
-    }
-
-    updateLevelButtons();
-
-    /* ── Состояние сессии ────────────────────────── */
-    let sessionXP = 0;  // накопленный XP за всю сессию
-
-    /* ── Состояние раунда ────────────────────────── */
-    let currentPairs   = 4;
-    let gameData       = [];
-    let timerInterval  = null;
-    let secondsElapsed = 0;
-    let timerStarted   = false;
-    let matchedPairs   = 0;
-    let attempts       = 0;
-    let selectedCard   = null;
-    let lockBoard      = false;
-
-    /* ── DOM ─────────────────────────────────────── */
-    const grid         = document.getElementById('grid');
-    const timerDisplay = document.getElementById('timer');
-    const scoreDisplay = document.getElementById('score');
-    const levelLabel   = document.getElementById('level-label');
-
-    /* ── Helpers ─────────────────────────────────── */
-    function shuffle(arr) {
-        const a = [...arr];
-        for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-        }
-        return a;
-    }
-
-    function pickWords(n) {
-        return shuffle(allData).slice(0, Math.min(n, allData.length));
-    }
-
-    function levelInfo(n) {
-        if (n <= 4) return { cls:'lv1', label:'⭐ Лёгкий',      gridCls:'' };
-        if (n <= 6) return { cls:'lv2', label:'⭐⭐ Средний',    gridCls:'' };
-        return             { cls:'lv3', label:'⭐⭐⭐ Сложный',  gridCls:'lv3' };
-    }
-
-    function fmt(sec) {
-        return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;
-    }
-
-    /* ── XP формула ──────────────────────────────── */
-    function calcXP(pairs, accuracy, seconds, isNewRecord) {
-        const cfg       = XP_CONFIG[pairs] || XP_CONFIG[8];
-        const base      = cfg.base;
-        const factor    = accuracy / 100;
-        const earned    = Math.round(base * factor);
-        const speed     = seconds <= cfg.speedSec ? cfg.speedBonus : 0;
-        const recordXP  = isNewRecord ? 20 : 0;
-        return { base, factor, earned, speed, recordXP, total: earned + speed + recordXP };
-    }
-
-    /* ── Плавающий +XP при совпадении ───────────── */
-    function spawnXPFloat(el, text) {
-        const rect = el.getBoundingClientRect();
-        const div  = document.createElement('div');
-        div.classList.add('xp-float');
-        div.textContent = text;
-        div.style.left = rect.left + rect.width / 2 - 20 + 'px';
-        div.style.top  = rect.top  + window.scrollY - 10 + 'px';
-        document.body.appendChild(div);
-        setTimeout(() => div.remove(), 950);
-    }
-
-    /* ── Выбор уровня ────────────────────────────── */
-    document.querySelectorAll('.btn-level').forEach(btn => {
-        btn.addEventListener('click', () => {
-            currentPairs = parseInt(btn.dataset.pairs);
-            startGame();
-        });
+/* ══════════════════════════════════════════════════
+   LEVEL BUTTONS
+══════════════════════════════════════════════════ */
+document.querySelectorAll('.btn-level').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const mode  = btn.dataset.mode;
+        const pairs = parseInt(btn.dataset.pairs) || 8;
+        if(mode === 'classic') startClassic(pairs);
+        else                   startSprint();
     });
+});
 
-    /* ── Старт раунда ────────────────────────────── */
-    function startGame() {
-        clearInterval(timerInterval);
-        secondsElapsed = 0; timerStarted = false;
-        matchedPairs   = 0; attempts     = 0;
-        selectedCard   = null; lockBoard  = false;
+/* ══════════════════════════════════════════════════
+   DOM refs
+══════════════════════════════════════════════════ */
+const grid         = document.getElementById('grid');
+const timerDisplay = document.getElementById('timer');
+const scoreDisplay = document.getElementById('score');
+const levelLabel   = document.getElementById('level-label');
+const sprintArea   = document.getElementById('sprint-area');
+const sprintLeft   = document.getElementById('sprint-left');
+const sprintRight  = document.getElementById('sprint-right');
 
-        gameData = pickWords(currentPairs);
-        const info = levelInfo(currentPairs);
+/* ══════════════════════════════════════════════════
+   SHARED STATE
+══════════════════════════════════════════════════ */
+let gameMode       = 'classic';
+let currentPairs   = 4;
+let gameData       = [];
+let timerInterval  = null;
+let secondsElapsed = 0;
+let secondsLeft    = 60;
+let timerStarted   = false;
+let lockBoard      = false;
+let selectedCard   = null;
 
-        document.getElementById('level-screen').style.display = 'none';
-        document.getElementById('win-screen').style.display   = 'none';
-        document.getElementById('header').classList.add('visible');
-        grid.className = 'grid visible' + (info.gridCls ? ' ' + info.gridCls : '');
+// Classic
+let matchedPairs  = 0;
+let attempts      = 0;
 
-        timerDisplay.textContent = '⏱ 00:00';
-        scoreDisplay.textContent = `Пары: 0 / ${currentPairs}`;
-        levelLabel.textContent   = info.label;
+// Sprint
+let sprintScore   = 0;
+let sprintAttempts = 0;
+let sprintQueue   = [];
+let sprintQueuePos = 0;
+let sprintSlots   = []; // [{id,el}] × 8
+let sprintRightCards = []; // [{id,el}]
 
-        buildCards();
+/* ════════════════════════════════════════════════
+   ████  CLASSIC MODE  ████
+════════════════════════════════════════════════ */
+function startClassic(pairs) {
+    gameMode     = 'classic';
+    currentPairs = pairs;
+    gameData     = pickWords(pairs);
+
+    clearInterval(timerInterval);
+    secondsElapsed = 0; timerStarted = false;
+    matchedPairs   = 0; attempts      = 0;
+    selectedCard   = null; lockBoard  = false;
+
+    const info = levelInfo(pairs);
+
+    hideAll();
+    document.getElementById('header').classList.add('visible');
+    grid.className = 'grid visible' + (info.gridCls ? ' '+info.gridCls : '');
+
+    timerDisplay.textContent = '⏱ 00:00';
+    timerDisplay.className   = '';
+    scoreDisplay.textContent = `Пары: 0 / ${pairs}`;
+    levelLabel.textContent   = info.label;
+
+    buildClassicCards();
+}
+
+function buildClassicCards() {
+    grid.innerHTML = '';
+    lockBoard = true;
+    const left  = shuffle(gameData.map((p,i)=>({id:i,text:p.w})));
+    const right = shuffle(gameData.map((p,i)=>({id:i,text:p.t})));
+
+    for(let i=0;i<gameData.length;i++) {
+        [left[i], right[i]].forEach((item,side) => {
+            const card = document.createElement('div');
+            card.classList.add('card','dealing');
+            card.dataset.id = item.id;
+            const rot = (rnd(-5,5)).toFixed(1);
+            card.style.setProperty('--r', rot+'deg');
+            card.style.animationDelay = (i*2+side)*40+'ms';
+            card.textContent = item.text;
+            card.addEventListener('click', onClassicClick);
+            grid.appendChild(card);
+        });
+    }
+    const total = (gameData.length*2-1)*40+420;
+    setTimeout(() => {
+        lockBoard = false;
+        grid.querySelectorAll('.card').forEach(c=>c.classList.remove('dealing'));
+    }, total);
+}
+
+function startClassicTimer() {
+    if(timerStarted) return;
+    timerStarted = true;
+    timerInterval = setInterval(() => {
+        secondsElapsed++;
+        timerDisplay.textContent = `⏱ ${fmt(secondsElapsed)}`;
+    }, 1000);
+}
+
+function onClassicClick() {
+    if(lockBoard || this.classList.contains('matched')) return;
+    startClassicTimer();
+
+    if(this === selectedCard) { this.classList.remove('selected'); selectedCard=null; return; }
+    if(!selectedCard) { this.classList.add('selected'); selectedCard=this; return; }
+
+    const first=selectedCard, second=this;
+    first.classList.remove('selected'); selectedCard=null;
+    attempts++;
+
+    if(first.dataset.id === second.dataset.id) {
+        first.classList.add('matched'); second.classList.add('matched');
+        first.removeEventListener('click',onClassicClick);
+        second.removeEventListener('click',onClassicClick);
+        matchedPairs++;
+        scoreDisplay.textContent = `Пары: ${matchedPairs} / ${currentPairs}`;
+        if(tg) tg.HapticFeedback?.impactOccurred('light');
+        spawnXPFloat(second,'✨');
+        if(matchedPairs===currentPairs) setTimeout(winClassic,450);
+    } else {
+        lockBoard=true;
+        first.classList.add('wrong'); second.classList.add('wrong');
+        if(tg) tg.HapticFeedback?.notificationOccurred('error');
+        setTimeout(()=>{ first.classList.remove('wrong'); second.classList.remove('wrong'); lockBoard=false; }, 700);
+    }
+}
+
+function winClassic() {
+    clearInterval(timerInterval);
+    hideAll();
+
+    const acc      = attempts>0 ? Math.round((currentPairs/attempts)*100) : 100;
+    const cfg      = XP_CLASSIC[currentPairs] || XP_CLASSIC[8];
+    const recKey   = `classic-${currentPairs}`;
+    const prevBest = getBest(recKey);
+    const isNew    = prevBest===null || secondsElapsed<prevBest;
+    if(isNew) saveRecord(recKey, secondsElapsed);
+
+    const earned   = Math.round(cfg.base*(acc/100));
+    const speed    = secondsElapsed<=cfg.speedSec ? cfg.speedBonus : 0;
+    const recBonus = isNew ? 20 : 0;
+    const total    = earned + speed + recBonus;
+
+    sessionXP += total;
+
+    const info = levelInfo(currentPairs);
+
+    // XP breakdown
+    document.getElementById('row-acc').style.display   = '';
+    document.getElementById('row-base').style.display  = '';
+    document.getElementById('row-speed').style.display = '';
+    document.getElementById('speed-label').textContent = '⚡ Бонус за скорость';
+
+    document.getElementById('xp-base').textContent    = `${cfg.base} XP`;
+    document.getElementById('xp-acc-pct').textContent = acc;
+    document.getElementById('xp-acc-val').textContent = `${earned} XP`;
+    document.getElementById('xp-speed').textContent   = `+${speed} XP`;
+
+    const recRow = document.getElementById('xp-record-row');
+    recRow.style.display = isNew ? '' : 'none';
+
+    document.getElementById('xp-round-total').textContent = `+${total} XP`;
+
+    // session
+    document.getElementById('session-total').textContent    = `${sessionXP} XP`;
+    document.getElementById('collect-xp-label').textContent = sessionXP;
+
+    // badge
+    const badge = document.getElementById('win-badge');
+    badge.textContent = info.label; badge.className = `level-badge ${info.cls}`;
+
+    // record banner
+    const banner = document.getElementById('record-banner');
+    if(isNew) {
+        const prev = prevBest!==null ? ` (было ${fmt(prevBest)})` : ' (первый рекорд!)';
+        document.getElementById('record-val').textContent = `${fmt(secondsElapsed)}${prev}`;
+        banner.classList.add('show');
+        setTimeout(celebrateRecord, 120);
+    } else {
+        banner.classList.remove('show');
+        celebrateWin();
     }
 
-    /* ── Таймер ──────────────────────────────────── */
-    function startTimer() {
-        if (timerStarted) return;
-        timerStarted = true;
-        timerInterval = setInterval(() => {
-            secondsElapsed++;
-            timerDisplay.textContent = `⏱ ${fmt(secondsElapsed)}`;
-        }, 1000);
+    document.getElementById('win-title').textContent = '🎉 Отлично!';
+    document.getElementById('final-stats').textContent =
+        `Время: ${fmt(secondsElapsed)} · Точность: ${acc}% · Рекорд: ${fmt(getBest(recKey))}`;
+
+    document.getElementById('win-screen').style.display = 'flex';
+    updateAllRecordLabels();
+    if(tg) tg.HapticFeedback?.notificationOccurred('success');
+}
+
+/* ════════════════════════════════════════════════
+   ████  SPRINT MODE  ████
+════════════════════════════════════════════════ */
+const SPRINT_ROWS = 8;
+
+function startSprint() {
+    gameMode = 'sprint';
+    clearInterval(timerInterval);
+    secondsLeft    = 60; timerStarted   = false;
+    sprintScore    = 0;  sprintAttempts = 0;
+    selectedCard   = null; lockBoard    = false;
+
+    hideAll();
+    document.getElementById('header').classList.add('visible');
+    sprintArea.classList.add('visible');
+
+    timerDisplay.textContent = '⏱ 1:00';
+    timerDisplay.className   = '';
+    scoreDisplay.innerHTML   = '<span class="sprint-pill">⚡ <span id="sprint-score-val">0</span> пар</span>';
+    levelLabel.textContent   = '⚡ Спринт';
+
+    // build infinite word queue
+    sprintQueue    = shuffle(allData.map((_,i)=>i));
+    sprintQueuePos = 0;
+
+    sprintLeft.innerHTML  = '';
+    sprintRight.innerHTML = '';
+    sprintSlots      = [];
+    sprintRightCards = [];
+
+    // Fill 8 left slots with words
+    for(let i=0;i<SPRINT_ROWS;i++) {
+        const id = nextSprintId();
+        const el = makeSprintCard(allData[id].w, 'left', i*35);
+        el.addEventListener('click', () => onSprintLeftClick(i));
+        sprintLeft.appendChild(el);
+        sprintSlots.push({id, el});
     }
 
-    /* ── Карточки ────────────────────────────────── */
-    function buildCards() {
-        grid.innerHTML = '';
-        lockBoard = true;
-        const leftCol  = shuffle(gameData.map((p,i) => ({ id:i, text:p.w })));
-        const rightCol = shuffle(gameData.map((p,i) => ({ id:i, text:p.t })));
+    // Right col: translations of all 8, shuffled
+    rebuildSprintRight(sprintSlots.map(s=>s.id));
 
-        for (let i = 0; i < gameData.length; i++) {
-            [leftCol[i], rightCol[i]].forEach((item, side) => {
-                const card = document.createElement('div');
-                card.classList.add('card', 'dealing');
-                card.dataset.id = item.id;
-                const rot = ((Math.random()*10)-5).toFixed(1);
-                card.style.setProperty('--r', rot + 'deg');
-                card.style.animationDelay = (i*2+side)*40 + 'ms';
-                card.textContent = item.text;
-                card.addEventListener('click', onCardClick);
-                grid.appendChild(card);
-            });
-        }
-        const totalMs = (gameData.length*2-1)*40 + 420;
-        setTimeout(() => {
-            lockBoard = false;
-            grid.querySelectorAll('.card').forEach(c => c.classList.remove('dealing'));
-        }, totalMs);
+    // Start timer on first click — attach to area
+    sprintArea.addEventListener('click', startSprintTimer, {once:true});
+}
+
+function nextSprintId() {
+    if(sprintQueuePos>=sprintQueue.length) {
+        sprintQueue = shuffle(allData.map((_,i)=>i));
+        sprintQueuePos = 0;
+    }
+    return sprintQueue[sprintQueuePos++];
+}
+
+function makeSprintCard(text, side, delay=0) {
+    const el = document.createElement('div');
+    el.classList.add('card','slide-in');
+    el.style.animationDelay = delay+'ms';
+    el.textContent = text;
+    setTimeout(()=>el.classList.remove('slide-in'), delay+300);
+    return el;
+}
+
+function rebuildSprintRight(ids) {
+    sprintRight.innerHTML = '';
+    sprintRightCards = [];
+    const shuffled = shuffle([...ids]);
+    shuffled.forEach((id,i)=>{
+        const el = makeSprintCard(allData[id].t, 'right', i*30);
+        el.addEventListener('click', ()=>onSprintRightClick(id, el));
+        sprintRight.appendChild(el);
+        sprintRightCards.push({id,el});
+    });
+}
+
+let sprintSelectedLeft  = null; // {slotIdx, id, el}
+let sprintSelectedRight = null; // {id, el}
+
+function onSprintLeftClick(slotIdx) {
+    if(lockBoard) return;
+    const slot = sprintSlots[slotIdx];
+    if(!slot || slot.el.classList.contains('matched')) return;
+
+    if(sprintSelectedLeft?.slotIdx===slotIdx) {
+        slot.el.classList.remove('selected');
+        sprintSelectedLeft=null; return;
+    }
+    if(sprintSelectedLeft) sprintSelectedLeft.el.classList.remove('selected');
+    sprintSelectedLeft = {slotIdx, id:slot.id, el:slot.el};
+    slot.el.classList.add('selected');
+    if(sprintSelectedRight) checkSprintPair();
+}
+
+function onSprintRightClick(id, el) {
+    if(lockBoard || el.classList.contains('matched')) return;
+    if(sprintSelectedRight?.el===el) {
+        el.classList.remove('selected');
+        sprintSelectedRight=null; return;
+    }
+    if(sprintSelectedRight) sprintSelectedRight.el.classList.remove('selected');
+    sprintSelectedRight = {id, el};
+    el.classList.add('selected');
+    if(sprintSelectedLeft) checkSprintPair();
+}
+
+function checkSprintPair() {
+    const L=sprintSelectedLeft, R=sprintSelectedRight;
+    L.el.classList.remove('selected');
+    R.el.classList.remove('selected');
+    sprintSelectedLeft=null; sprintSelectedRight=null;
+    sprintAttempts++;
+
+    if(L.id===R.id) {
+        // Match!
+        L.el.classList.add('matched');
+        R.el.classList.add('matched');
+        sprintScore++;
+        const sv = document.getElementById('sprint-score-val');
+        if(sv) sv.textContent = sprintScore;
+        if(tg) tg.HapticFeedback?.impactOccurred('light');
+        spawnXPFloat(R.el,'✨');
+
+        setTimeout(()=>replaceSprintSlot(L.slotIdx, L.el, R.el), 650);
+    } else {
+        lockBoard=true;
+        L.el.classList.add('wrong');
+        R.el.classList.add('wrong');
+        if(tg) tg.HapticFeedback?.notificationOccurred('error');
+        setTimeout(()=>{
+            L.el.classList.remove('wrong');
+            R.el.classList.remove('wrong');
+            lockBoard=false;
+        }, 600);
+    }
+}
+
+function replaceSprintSlot(slotIdx, oldLeft, matchedRight) {
+    // Remove right card
+    matchedRight.classList.add('slide-out');
+    setTimeout(()=>matchedRight.remove(), 220);
+
+    // Remove old left card
+    oldLeft.classList.add('slide-out');
+    const newId = nextSprintId();
+
+    setTimeout(()=>{
+        // New left card
+        const newEl = makeSprintCard(allData[newId].w, 'left');
+        newEl.addEventListener('click', ()=>onSprintLeftClick(slotIdx));
+        sprintLeft.replaceChild(newEl, oldLeft);
+        sprintSlots[slotIdx] = {id:newId, el:newEl};
+
+        // Add new right card at random position
+        const newRight = makeSprintCard(allData[newId].t, 'right');
+        newRight.addEventListener('click', ()=>onSprintRightClick(newId, newRight));
+        const children = Array.from(sprintRight.children).filter(c=>!c.classList.contains('slide-out'));
+        const insertBefore = children[Math.floor(Math.random()*(children.length+1))];
+        if(insertBefore) sprintRight.insertBefore(newRight, insertBefore);
+        else sprintRight.appendChild(newRight);
+        sprintRightCards.push({id:newId, el:newRight});
+    }, 220);
+}
+
+function startSprintTimer() {
+    if(timerStarted) return;
+    timerStarted=true;
+    timerInterval=setInterval(()=>{
+        secondsLeft--;
+        const m=Math.floor(secondsLeft/60), s=String(secondsLeft%60).padStart(2,'0');
+        timerDisplay.textContent=`⏱ ${m}:${s}`;
+        timerDisplay.classList.toggle('warn',   secondsLeft<=20 && secondsLeft>10);
+        timerDisplay.classList.toggle('danger', secondsLeft<=10);
+        if(secondsLeft<=0) endSprint();
+    },1000);
+}
+
+function endSprint() {
+    clearInterval(timerInterval);
+    hideAll();
+
+    const recKey   = 'sprint';
+    const prevBest = getBest(recKey);
+    const isNew    = prevBest===null || sprintScore>prevBest;
+    if(isNew) saveRecord(recKey, sprintScore);
+
+    // XP: base 30 + 1 per pair + record bonus
+    const pairXP   = sprintScore;
+    const base     = XP_SPRINT.base;
+    const total    = base + pairXP + (isNew ? XP_SPRINT.recordBonus : 0);
+    sessionXP += total;
+
+    // Show sprint-specific XP breakdown
+    document.getElementById('row-base').style.display  = '';
+    document.getElementById('row-acc').style.display   = 'none'; // no accuracy in sprint
+    document.getElementById('row-speed').style.display = '';
+    document.getElementById('speed-label').textContent = '⚡ Бонус за пары';
+    document.getElementById('xp-base').textContent     = `${base} XP`;
+    document.getElementById('xp-speed').textContent    = `+${pairXP} XP`;
+
+    const recRow = document.getElementById('xp-record-row');
+    recRow.style.display = isNew ? '' : 'none';
+
+    document.getElementById('xp-round-total').textContent  = `+${total} XP`;
+    document.getElementById('session-total').textContent    = `${sessionXP} XP`;
+    document.getElementById('collect-xp-label').textContent = sessionXP;
+
+    const badge = document.getElementById('win-badge');
+    badge.textContent = '⚡ Спринт'; badge.className = 'level-badge sprint';
+
+    const banner = document.getElementById('record-banner');
+    if(isNew) {
+        const prev = prevBest!==null ? ` (было ${prevBest} пар)` : ' (первый рекорд!)';
+        document.getElementById('record-val').textContent = `${sprintScore} пар${prev}`;
+        banner.classList.add('show');
+        setTimeout(celebrateRecord, 120);
+    } else {
+        banner.classList.remove('show');
+        celebrateWin();
     }
 
-    /* ── Клик ────────────────────────────────────── */
-    function onCardClick() {
-        if (lockBoard || this.classList.contains('matched')) return;
-        startTimer();
+    document.getElementById('win-title').textContent = '⏰ Время вышло!';
+    const acc = sprintAttempts>0 ? Math.round((sprintScore/sprintAttempts)*100) : 0;
+    document.getElementById('final-stats').textContent =
+        `Угадано: ${sprintScore} пар · Точность: ${acc}% · Рекорд: ${getBest(recKey)} пар`;
 
-        if (this === selectedCard) {
-            this.classList.remove('selected');
-            selectedCard = null;
-            return;
-        }
-        if (!selectedCard) {
-            this.classList.add('selected');
-            selectedCard = this;
-            return;
-        }
+    document.getElementById('win-screen').style.display = 'flex';
+    updateAllRecordLabels();
+    if(tg) tg.HapticFeedback?.notificationOccurred('success');
+}
 
-        const first = selectedCard, second = this;
-        first.classList.remove('selected');
-        selectedCard = null;
-        attempts++;
+/* ══════════════════════════════════════════════════
+   CONFETTI / BURST
+══════════════════════════════════════════════════ */
+const COLORS = ['#f59e0b','#ef4444','#3b82f6','#10b981','#8b5cf6','#ec4899','#38bdf8','#fff'];
+const STARS  = ['⭐','🌟','✨','💫','🎉','🏆'];
 
-        if (first.dataset.id === second.dataset.id) {
-            first.classList.add('matched');
-            second.classList.add('matched');
-            first.removeEventListener('click', onCardClick);
-            second.removeEventListener('click', onCardClick);
-            matchedPairs++;
-            scoreDisplay.textContent = `Пары: ${matchedPairs} / ${currentPairs}`;
-            if (tg) tg.HapticFeedback?.impactOccurred('light');
-            // маленький +1 за каждую пару
-            spawnXPFloat(second, '+✨');
-            if (matchedPairs === currentPairs) setTimeout(winGame, 450);
-        } else {
-            lockBoard = true;
-            first.classList.add('wrong');
-            second.classList.add('wrong');
-            if (tg) tg.HapticFeedback?.notificationOccurred('error');
-            setTimeout(() => {
-                first.classList.remove('wrong');
-                second.classList.remove('wrong');
-                lockBoard = false;
-            }, 700);
-        }
-    }
-
-
-    /* ── CONFETTI / BURST ANIMATION ─────────────── */
-    const CONFETTI_COLORS = ['#f59e0b','#ef4444','#3b82f6','#10b981','#8b5cf6','#ec4899','#38bdf8','#fff'];
-    const STAR_EMOJIS     = ['⭐','🌟','✨','💫','🎉','🏆'];
-
-    function randomBetween(a, b) { return a + Math.random() * (b - a); }
-
-    function launchConfetti(originX, originY, count = 60) {
-        for (let i = 0; i < count; i++) {
-            const el = document.createElement('div');
-            el.classList.add('confetti-piece');
-
-            const angle   = randomBetween(0, Math.PI * 2);
-            const power   = randomBetween(120, 380);
-            const tx      = Math.cos(angle) * power;
-            const ty      = Math.sin(angle) * power - randomBetween(80, 200);
-            const rot     = randomBetween(-720, 720);
-            const dur     = randomBetween(0.7, 1.4);
-            const delay   = randomBetween(0, 0.18);
-            const size    = randomBetween(7, 14);
-            const color   = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
-            const ease    = ['ease-out','cubic-bezier(.2,.8,.3,1)'][Math.floor(Math.random()*2)];
-            // half circles, half squares
-            const isCircle = Math.random() > 0.5;
-
-            el.style.cssText = `
-                left: ${originX}px; top: ${originY}px;
-                width: ${size}px; height: ${size * (isCircle ? 1 : randomBetween(0.4,1))}px;
-                background: ${color};
-                border-radius: ${isCircle ? '50%' : '2px'};
-                --tx: ${tx}px; --ty: ${ty}px; --rot: ${rot}deg;
-                --dur: ${dur}s; --delay: ${delay}s; --ease: ${ease};
-            `;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), (dur + delay) * 1000 + 100);
-        }
-    }
-
-    function launchBurstRing(originX, originY, color = '#f59e0b', size = 160) {
-        const el = document.createElement('div');
-        el.classList.add('burst-ring');
-        el.style.cssText = `
-            left: ${originX}px; top: ${originY}px;
-            width: ${size}px; height: ${size}px;
-            --ring-color: ${color};
-        `;
+function launchConfetti(cx,cy,count=60) {
+    for(let i=0;i<count;i++) {
+        const el=document.createElement('div');
+        el.classList.add('confetti-piece');
+        const angle=rnd(0,Math.PI*2), power=rnd(120,380);
+        const tx=Math.cos(angle)*power, ty=Math.sin(angle)*power-rnd(80,200);
+        const rot=rnd(-720,720), dur=rnd(.7,1.4), delay=rnd(0,.18);
+        const size=rnd(7,14), color=COLORS[Math.floor(Math.random()*COLORS.length)];
+        const ease=['ease-out','cubic-bezier(.2,.8,.3,1)'][Math.floor(Math.random()*2)];
+        const circle=Math.random()>.5;
+        el.style.cssText=`left:${cx}px;top:${cy}px;width:${size}px;height:${size*(circle?1:rnd(.4,1))}px;
+            background:${color};border-radius:${circle?'50%':'2px'};
+            --tx:${tx}px;--ty:${ty}px;--rot:${rot}deg;--dur:${dur}s;--delay:${delay}s;--ease:${ease};`;
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 700);
+        setTimeout(()=>el.remove(),(dur+delay)*1000+100);
     }
-
-    function launchStars(originX, originY, count = 8) {
-        for (let i = 0; i < count; i++) {
-            const el    = document.createElement('div');
-            el.classList.add('star-burst');
-            const angle = (Math.PI * 2 / count) * i;
-            const power = randomBetween(80, 160);
-            const tx    = Math.cos(angle) * power;
-            const ty    = Math.sin(angle) * power;
-            const rot   = randomBetween(-180, 180);
-            const dur   = randomBetween(0.6, 1.0);
-            const delay = randomBetween(0, 0.1);
-            const emoji = STAR_EMOJIS[Math.floor(Math.random() * STAR_EMOJIS.length)];
-            el.textContent = emoji;
-            el.style.cssText = `left:${originX}px; top:${originY}px;
-                --tx:${tx}px; --ty:${ty}px; --rot:${rot}deg;
-                --dur:${dur}s; --delay:${delay}s;`;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), (dur + delay) * 1000 + 100);
-        }
+}
+function launchBurstRing(cx,cy,color='#f59e0b',size=160) {
+    const el=document.createElement('div');
+    el.classList.add('burst-ring');
+    el.style.cssText=`left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;--ring-color:${color};`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),700);
+}
+function launchStars(cx,cy,count=8) {
+    for(let i=0;i<count;i++) {
+        const el=document.createElement('div');
+        el.classList.add('star-burst');
+        const angle=(Math.PI*2/count)*i, power=rnd(80,160);
+        const tx=Math.cos(angle)*power, ty=Math.sin(angle)*power;
+        const dur=rnd(.6,1), delay=rnd(0,.1);
+        el.textContent=STARS[Math.floor(Math.random()*STARS.length)];
+        el.style.cssText=`left:${cx}px;top:${cy}px;--tx:${tx}px;--ty:${ty}px;
+            --rot:${rnd(-180,180)}deg;--dur:${dur}s;--delay:${delay}s;`;
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),(dur+delay)*1000+100);
     }
+}
+function celebrateRecord() {
+    const cx=window.innerWidth/2, cy=window.innerHeight/2;
+    launchBurstRing(cx,cy,'#f59e0b',200); launchStars(cx,cy,10); launchConfetti(cx,cy,70);
+    setTimeout(()=>{ launchBurstRing(cx*.3,cy*.6,'#3b82f6',120); launchConfetti(cx*.3,cy*.6,30); },180);
+    setTimeout(()=>{ launchBurstRing(cx*1.7,cy*.6,'#ec4899',120); launchConfetti(cx*1.7,cy*.6,30); },320);
+    setTimeout(()=>{ launchStars(cx,cy*.3,8); launchConfetti(cx,cy*.8,40); },500);
+}
+function celebrateWin() {
+    const cx=window.innerWidth/2, cy=window.innerHeight/2;
+    launchBurstRing(cx,cy,'#38bdf8',160); launchConfetti(cx,cy,45); launchStars(cx,cy,6);
+}
+function spawnXPFloat(el,text) {
+    const rect=el.getBoundingClientRect();
+    const div=document.createElement('div');
+    div.classList.add('xp-float');
+    div.textContent=text;
+    div.style.left=rect.left+rect.width/2-20+'px';
+    div.style.top=rect.top+window.scrollY-10+'px';
+    document.body.appendChild(div);
+    setTimeout(()=>div.remove(),950);
+}
 
-    function celebrateRecord() {
-        // Three burst waves from different spots on screen
-        const cx = window.innerWidth  / 2;
-        const cy = window.innerHeight / 2;
+/* ══════════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════════ */
+function hideAll() {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('win-screen').style.display   = 'none';
+    document.getElementById('header').classList.remove('visible');
+    grid.className       = 'grid';
+    sprintArea.classList.remove('visible');
+    sprintLeft.innerHTML = '';
+    sprintRight.innerHTML= '';
+}
 
-        // Immediate center burst
-        launchBurstRing(cx, cy, '#f59e0b', 200);
-        launchStars(cx, cy, 10);
-        launchConfetti(cx, cy, 70);
+function goToMenu() {
+    clearInterval(timerInterval);
+    hideAll();
+    document.getElementById('start-screen').style.display = 'flex';
+    updateAllRecordLabels();
+}
 
-        // Slightly delayed side bursts
-        setTimeout(() => {
-            launchBurstRing(cx * 0.3, cy * 0.6, '#3b82f6', 120);
-            launchConfetti(cx * 0.3, cy * 0.6, 30);
-        }, 180);
-        setTimeout(() => {
-            launchBurstRing(cx * 1.7, cy * 0.6, '#ec4899', 120);
-            launchConfetti(cx * 1.7, cy * 0.6, 30);
-        }, 320);
-        setTimeout(() => {
-            launchStars(cx, cy * 0.3, 8);
-            launchConfetti(cx, cy * 0.8, 40);
-        }, 500);
-    }
+/* ══════════════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════════════ */
+document.getElementById('btn-collect').addEventListener('click', ()=>{
+    const records = getRecords();
+    const payload = {
+        action: 'collect_xp', session_xp: sessionXP,
+        best_times: { classic_4:records['classic-4']??null, classic_6:records['classic-6']??null, classic_8:records['classic-8']??null },
+        sprint_record: records['sprint']??null,
+    };
+    if(tg) tg.sendData(JSON.stringify(payload));
+    else alert(`Начислено ${sessionXP} XP!\n${JSON.stringify(records,null,2)}`);
+});
 
-    function celebrateWin() {
-        const cx = window.innerWidth  / 2;
-        const cy = window.innerHeight / 2;
-        launchBurstRing(cx, cy, '#38bdf8', 160);
-        launchConfetti(cx, cy, 45);
-        launchStars(cx, cy, 6);
-    }
+document.getElementById('btn-restart').addEventListener('click', ()=>{
+    if(gameMode==='classic') startClassic(currentPairs);
+    else                     startSprint();
+});
 
-    /* ── Победа ──────────────────────────────────── */
-    function winGame() {
-        clearInterval(timerInterval);
-        grid.className = 'grid';
-        document.getElementById('header').classList.remove('visible');
-
-        const acc     = attempts > 0 ? Math.round((currentPairs / attempts) * 100) : 100;
-        const prevBest = getBestTime(currentPairs);
-        const isNew   = prevBest === null || secondsElapsed < prevBest;
-
-        // Сохранить рекорд если новый
-        if (isNew) saveRecord(currentPairs, secondsElapsed);
-
-        const xp   = calcXP(currentPairs, acc, secondsElapsed, isNew);
-        const info = levelInfo(currentPairs);
-
-        // Добавить к сессии
-        sessionXP += xp.total;
-
-        // Бейдж
-        const badge = document.getElementById('win-badge');
-        badge.textContent = info.label;
-        badge.className   = `level-badge ${info.cls}`;
-
-        // Разбивка XP
-        document.getElementById('xp-base').textContent        = `${xp.base} XP`;
-        document.getElementById('xp-acc-pct').textContent     = acc;
-        document.getElementById('xp-acc-val').textContent     = `${xp.earned} XP`;
-        document.getElementById('xp-speed').textContent       = `+${xp.speed} XP`;
-
-        // Строка рекорда
-        const recRow = document.getElementById('xp-record-row');
-        if (isNew) {
-            recRow.style.display = '';
-            document.getElementById('xp-record-bonus').textContent = '+20 XP';
-        } else {
-            recRow.style.display = 'none';
-        }
-
-        document.getElementById('xp-round-total').textContent = `+${xp.total} XP`;
-
-        // Сессия
-        document.getElementById('session-total').textContent    = `${sessionXP} XP`;
-        document.getElementById('collect-xp-label').textContent = sessionXP;
-
-        // Баннер рекорда
-        const banner = document.getElementById('record-banner');
-        if (isNew) {
-            const prevText = prevBest !== null ? ` (было ${fmt(prevBest)})` : ' (первый рекорд!)';
-            document.getElementById('record-val').textContent = `${fmt(secondsElapsed)}${prevText}`;
-            banner.classList.add('show');
-            if (tg) tg.HapticFeedback?.notificationOccurred('success');
-            setTimeout(celebrateRecord, 120);
-        } else {
-            banner.classList.remove('show');
-        }
-
-        // Стата
-        const bestAfter = getBestTime(currentPairs);
-        document.getElementById('final-stats').textContent =
-            `Время: ${fmt(secondsElapsed)} · Точность: ${acc}% · Рекорд: ${fmt(bestAfter)}`;
-
-        document.getElementById('win-screen').style.display = 'flex';
-
-        // Обновить кнопки уровней с новым рекордом
-        updateLevelButtons();
-
-        if (!isNew) celebrateWin();
-        if (tg) tg.HapticFeedback?.notificationOccurred('success');
-    }
-
-    /* ── Забрать XP и выйти ──────────────────────── */
-    document.getElementById('btn-collect').addEventListener('click', () => {
-        const records = getRecords();
-        const payload = {
-            action:     'collect_xp',
-            session_xp: sessionXP,
-            best_times: {
-                lv4: records[4] ?? null,
-                lv6: records[6] ?? null,
-                lv8: records[8] ?? null,
-            },
-        };
-        if (tg) {
-            tg.sendData(JSON.stringify(payload));
-        } else {
-            alert(`Начислено ${sessionXP} XP!\nРекорды: ${JSON.stringify(records)}`);
-        }
-    });
-
-    /* ── Сыграть снова ───────────────────────────── */
-    document.getElementById('btn-restart').addEventListener('click', () => {
-        startGame();
-    });
-
-    /* ── Сменить уровень ─────────────────────────── */
-    document.getElementById('btn-change-level').addEventListener('click', () => {
-        document.getElementById('win-screen').style.display   = 'none';
-        document.getElementById('level-screen').style.display = 'flex';
-    });
+document.getElementById('btn-menu').addEventListener('click', goToMenu);
 </script>
 </body>
 </html>
