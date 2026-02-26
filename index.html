@@ -12,8 +12,11 @@
             --card-bg:      var(--tg-theme-secondary-bg-color, #ffffff);
             --primary:      var(--tg-theme-button-color, #3b82f6);
             --primary-dark: #2563eb;
-            --success:      #10b981;
+            --success:      #38bdf8;
+            --match-border: #10b981;
             --error:        #ef4444;
+            --xp:           #f59e0b;
+            --xp-dark:      #d97706;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +33,7 @@
             user-select: none;
         }
 
-        /* ── LEVEL SELECT SCREEN ─────────────────────── */
+        /* ── LEVEL SELECT ────────────────────────────── */
         #level-screen {
             display: flex;
             flex-direction: column;
@@ -43,23 +46,10 @@
             animation: fadeUp 0.4s ease both;
         }
 
-        #level-screen h1 {
-            font-size: 2rem;
-            text-align: center;
-        }
+        #level-screen h1 { font-size: 2rem; text-align: center; }
+        #level-screen p  { font-size: 1rem; opacity: 0.6; text-align: center; }
 
-        #level-screen p {
-            font-size: 1rem;
-            opacity: 0.6;
-            text-align: center;
-        }
-
-        .level-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-        }
+        .level-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; }
 
         .btn-level {
             width: 100%;
@@ -74,27 +64,14 @@
             justify-content: space-between;
             transition: transform 0.12s, box-shadow 0.12s;
         }
-
         .btn-level:active { transform: scale(0.97); }
-
-        .btn-level.lv1 {
-            background: linear-gradient(135deg, #3b82f6, #6366f1);
-            color: #fff;
-            box-shadow: 0 6px 18px rgba(99,102,241,0.35);
-        }
-        .btn-level.lv2 {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            color: #fff;
-            box-shadow: 0 6px 18px rgba(139,92,246,0.35);
-        }
-        .btn-level.lv3 {
-            background: linear-gradient(135deg, #f59e0b, #ef4444);
-            color: #fff;
-            box-shadow: 0 6px 18px rgba(245,158,11,0.35);
-        }
-
+        .btn-level.lv1 { background: linear-gradient(135deg,#3b82f6,#6366f1); color:#fff; box-shadow:0 6px 18px rgba(99,102,241,.35); }
+        .btn-level.lv2 { background: linear-gradient(135deg,#8b5cf6,#ec4899); color:#fff; box-shadow:0 6px 18px rgba(139,92,246,.35); }
+        .btn-level.lv3 { background: linear-gradient(135deg,#f59e0b,#ef4444); color:#fff; box-shadow:0 6px 18px rgba(245,158,11,.35); }
         .btn-level .lv-name { font-size: 1.1rem; }
-        .btn-level .lv-desc { font-size: 0.8rem; opacity: 0.85; font-weight: 500; }
+        .btn-level .lv-meta { display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+        .btn-level .lv-desc { font-size: 0.78rem; opacity: 0.85; font-weight: 500; }
+        .btn-level .lv-xp  { font-size: 0.78rem; opacity: 0.95; font-weight: 700; background: rgba(255,255,255,.2); padding: 2px 8px; border-radius: 8px; }
 
         /* ── HEADER ─────────────────────────────────── */
         .header {
@@ -111,10 +88,9 @@
             font-size: 1.05rem;
             font-weight: 700;
         }
-
         .header.visible { display: flex; }
 
-        /* ── GRID: 2 колонки ────────────────────────── */
+        /* ── GRID ────────────────────────────────────── */
         .grid {
             display: none;
             grid-template-columns: 1fr 1fr;
@@ -122,10 +98,9 @@
             width: 100%;
             max-width: 440px;
         }
-
         .grid.visible { display: grid; }
 
-        /* ── CARD ───────────────────────────────────── */
+        /* ── CARD ────────────────────────────────────── */
         .card {
             width: 100%;
             min-height: 60px;
@@ -135,7 +110,7 @@
             justify-content: center;
             text-align: center;
             border-radius: 12px;
-            font-size: 1.05rem;       /* ← крупнее */
+            font-size: 1.05rem;
             font-weight: 600;
             line-height: 1.3;
             word-break: break-word;
@@ -145,428 +120,792 @@
             background: var(--card-bg);
             color: var(--text);
             box-shadow: 0 2px 6px rgba(0,0,0,0.07);
-            transition: background 0.18s, border-color 0.18s,
-                        color 0.18s, transform 0.13s, box-shadow 0.18s;
+            transition: background .18s, border-color .18s, color .18s, transform .13s, box-shadow .18s;
         }
-
-        /* Уровни — чуть меняем размер шрифта для 8 пар */
         .grid.lv3 .card { font-size: 0.92rem; min-height: 52px; }
-
         .card:active:not(.matched):not(.dealing) { transform: scale(0.95); }
-
         .card.selected {
             border-color: var(--primary-dark);
             background: color-mix(in srgb, var(--primary) 14%, var(--card-bg));
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
+            box-shadow: 0 0 0 3px rgba(59,130,246,.25);
             transform: scale(1.04);
         }
-
         .card.matched {
-            background: var(--success);
-            border-color: var(--success);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(16,185,129,0.35);
+            background: var(--success); border-color: var(--match-border); color: #111827;
+            box-shadow: 0 4px 12px rgba(56,189,248,.4);
             cursor: default;
-            animation: pop 0.32s cubic-bezier(0.34,1.56,0.64,1);
+            animation: pop .32s cubic-bezier(.34,1.56,.64,1);
         }
-
-        @keyframes pop {
-            0%   { transform: scale(1); }
-            50%  { transform: scale(1.08); }
-            100% { transform: scale(1); }
-        }
-
         .card.wrong {
-            background: var(--error);
-            border-color: var(--error);
-            color: #fff;
-            animation: shake 0.38s ease;
+            background: var(--error); border-color: var(--error); color: #fff;
+            animation: shake .38s ease;
         }
-
-        @keyframes shake {
-            0%,100% { transform: translateX(0); }
-            20%     { transform: translateX(-6px); }
-            60%     { transform: translateX(6px); }
-            80%     { transform: translateX(-3px); }
-        }
-
-        @keyframes dealIn {
-            0%   { opacity: 0; transform: translateY(-28px) scale(0.82) rotate(var(--r)); }
-            65%  { transform: translateY(5px) scale(1.05) rotate(0deg); }
-            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
-        }
-
-        .card.dealing { animation: dealIn 0.42s cubic-bezier(0.22,1,0.36,1) both; }
+        @keyframes pop    { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+        @keyframes shake  { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-3px)} }
+        @keyframes dealIn { 0%{opacity:0;transform:translateY(-28px) scale(.82) rotate(var(--r))} 65%{transform:translateY(5px) scale(1.05) rotate(0deg)} 100%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)} }
+        .card.dealing { animation: dealIn .42s cubic-bezier(.22,1,.36,1) both; }
 
         /* ── WIN SCREEN ─────────────────────────────── */
         #win-screen {
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
-            margin-top: 50px;
-            animation: fadeUp 0.5s ease both;
+            gap: 14px;
+            margin-top: 40px;
+            animation: fadeUp .5s ease both;
             text-align: center;
+            width: 100%;
+            max-width: 360px;
+        }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+        #win-screen h1 { font-size: 2.2rem; }
+        #win-screen .sub { font-size: 1rem; opacity: 0.7; }
+
+        /* XP карточка раунда */
+        .xp-card {
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        #win-screen h1 { font-size: 2.4rem; }
-        #win-screen p  { font-size: 1.05rem; opacity: 0.75; }
-
-        /* Бейдж уровня */
-        .level-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+        .xp-card-title {
+            font-size: 0.75rem;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            opacity: .45;
+        }
+
+        .xp-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .xp-row .label { opacity: .65; }
+        .xp-row .val   { font-weight: 700; }
+        .xp-row .val.bonus { color: var(--xp); }
+        .xp-row.total {
+            border-top: 1px solid rgba(0,0,0,.08);
+            padding-top: 8px;
+            font-size: 1.05rem;
+        }
+        .xp-row.total .val { color: var(--match-border); font-size: 1.2rem; }
+
+        /* Накопленный XP за сессию */
+        .session-xp {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             color: #fff;
         }
+        .session-xp .s-label { font-size: 0.85rem; opacity: .85; }
+        .session-xp .s-total { font-size: 1.8rem; font-weight: 800; line-height: 1; }
 
+        /* Кнопка «Забрать XP» */
+        .btn-collect {
+            width: 100%;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(16,185,129,.4);
+            transition: transform .12s, box-shadow .12s;
+            letter-spacing: .01em;
+        }
+        .btn-collect:active { transform: scale(0.97); box-shadow: 0 3px 10px rgba(16,185,129,.3); }
+
+        .level-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 20px; font-size: .85rem; font-weight: 700; color: #fff;
+        }
         .level-badge.lv1 { background: linear-gradient(135deg,#3b82f6,#6366f1); }
         .level-badge.lv2 { background: linear-gradient(135deg,#8b5cf6,#ec4899); }
         .level-badge.lv3 { background: linear-gradient(135deg,#f59e0b,#ef4444); }
 
-        .win-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            max-width: 300px;
-        }
+        .win-buttons { display:flex; flex-direction:column; gap:10px; width:100%; }
 
         .btn {
-            padding: 14px 20px;
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(59,130,246,0.38);
-            transition: background 0.18s, transform 0.1s;
+            padding: 14px 20px; background: var(--primary); color: #fff;
+            border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; box-shadow: 0 4px 14px rgba(59,130,246,.38);
+            transition: background .18s, transform .1s;
         }
-        .btn:active { transform: scale(0.95); background: var(--primary-dark); }
+        .btn:active { transform: scale(.95); background: var(--primary-dark); }
 
         .btn-outline {
-            padding: 12px 20px;
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.18s, transform 0.1s;
+            padding: 12px 20px; background: transparent;
+            color: var(--primary); border: 2px solid var(--primary);
+            border-radius: 12px; font-size: .95rem; font-weight: 700;
+            cursor: pointer; transition: background .18s, transform .1s;
         }
-        .btn-outline:active { transform: scale(0.95); background: color-mix(in srgb, var(--primary) 8%, transparent); }
+        .btn-outline:active { transform: scale(.95); background: color-mix(in srgb,var(--primary) 8%,transparent); }
+
+
+        /* ── RECORD BADGE ───────────────────────────── */
+        .record-banner {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #fff;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-weight: 800;
+            font-size: 1rem;
+            width: 100%;
+            animation: recordPop .5s cubic-bezier(.34,1.56,.64,1) both;
+        }
+        .record-banner.show { display: flex; }
+        @keyframes recordPop {
+            0%   { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1);   opacity: 1; }
+        }
+        .record-banner .rec-icon { font-size: 1.5rem; }
+        .record-banner .rec-text { display: flex; flex-direction: column; gap: 1px; }
+        .record-banner .rec-title { font-size: 0.72rem; opacity: .85; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+        .record-banner .rec-val   { font-size: 1.05rem; font-weight: 800; }
+
+
+        /* ── CONFETTI PARTICLE ──────────────────────── */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 2px;
+            animation: confettiFall var(--dur) var(--ease) var(--delay) forwards;
+        }
+        @keyframes confettiFall {
+            0%   { transform: translate(0,0) rotate(0deg) scale(1);    opacity: 1; }
+            80%  { opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.4); opacity: 0; }
+        }
+        /* Burst ring flash */
+        .burst-ring {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            border: 3px solid var(--ring-color, #f59e0b);
+            animation: burstRing .6s ease-out forwards;
+        }
+        @keyframes burstRing {
+            0%   { transform: translate(-50%,-50%) scale(0); opacity: .9; }
+            100% { transform: translate(-50%,-50%) scale(1);  opacity: 0; }
+        }
+        /* Stars burst */
+        .star-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 1.4rem;
+            animation: starFly var(--dur) ease var(--delay) forwards;
+        }
+        @keyframes starFly {
+            0%   { transform: translate(0,0) scale(0) rotate(0deg);    opacity: 1; }
+            40%  { transform: translate(var(--tx),var(--ty)) scale(1.3) rotate(var(--rot)); opacity: 1; }
+            100% { transform: translate(calc(var(--tx)*1.6), calc(var(--ty)*1.6)) scale(0) rotate(calc(var(--rot)*2)); opacity: 0; }
+        }
+
+        /* ── XP FLOAT ANIMATION ─────────────────────── */
+        .xp-float {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--xp);
+            text-shadow: 0 1px 4px rgba(0,0,0,.15);
+            animation: floatUp .9s ease forwards;
+            z-index: 100;
+        }
+        @keyframes floatUp {
+            0%   { opacity: 1; transform: translateY(0) scale(1); }
+            80%  { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+        }
 
         /* ── ERROR ──────────────────────────────────── */
         #error-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-top: 60px;
-            color: var(--error);
-            font-size: 1rem;
-            text-align: center;
+            display: none; flex-direction: column; align-items: center;
+            gap: 10px; margin-top: 60px; color: var(--error);
+            font-size: 1rem; text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <!-- Выбор уровня -->
-    <div id="level-screen">
-        <div>
-            <h1>🧠 Match Pairs</h1>
-            <p style="margin-top:8px">Выбери уровень сложности</p>
-        </div>
-        <div class="level-buttons">
-            <button class="btn-level lv1" data-pairs="4">
-                <span class="lv-name">⭐ Лёгкий</span>
+<!-- Выбор уровня -->
+<div id="level-screen">
+    <div>
+        <h1>🧠 Match Pairs</h1>
+        <p style="margin-top:8px">Выбери уровень сложности</p>
+    </div>
+    <div class="level-buttons">
+        <button class="btn-level lv1" data-pairs="4">
+            <span class="lv-name">⭐ Лёгкий</span>
+            <span class="lv-meta">
                 <span class="lv-desc">4 пары</span>
-            </button>
-            <button class="btn-level lv2" data-pairs="6">
-                <span class="lv-name">⭐⭐ Средний</span>
+                <span class="lv-xp">до 15 XP</span>
+            </span>
+        </button>
+        <button class="btn-level lv2" data-pairs="6">
+            <span class="lv-name">⭐⭐ Средний</span>
+            <span class="lv-meta">
                 <span class="lv-desc">6 пар</span>
-            </button>
-            <button class="btn-level lv3" data-pairs="8">
-                <span class="lv-name">⭐⭐⭐ Сложный</span>
+                <span class="lv-xp">до 25 XP</span>
+            </span>
+        </button>
+        <button class="btn-level lv3" data-pairs="8">
+            <span class="lv-name">⭐⭐⭐ Сложный</span>
+            <span class="lv-meta">
                 <span class="lv-desc">8 пар</span>
-            </button>
+                <span class="lv-xp">до 35 XP</span>
+            </span>
+        </button>
+    </div>
+</div>
+
+<!-- Игровое поле -->
+<div class="header" id="header">
+    <div id="timer">⏱ 00:00</div>
+    <div id="level-label"></div>
+    <div id="score">Пары: 0 / —</div>
+</div>
+<div class="grid" id="grid"></div>
+
+<!-- Экран победы -->
+<div id="win-screen">
+    <h1>🎉 Отлично!</h1>
+    <div id="win-badge" class="level-badge"></div>
+
+    <!-- Разбивка XP за раунд -->
+    <div class="xp-card">
+        <div class="xp-card-title">XP за этот раунд</div>
+        <div class="xp-row">
+            <span class="label">База (уровень)</span>
+            <span class="val" id="xp-base">0 XP</span>
+        </div>
+        <div class="xp-row">
+            <span class="label">× Точность (<span id="xp-acc-pct">0</span>%)</span>
+            <span class="val" id="xp-acc-val">0 XP</span>
+        </div>
+        <div class="xp-row">
+            <span class="label">⚡ Бонус за скорость</span>
+            <span class="val bonus" id="xp-speed">+0 XP</span>
+        </div>
+        <div class="xp-row" id="xp-record-row" style="display:none">
+            <span class="label">🏆 Бонус рекорда</span>
+            <span class="val bonus" id="xp-record-bonus">+20 XP</span>
+        </div>
+        <div class="xp-row total">
+            <span class="label"><b>Итого за раунд</b></span>
+            <span class="val" id="xp-round-total">0 XP</span>
         </div>
     </div>
 
-    <!-- Игра -->
-    <div class="header" id="header">
-        <div id="timer">⏱ 00:00</div>
-        <div id="level-label"></div>
-        <div id="score">Пары: 0 / —</div>
-    </div>
-
-    <div class="grid" id="grid"></div>
-
-    <!-- Победа -->
-    <div id="win-screen">
-        <h1>🎉 Отлично!</h1>
-        <div id="win-badge" class="level-badge"></div>
-        <p id="final-stats"></p>
-        <div class="win-buttons">
-            <button class="btn"         id="btn-restart">Сыграть снова (тот же уровень)</button>
-            <button class="btn-outline" id="btn-change-level">Сменить уровень</button>
+    <!-- Накоплено за сессию -->
+    <div class="session-xp">
+        <div>
+            <div class="s-label">Накоплено за сессию</div>
+            <div class="s-total" id="session-total">0 XP</div>
         </div>
+        <div style="font-size:2rem">🏆</div>
     </div>
 
-    <div id="error-screen">
-        <p>⚠️ Не удалось загрузить данные игры.<br>Попробуйте открыть игру заново.</p>
+    <p class="sub" id="final-stats"></p>
+
+    <!-- Новый рекорд -->
+    <div class="record-banner" id="record-banner">
+        <span class="rec-icon">🏆</span>
+        <span class="rec-text">
+            <span class="rec-title">Новый рекорд уровня!</span>
+            <span class="rec-val" id="record-val"></span>
+        </span>
     </div>
 
-    <script>
-        /* ── Telegram SDK ────────────────────────────── */
-        const tg = window.Telegram?.WebApp;
-        if (tg) tg.expand();
+    <div class="win-buttons">
+        <!-- Забрать XP — главная зелёная кнопка -->
+        <button class="btn-collect" id="btn-collect">🎁 Забрать <span id="collect-xp-label">0</span> XP и выйти</button>
+        <button class="btn"         id="btn-restart">▶ Сыграть снова (тот же уровень)</button>
+        <button class="btn-outline" id="btn-change-level">Сменить уровень</button>
+    </div>
+</div>
 
-        /* ── Данные игры ─────────────────────────────── */
-        const urlParams = new URLSearchParams(window.location.search);
-        let allData = [];
+<div id="error-screen">
+    <p>⚠️ Не удалось загрузить данные игры.<br>Попробуйте открыть игру заново.</p>
+</div>
 
-        try {
-            const raw = urlParams.get('data');
-            if (raw) {
-                allData = JSON.parse(decodeURIComponent(raw));
-                if (!Array.isArray(allData) || !allData.length) throw new Error('empty');
-            } else {
-                // Демо — минимум 8 слов
-                allData = [
-                    { w: 'Hund',       t: 'Собака'    },
-                    { w: 'Katze',      t: 'Кошка'     },
-                    { w: 'Haus',       t: 'Дом'       },
-                    { w: 'Auto',       t: 'Машина'    },
-                    { w: 'Baum',       t: 'Дерево'    },
-                    { w: 'Apfel',      t: 'Яблоко'    },
-                    { w: 'Wasser',     t: 'Вода'      },
-                    { w: 'Brot',       t: 'Хлеб'      },
-                    { w: 'Schule',     t: 'Школа'     },
-                    { w: 'Buch',       t: 'Книга'     },
-                    { w: 'Kind',       t: 'Ребёнок'   },
-                    { w: 'Freund',     t: 'Друг'      },
-                ];
-            }
-        } catch (e) {
-            console.error('Data error:', e);
-            document.getElementById('level-screen').style.display  = 'none';
-            document.getElementById('error-screen').style.display  = 'flex';
+<script>
+    /* ── Telegram SDK ────────────────────────────── */
+    const tg = window.Telegram?.WebApp;
+    if (tg) tg.expand();
+
+    /* ── Данные игры ─────────────────────────────── */
+    const urlParams = new URLSearchParams(window.location.search);
+    let allData = [];
+    try {
+        const raw = urlParams.get('data');
+        if (raw) {
+            allData = JSON.parse(decodeURIComponent(raw));
+            if (!Array.isArray(allData) || !allData.length) throw new Error('empty');
+        } else {
+            allData = [
+                { w:'Hund',    t:'Собака'  }, { w:'Katze',   t:'Кошка'   },
+                { w:'Haus',    t:'Дом'     }, { w:'Auto',    t:'Машина'  },
+                { w:'Baum',    t:'Дерево'  }, { w:'Apfel',   t:'Яблоко'  },
+                { w:'Wasser',  t:'Вода'    }, { w:'Brot',    t:'Хлеб'    },
+                { w:'Schule',  t:'Школа'   }, { w:'Buch',    t:'Книга'   },
+                { w:'Kind',    t:'Ребёнок' }, { w:'Freund',  t:'Друг'    },
+            ];
         }
+    } catch(e) {
+        console.error('Data error:', e);
+        document.getElementById('level-screen').style.display = 'none';
+        document.getElementById('error-screen').style.display = 'flex';
+    }
 
-        /* ── Состояние ───────────────────────────────── */
-        let currentPairs   = 4;
-        let gameData       = [];       // текущий набор слов (случайные N из allData)
-        let timerInterval  = null;
-        let secondsElapsed = 0;
-        let timerStarted   = false;
-        let matchedPairs   = 0;
-        let attempts       = 0;
-        let selectedCard   = null;
-        let lockBoard      = false;
+    /* ── XP конфиг ───────────────────────────────── */
+    const XP_CONFIG = {
+        4: { base: 10, speedBonus: 5,  speedSec: 15 },
+        6: { base: 15, speedBonus: 10, speedSec: 25 },
+        8: { base: 20, speedBonus: 15, speedSec: 35 },
+    };
 
-        /* ── DOM ─────────────────────────────────────── */
-        const grid         = document.getElementById('grid');
-        const timerDisplay = document.getElementById('timer');
-        const scoreDisplay = document.getElementById('score');
-        const levelLabel   = document.getElementById('level-label');
 
-        /* ── Fisher-Yates ────────────────────────────── */
-        function shuffle(arr) {
-            const a = [...arr];
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
+    /* ── Рекорды времени (localStorage) ─────────── */
+    const RECORDS_KEY = 'match_pairs_records';
 
-        /* ── Выбрать N случайных слов из allData ──────── */
-        function pickWords(n) {
-            const available = allData.length;
-            const count = Math.min(n, available);
-            return shuffle(allData).slice(0, count);
-        }
+    function getRecords() {
+        try { return JSON.parse(localStorage.getItem(RECORDS_KEY)) || {}; }
+        catch { return {}; }
+    }
 
-        /* ── Выбор уровня ────────────────────────────── */
+    function saveRecord(pairs, seconds) {
+        const records = getRecords();
+        records[pairs] = seconds;
+        localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
+    }
+
+    function getBestTime(pairs) {
+        return getRecords()[pairs] ?? null;
+    }
+
+    // Обновить отображение рекорда на кнопках уровня
+    function updateLevelButtons() {
         document.querySelectorAll('.btn-level').forEach(btn => {
-            btn.addEventListener('click', () => {
-                currentPairs = parseInt(btn.dataset.pairs);
-                startGame();
+            const pairs = parseInt(btn.dataset.pairs);
+            const best  = getBestTime(pairs);
+            let rec = btn.querySelector('.lv-record');
+            if (!rec) {
+                rec = document.createElement('span');
+                rec.classList.add('lv-record');
+                btn.querySelector('.lv-meta').appendChild(rec);
+            }
+            rec.textContent = best !== null ? `🏆 ${fmt(best)}` : '';
+        });
+    }
+
+    updateLevelButtons();
+
+    /* ── Состояние сессии ────────────────────────── */
+    let sessionXP = 0;  // накопленный XP за всю сессию
+
+    /* ── Состояние раунда ────────────────────────── */
+    let currentPairs   = 4;
+    let gameData       = [];
+    let timerInterval  = null;
+    let secondsElapsed = 0;
+    let timerStarted   = false;
+    let matchedPairs   = 0;
+    let attempts       = 0;
+    let selectedCard   = null;
+    let lockBoard      = false;
+
+    /* ── DOM ─────────────────────────────────────── */
+    const grid         = document.getElementById('grid');
+    const timerDisplay = document.getElementById('timer');
+    const scoreDisplay = document.getElementById('score');
+    const levelLabel   = document.getElementById('level-label');
+
+    /* ── Helpers ─────────────────────────────────── */
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function pickWords(n) {
+        return shuffle(allData).slice(0, Math.min(n, allData.length));
+    }
+
+    function levelInfo(n) {
+        if (n <= 4) return { cls:'lv1', label:'⭐ Лёгкий',      gridCls:'' };
+        if (n <= 6) return { cls:'lv2', label:'⭐⭐ Средний',    gridCls:'' };
+        return             { cls:'lv3', label:'⭐⭐⭐ Сложный',  gridCls:'lv3' };
+    }
+
+    function fmt(sec) {
+        return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;
+    }
+
+    /* ── XP формула ──────────────────────────────── */
+    function calcXP(pairs, accuracy, seconds, isNewRecord) {
+        const cfg       = XP_CONFIG[pairs] || XP_CONFIG[8];
+        const base      = cfg.base;
+        const factor    = accuracy / 100;
+        const earned    = Math.round(base * factor);
+        const speed     = seconds <= cfg.speedSec ? cfg.speedBonus : 0;
+        const recordXP  = isNewRecord ? 20 : 0;
+        return { base, factor, earned, speed, recordXP, total: earned + speed + recordXP };
+    }
+
+    /* ── Плавающий +XP при совпадении ───────────── */
+    function spawnXPFloat(el, text) {
+        const rect = el.getBoundingClientRect();
+        const div  = document.createElement('div');
+        div.classList.add('xp-float');
+        div.textContent = text;
+        div.style.left = rect.left + rect.width / 2 - 20 + 'px';
+        div.style.top  = rect.top  + window.scrollY - 10 + 'px';
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 950);
+    }
+
+    /* ── Выбор уровня ────────────────────────────── */
+    document.querySelectorAll('.btn-level').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentPairs = parseInt(btn.dataset.pairs);
+            startGame();
+        });
+    });
+
+    /* ── Старт раунда ────────────────────────────── */
+    function startGame() {
+        clearInterval(timerInterval);
+        secondsElapsed = 0; timerStarted = false;
+        matchedPairs   = 0; attempts     = 0;
+        selectedCard   = null; lockBoard  = false;
+
+        gameData = pickWords(currentPairs);
+        const info = levelInfo(currentPairs);
+
+        document.getElementById('level-screen').style.display = 'none';
+        document.getElementById('win-screen').style.display   = 'none';
+        document.getElementById('header').classList.add('visible');
+        grid.className = 'grid visible' + (info.gridCls ? ' ' + info.gridCls : '');
+
+        timerDisplay.textContent = '⏱ 00:00';
+        scoreDisplay.textContent = `Пары: 0 / ${currentPairs}`;
+        levelLabel.textContent   = info.label;
+
+        buildCards();
+    }
+
+    /* ── Таймер ──────────────────────────────────── */
+    function startTimer() {
+        if (timerStarted) return;
+        timerStarted = true;
+        timerInterval = setInterval(() => {
+            secondsElapsed++;
+            timerDisplay.textContent = `⏱ ${fmt(secondsElapsed)}`;
+        }, 1000);
+    }
+
+    /* ── Карточки ────────────────────────────────── */
+    function buildCards() {
+        grid.innerHTML = '';
+        lockBoard = true;
+        const leftCol  = shuffle(gameData.map((p,i) => ({ id:i, text:p.w })));
+        const rightCol = shuffle(gameData.map((p,i) => ({ id:i, text:p.t })));
+
+        for (let i = 0; i < gameData.length; i++) {
+            [leftCol[i], rightCol[i]].forEach((item, side) => {
+                const card = document.createElement('div');
+                card.classList.add('card', 'dealing');
+                card.dataset.id = item.id;
+                const rot = ((Math.random()*10)-5).toFixed(1);
+                card.style.setProperty('--r', rot + 'deg');
+                card.style.animationDelay = (i*2+side)*40 + 'ms';
+                card.textContent = item.text;
+                card.addEventListener('click', onCardClick);
+                grid.appendChild(card);
             });
-        });
-
-        function levelInfo(n) {
-            if (n <= 4) return { cls: 'lv1', label: '⭐ Лёгкий', gridCls: '' };
-            if (n <= 6) return { cls: 'lv2', label: '⭐⭐ Средний', gridCls: '' };
-            return           { cls: 'lv3', label: '⭐⭐⭐ Сложный', gridCls: 'lv3' };
         }
+        const totalMs = (gameData.length*2-1)*40 + 420;
+        setTimeout(() => {
+            lockBoard = false;
+            grid.querySelectorAll('.card').forEach(c => c.classList.remove('dealing'));
+        }, totalMs);
+    }
 
-        /* ── Запуск игры ─────────────────────────────── */
-        function startGame() {
-            // Сбросить состояние
-            clearInterval(timerInterval);
-            secondsElapsed = 0; timerStarted = false;
-            matchedPairs   = 0; attempts     = 0;
-            selectedCard   = null; lockBoard  = false;
+    /* ── Клик ────────────────────────────────────── */
+    function onCardClick() {
+        if (lockBoard || this.classList.contains('matched')) return;
+        startTimer();
 
-            // Взять новые слова
-            gameData = pickWords(currentPairs);
-
-            const info = levelInfo(currentPairs);
-
-            // Показать поле, скрыть остальное
-            document.getElementById('level-screen').style.display = 'none';
-            document.getElementById('win-screen').style.display   = 'none';
-            document.getElementById('header').classList.add('visible');
-            grid.classList.remove('hidden');
-            grid.className = 'grid visible' + (info.gridCls ? ' ' + info.gridCls : '');
-
-            timerDisplay.textContent  = '⏱ 00:00';
-            scoreDisplay.textContent  = `Пары: 0 / ${currentPairs}`;
-            levelLabel.textContent    = info.label;
-
-            buildCards();
-        }
-
-        /* ── Таймер ──────────────────────────────────── */
-        function startTimer() {
-            if (timerStarted) return;
-            timerStarted = true;
-            timerInterval = setInterval(() => {
-                secondsElapsed++;
-                timerDisplay.textContent = `⏱ ${fmt(secondsElapsed)}`;
-            }, 1000);
-        }
-
-        function fmt(sec) {
-            return `${String(Math.floor(sec / 60)).padStart(2,'0')}:${String(sec % 60).padStart(2,'0')}`;
-        }
-
-        /* ── Построение карточек ─────────────────────── */
-        function buildCards() {
-            grid.innerHTML = '';
-            lockBoard = true;
-
-            const leftCol  = shuffle(gameData.map((p, i) => ({ id: i, text: p.w })));
-            const rightCol = shuffle(gameData.map((p, i) => ({ id: i, text: p.t })));
-
-            for (let i = 0; i < gameData.length; i++) {
-                [leftCol[i], rightCol[i]].forEach((item, side) => {
-                    const card = document.createElement('div');
-                    card.classList.add('card', 'dealing');
-                    card.dataset.id = item.id;
-
-                    const rot = ((Math.random() * 10) - 5).toFixed(1);
-                    card.style.setProperty('--r', rot + 'deg');
-                    card.style.animationDelay = (i * 2 + side) * 40 + 'ms';
-
-                    card.textContent = item.text;
-                    card.addEventListener('click', onCardClick);
-                    grid.appendChild(card);
-                });
-            }
-
-            const totalMs = (gameData.length * 2 - 1) * 40 + 420;
-            setTimeout(() => {
-                lockBoard = false;
-                grid.querySelectorAll('.card').forEach(c => c.classList.remove('dealing'));
-            }, totalMs);
-        }
-
-        /* ── Клик по карточке ────────────────────────── */
-        function onCardClick() {
-            if (lockBoard || this.classList.contains('matched')) return;
-            startTimer();
-
-            if (this === selectedCard) {
-                this.classList.remove('selected');
-                selectedCard = null;
-                return;
-            }
-
-            if (!selectedCard) {
-                this.classList.add('selected');
-                selectedCard = this;
-                return;
-            }
-
-            const first  = selectedCard;
-            const second = this;
-            first.classList.remove('selected');
+        if (this === selectedCard) {
+            this.classList.remove('selected');
             selectedCard = null;
-            attempts++;
-
-            if (first.dataset.id === second.dataset.id) {
-                first.classList.add('matched');
-                second.classList.add('matched');
-                first.removeEventListener('click', onCardClick);
-                second.removeEventListener('click', onCardClick);
-                matchedPairs++;
-                scoreDisplay.textContent = `Пары: ${matchedPairs} / ${currentPairs}`;
-                if (tg) tg.HapticFeedback?.impactOccurred('light');
-                if (matchedPairs === currentPairs) setTimeout(winGame, 450);
-            } else {
-                lockBoard = true;
-                first.classList.add('wrong');
-                second.classList.add('wrong');
-                if (tg) tg.HapticFeedback?.notificationOccurred('error');
-                setTimeout(() => {
-                    first.classList.remove('wrong');
-                    second.classList.remove('wrong');
-                    lockBoard = false;
-                }, 700);
-            }
+            return;
+        }
+        if (!selectedCard) {
+            this.classList.add('selected');
+            selectedCard = this;
+            return;
         }
 
-        /* ── Победа ──────────────────────────────────── */
-        function winGame() {
-            clearInterval(timerInterval);
-            grid.className = 'grid';
-            document.getElementById('header').classList.remove('visible');
+        const first = selectedCard, second = this;
+        first.classList.remove('selected');
+        selectedCard = null;
+        attempts++;
 
-            const acc  = attempts > 0 ? Math.round((currentPairs / attempts) * 100) : 100;
-            const info = levelInfo(currentPairs);
-
-            const badge = document.getElementById('win-badge');
-            badge.textContent  = info.label;
-            badge.className    = `level-badge ${info.cls}`;
-
-            document.getElementById('final-stats').textContent =
-                `Время: ${fmt(secondsElapsed)} · Точность: ${acc}%`;
-            document.getElementById('win-screen').style.display = 'flex';
-
-            if (tg) tg.HapticFeedback?.notificationOccurred('success');
+        if (first.dataset.id === second.dataset.id) {
+            first.classList.add('matched');
+            second.classList.add('matched');
+            first.removeEventListener('click', onCardClick);
+            second.removeEventListener('click', onCardClick);
+            matchedPairs++;
+            scoreDisplay.textContent = `Пары: ${matchedPairs} / ${currentPairs}`;
+            if (tg) tg.HapticFeedback?.impactOccurred('light');
+            // маленький +1 за каждую пару
+            spawnXPFloat(second, '+✨');
+            if (matchedPairs === currentPairs) setTimeout(winGame, 450);
+        } else {
+            lockBoard = true;
+            first.classList.add('wrong');
+            second.classList.add('wrong');
+            if (tg) tg.HapticFeedback?.notificationOccurred('error');
             setTimeout(() => {
-                if (tg) tg.sendData(JSON.stringify({
-                    game: 'match_pairs', level: currentPairs,
-                    time_seconds: secondsElapsed, attempts, accuracy: acc
-                }));
-            }, 2000);
+                first.classList.remove('wrong');
+                second.classList.remove('wrong');
+                lockBoard = false;
+            }, 700);
+        }
+    }
+
+
+    /* ── CONFETTI / BURST ANIMATION ─────────────── */
+    const CONFETTI_COLORS = ['#f59e0b','#ef4444','#3b82f6','#10b981','#8b5cf6','#ec4899','#38bdf8','#fff'];
+    const STAR_EMOJIS     = ['⭐','🌟','✨','💫','🎉','🏆'];
+
+    function randomBetween(a, b) { return a + Math.random() * (b - a); }
+
+    function launchConfetti(originX, originY, count = 60) {
+        for (let i = 0; i < count; i++) {
+            const el = document.createElement('div');
+            el.classList.add('confetti-piece');
+
+            const angle   = randomBetween(0, Math.PI * 2);
+            const power   = randomBetween(120, 380);
+            const tx      = Math.cos(angle) * power;
+            const ty      = Math.sin(angle) * power - randomBetween(80, 200);
+            const rot     = randomBetween(-720, 720);
+            const dur     = randomBetween(0.7, 1.4);
+            const delay   = randomBetween(0, 0.18);
+            const size    = randomBetween(7, 14);
+            const color   = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+            const ease    = ['ease-out','cubic-bezier(.2,.8,.3,1)'][Math.floor(Math.random()*2)];
+            // half circles, half squares
+            const isCircle = Math.random() > 0.5;
+
+            el.style.cssText = `
+                left: ${originX}px; top: ${originY}px;
+                width: ${size}px; height: ${size * (isCircle ? 1 : randomBetween(0.4,1))}px;
+                background: ${color};
+                border-radius: ${isCircle ? '50%' : '2px'};
+                --tx: ${tx}px; --ty: ${ty}px; --rot: ${rot}deg;
+                --dur: ${dur}s; --delay: ${delay}s; --ease: ${ease};
+            `;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), (dur + delay) * 1000 + 100);
+        }
+    }
+
+    function launchBurstRing(originX, originY, color = '#f59e0b', size = 160) {
+        const el = document.createElement('div');
+        el.classList.add('burst-ring');
+        el.style.cssText = `
+            left: ${originX}px; top: ${originY}px;
+            width: ${size}px; height: ${size}px;
+            --ring-color: ${color};
+        `;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 700);
+    }
+
+    function launchStars(originX, originY, count = 8) {
+        for (let i = 0; i < count; i++) {
+            const el    = document.createElement('div');
+            el.classList.add('star-burst');
+            const angle = (Math.PI * 2 / count) * i;
+            const power = randomBetween(80, 160);
+            const tx    = Math.cos(angle) * power;
+            const ty    = Math.sin(angle) * power;
+            const rot   = randomBetween(-180, 180);
+            const dur   = randomBetween(0.6, 1.0);
+            const delay = randomBetween(0, 0.1);
+            const emoji = STAR_EMOJIS[Math.floor(Math.random() * STAR_EMOJIS.length)];
+            el.textContent = emoji;
+            el.style.cssText = `left:${originX}px; top:${originY}px;
+                --tx:${tx}px; --ty:${ty}px; --rot:${rot}deg;
+                --dur:${dur}s; --delay:${delay}s;`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), (dur + delay) * 1000 + 100);
+        }
+    }
+
+    function celebrateRecord() {
+        // Three burst waves from different spots on screen
+        const cx = window.innerWidth  / 2;
+        const cy = window.innerHeight / 2;
+
+        // Immediate center burst
+        launchBurstRing(cx, cy, '#f59e0b', 200);
+        launchStars(cx, cy, 10);
+        launchConfetti(cx, cy, 70);
+
+        // Slightly delayed side bursts
+        setTimeout(() => {
+            launchBurstRing(cx * 0.3, cy * 0.6, '#3b82f6', 120);
+            launchConfetti(cx * 0.3, cy * 0.6, 30);
+        }, 180);
+        setTimeout(() => {
+            launchBurstRing(cx * 1.7, cy * 0.6, '#ec4899', 120);
+            launchConfetti(cx * 1.7, cy * 0.6, 30);
+        }, 320);
+        setTimeout(() => {
+            launchStars(cx, cy * 0.3, 8);
+            launchConfetti(cx, cy * 0.8, 40);
+        }, 500);
+    }
+
+    function celebrateWin() {
+        const cx = window.innerWidth  / 2;
+        const cy = window.innerHeight / 2;
+        launchBurstRing(cx, cy, '#38bdf8', 160);
+        launchConfetti(cx, cy, 45);
+        launchStars(cx, cy, 6);
+    }
+
+    /* ── Победа ──────────────────────────────────── */
+    function winGame() {
+        clearInterval(timerInterval);
+        grid.className = 'grid';
+        document.getElementById('header').classList.remove('visible');
+
+        const acc     = attempts > 0 ? Math.round((currentPairs / attempts) * 100) : 100;
+        const prevBest = getBestTime(currentPairs);
+        const isNew   = prevBest === null || secondsElapsed < prevBest;
+
+        // Сохранить рекорд если новый
+        if (isNew) saveRecord(currentPairs, secondsElapsed);
+
+        const xp   = calcXP(currentPairs, acc, secondsElapsed, isNew);
+        const info = levelInfo(currentPairs);
+
+        // Добавить к сессии
+        sessionXP += xp.total;
+
+        // Бейдж
+        const badge = document.getElementById('win-badge');
+        badge.textContent = info.label;
+        badge.className   = `level-badge ${info.cls}`;
+
+        // Разбивка XP
+        document.getElementById('xp-base').textContent        = `${xp.base} XP`;
+        document.getElementById('xp-acc-pct').textContent     = acc;
+        document.getElementById('xp-acc-val').textContent     = `${xp.earned} XP`;
+        document.getElementById('xp-speed').textContent       = `+${xp.speed} XP`;
+
+        // Строка рекорда
+        const recRow = document.getElementById('xp-record-row');
+        if (isNew) {
+            recRow.style.display = '';
+            document.getElementById('xp-record-bonus').textContent = '+20 XP';
+        } else {
+            recRow.style.display = 'none';
         }
 
-        /* ── Сыграть снова (новые слова, тот же уровень) */
-        document.getElementById('btn-restart').addEventListener('click', () => {
-            startGame();  // pickWords внутри — всегда новые
-        });
+        document.getElementById('xp-round-total').textContent = `+${xp.total} XP`;
 
-        /* ── Сменить уровень ─────────────────────────── */
-        document.getElementById('btn-change-level').addEventListener('click', () => {
-            document.getElementById('win-screen').style.display    = 'none';
-            document.getElementById('level-screen').style.display  = 'flex';
-        });
-    </script>
+        // Сессия
+        document.getElementById('session-total').textContent    = `${sessionXP} XP`;
+        document.getElementById('collect-xp-label').textContent = sessionXP;
+
+        // Баннер рекорда
+        const banner = document.getElementById('record-banner');
+        if (isNew) {
+            const prevText = prevBest !== null ? ` (было ${fmt(prevBest)})` : ' (первый рекорд!)';
+            document.getElementById('record-val').textContent = `${fmt(secondsElapsed)}${prevText}`;
+            banner.classList.add('show');
+            if (tg) tg.HapticFeedback?.notificationOccurred('success');
+            setTimeout(celebrateRecord, 120);
+        } else {
+            banner.classList.remove('show');
+        }
+
+        // Стата
+        const bestAfter = getBestTime(currentPairs);
+        document.getElementById('final-stats').textContent =
+            `Время: ${fmt(secondsElapsed)} · Точность: ${acc}% · Рекорд: ${fmt(bestAfter)}`;
+
+        document.getElementById('win-screen').style.display = 'flex';
+
+        // Обновить кнопки уровней с новым рекордом
+        updateLevelButtons();
+
+        if (!isNew) celebrateWin();
+        if (tg) tg.HapticFeedback?.notificationOccurred('success');
+    }
+
+    /* ── Забрать XP и выйти ──────────────────────── */
+    document.getElementById('btn-collect').addEventListener('click', () => {
+        const records = getRecords();
+        const payload = {
+            action:     'collect_xp',
+            session_xp: sessionXP,
+            best_times: {
+                lv4: records[4] ?? null,
+                lv6: records[6] ?? null,
+                lv8: records[8] ?? null,
+            },
+        };
+        if (tg) {
+            tg.sendData(JSON.stringify(payload));
+        } else {
+            alert(`Начислено ${sessionXP} XP!\nРекорды: ${JSON.stringify(records)}`);
+        }
+    });
+
+    /* ── Сыграть снова ───────────────────────────── */
+    document.getElementById('btn-restart').addEventListener('click', () => {
+        startGame();
+    });
+
+    /* ── Сменить уровень ─────────────────────────── */
+    document.getElementById('btn-change-level').addEventListener('click', () => {
+        document.getElementById('win-screen').style.display   = 'none';
+        document.getElementById('level-screen').style.display = 'flex';
+    });
+</script>
 </body>
 </html>
