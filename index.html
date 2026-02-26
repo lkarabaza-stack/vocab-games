@@ -7,13 +7,13 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg:      var(--tg-theme-bg-color, #f0f4ff);
-            --text:    var(--tg-theme-text-color, #111827);
-            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
-            --primary: var(--tg-theme-button-color, #3b82f6);
+            --bg:           var(--tg-theme-bg-color, #f0f4ff);
+            --text:         var(--tg-theme-text-color, #111827);
+            --card-bg:      var(--tg-theme-secondary-bg-color, #ffffff);
+            --primary:      var(--tg-theme-button-color, #3b82f6);
             --primary-dark: #2563eb;
-            --success: #10b981;
-            --error:   #ef4444;
+            --success:      #10b981;
+            --error:        #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,9 +30,75 @@
             user-select: none;
         }
 
+        /* ── LEVEL SELECT SCREEN ─────────────────────── */
+        #level-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            min-height: 80vh;
+            width: 100%;
+            max-width: 380px;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        #level-screen h1 {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        #level-screen p {
+            font-size: 1rem;
+            opacity: 0.6;
+            text-align: center;
+        }
+
+        .level-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn-level {
+            width: 100%;
+            padding: 18px 20px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.12s, box-shadow 0.12s;
+        }
+
+        .btn-level:active { transform: scale(0.97); }
+
+        .btn-level.lv1 {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(99,102,241,0.35);
+        }
+        .btn-level.lv2 {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(139,92,246,0.35);
+        }
+        .btn-level.lv3 {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(245,158,11,0.35);
+        }
+
+        .btn-level .lv-name { font-size: 1.1rem; }
+        .btn-level .lv-desc { font-size: 0.8rem; opacity: 0.85; font-weight: 500; }
+
         /* ── HEADER ─────────────────────────────────── */
         .header {
-            display: flex;
+            display: none;
             justify-content: space-between;
             align-items: center;
             width: 100%;
@@ -42,30 +108,34 @@
             background: var(--card-bg);
             border-radius: 14px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.05rem;
+            font-weight: 700;
         }
+
+        .header.visible { display: flex; }
 
         /* ── GRID: 2 колонки ────────────────────────── */
         .grid {
-            display: grid;
+            display: none;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
             max-width: 440px;
         }
 
-        /* ── CARD (прямоугольник, сразу открыта) ─────── */
+        .grid.visible { display: grid; }
+
+        /* ── CARD ───────────────────────────────────── */
         .card {
             width: 100%;
-            min-height: 52px;
+            min-height: 60px;
             padding: 12px 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             border-radius: 12px;
-            font-size: 0.9rem;
+            font-size: 1.05rem;       /* ← крупнее */
             font-weight: 600;
             line-height: 1.3;
             word-break: break-word;
@@ -79,19 +149,18 @@
                         color 0.18s, transform 0.13s, box-shadow 0.18s;
         }
 
-        .card:active:not(.matched):not(.dealing) {
-            transform: scale(0.95);
-        }
+        /* Уровни — чуть меняем размер шрифта для 8 пар */
+        .grid.lv3 .card { font-size: 0.92rem; min-height: 52px; }
 
-        /* Выбранная карточка */
+        .card:active:not(.matched):not(.dealing) { transform: scale(0.95); }
+
         .card.selected {
             border-color: var(--primary-dark);
-            background: color-mix(in srgb, var(--primary) 12%, var(--card-bg));
+            background: color-mix(in srgb, var(--primary) 14%, var(--card-bg));
             box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
             transform: scale(1.04);
         }
 
-        /* Совпадение */
         .card.matched {
             background: var(--success);
             border-color: var(--success);
@@ -107,7 +176,6 @@
             100% { transform: scale(1); }
         }
 
-        /* Ошибка */
         .card.wrong {
             background: var(--error);
             border-color: var(--error);
@@ -122,33 +190,23 @@
             80%     { transform: translateX(-3px); }
         }
 
-        /* ── SHUFFLE / DEAL-IN ANIMATION ─────────────── */
         @keyframes dealIn {
-            0% {
-                opacity: 0;
-                transform: translateY(-28px) scale(0.82) rotate(var(--r));
-            }
-            65% {
-                transform: translateY(5px) scale(1.05) rotate(0deg);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1) rotate(0deg);
-            }
+            0%   { opacity: 0; transform: translateY(-28px) scale(0.82) rotate(var(--r)); }
+            65%  { transform: translateY(5px) scale(1.05) rotate(0deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
         }
 
-        .card.dealing {
-            animation: dealIn 0.42s cubic-bezier(0.22,1,0.36,1) both;
-        }
+        .card.dealing { animation: dealIn 0.42s cubic-bezier(0.22,1,0.36,1) both; }
 
         /* ── WIN SCREEN ─────────────────────────────── */
         #win-screen {
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 14px;
-            margin-top: 60px;
+            gap: 16px;
+            margin-top: 50px;
             animation: fadeUp 0.5s ease both;
+            text-align: center;
         }
 
         @keyframes fadeUp {
@@ -159,9 +217,32 @@
         #win-screen h1 { font-size: 2.4rem; }
         #win-screen p  { font-size: 1.05rem; opacity: 0.75; }
 
+        /* Бейдж уровня */
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .level-badge.lv1 { background: linear-gradient(135deg,#3b82f6,#6366f1); }
+        .level-badge.lv2 { background: linear-gradient(135deg,#8b5cf6,#ec4899); }
+        .level-badge.lv3 { background: linear-gradient(135deg,#f59e0b,#ef4444); }
+
+        .win-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+
         .btn {
-            margin-top: 4px;
-            padding: 12px 32px;
+            padding: 14px 20px;
             background: var(--primary);
             color: #fff;
             border: none;
@@ -174,7 +255,20 @@
         }
         .btn:active { transform: scale(0.95); background: var(--primary-dark); }
 
-        /* ── ERROR SCREEN ───────────────────────────── */
+        .btn-outline {
+            padding: 12px 20px;
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.18s, transform 0.1s;
+        }
+        .btn-outline:active { transform: scale(0.95); background: color-mix(in srgb, var(--primary) 8%, transparent); }
+
+        /* ── ERROR ──────────────────────────────────── */
         #error-screen {
             display: none;
             flex-direction: column;
@@ -189,18 +283,46 @@
 </head>
 <body>
 
+    <!-- Выбор уровня -->
+    <div id="level-screen">
+        <div>
+            <h1>🧠 Match Pairs</h1>
+            <p style="margin-top:8px">Выбери уровень сложности</p>
+        </div>
+        <div class="level-buttons">
+            <button class="btn-level lv1" data-pairs="4">
+                <span class="lv-name">⭐ Лёгкий</span>
+                <span class="lv-desc">4 пары</span>
+            </button>
+            <button class="btn-level lv2" data-pairs="6">
+                <span class="lv-name">⭐⭐ Средний</span>
+                <span class="lv-desc">6 пар</span>
+            </button>
+            <button class="btn-level lv3" data-pairs="8">
+                <span class="lv-name">⭐⭐⭐ Сложный</span>
+                <span class="lv-desc">8 пар</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Игра -->
     <div class="header" id="header">
         <div id="timer">⏱ 00:00</div>
+        <div id="level-label"></div>
         <div id="score">Пары: 0 / —</div>
     </div>
 
     <div class="grid" id="grid"></div>
 
+    <!-- Победа -->
     <div id="win-screen">
         <h1>🎉 Отлично!</h1>
+        <div id="win-badge" class="level-badge"></div>
         <p id="final-stats"></p>
-        <p>Возвращаем в Telegram…</p>
-        <button class="btn" id="btn-restart">Сыграть снова</button>
+        <div class="win-buttons">
+            <button class="btn"         id="btn-restart">Сыграть снова (тот же уровень)</button>
+            <button class="btn-outline" id="btn-change-level">Сменить уровень</button>
+        </div>
     </div>
 
     <div id="error-screen">
@@ -214,36 +336,39 @@
 
         /* ── Данные игры ─────────────────────────────── */
         const urlParams = new URLSearchParams(window.location.search);
-        let gameData = [];
+        let allData = [];
 
         try {
             const raw = urlParams.get('data');
             if (raw) {
-                gameData = JSON.parse(decodeURIComponent(raw));
-                if (!Array.isArray(gameData) || !gameData.length) throw new Error('empty');
+                allData = JSON.parse(decodeURIComponent(raw));
+                if (!Array.isArray(allData) || !allData.length) throw new Error('empty');
             } else {
-                // Демо-данные
-                gameData = [
-                    { w: 'Hund',   t: 'Собака'  },
-                    { w: 'Katze',  t: 'Кошка'   },
-                    { w: 'Haus',   t: 'Дом'     },
-                    { w: 'Auto',   t: 'Машина'  },
-                    { w: 'Baum',   t: 'Дерево'  },
-                    { w: 'Apfel',  t: 'Яблоко'  },
-                    { w: 'Wasser', t: 'Вода'    },
-                    { w: 'Brot',   t: 'Хлеб'    }
+                // Демо — минимум 8 слов
+                allData = [
+                    { w: 'Hund',       t: 'Собака'    },
+                    { w: 'Katze',      t: 'Кошка'     },
+                    { w: 'Haus',       t: 'Дом'       },
+                    { w: 'Auto',       t: 'Машина'    },
+                    { w: 'Baum',       t: 'Дерево'    },
+                    { w: 'Apfel',      t: 'Яблоко'    },
+                    { w: 'Wasser',     t: 'Вода'      },
+                    { w: 'Brot',       t: 'Хлеб'      },
+                    { w: 'Schule',     t: 'Школа'     },
+                    { w: 'Buch',       t: 'Книга'     },
+                    { w: 'Kind',       t: 'Ребёнок'   },
+                    { w: 'Freund',     t: 'Друг'      },
                 ];
             }
         } catch (e) {
             console.error('Data error:', e);
-            document.getElementById('header').style.display       = 'none';
-            document.getElementById('grid').style.display         = 'none';
-            document.getElementById('error-screen').style.display = 'flex';
+            document.getElementById('level-screen').style.display  = 'none';
+            document.getElementById('error-screen').style.display  = 'flex';
         }
 
-        const TOTAL_PAIRS = gameData.length;
-
         /* ── Состояние ───────────────────────────────── */
+        let currentPairs   = 4;
+        let gameData       = [];       // текущий набор слов (случайные N из allData)
         let timerInterval  = null;
         let secondsElapsed = 0;
         let timerStarted   = false;
@@ -256,7 +381,7 @@
         const grid         = document.getElementById('grid');
         const timerDisplay = document.getElementById('timer');
         const scoreDisplay = document.getElementById('score');
-        scoreDisplay.textContent = `Пары: 0 / ${TOTAL_PAIRS}`;
+        const levelLabel   = document.getElementById('level-label');
 
         /* ── Fisher-Yates ────────────────────────────── */
         function shuffle(arr) {
@@ -266,6 +391,54 @@
                 [a[i], a[j]] = [a[j], a[i]];
             }
             return a;
+        }
+
+        /* ── Выбрать N случайных слов из allData ──────── */
+        function pickWords(n) {
+            const available = allData.length;
+            const count = Math.min(n, available);
+            return shuffle(allData).slice(0, count);
+        }
+
+        /* ── Выбор уровня ────────────────────────────── */
+        document.querySelectorAll('.btn-level').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentPairs = parseInt(btn.dataset.pairs);
+                startGame();
+            });
+        });
+
+        function levelInfo(n) {
+            if (n <= 4) return { cls: 'lv1', label: '⭐ Лёгкий', gridCls: '' };
+            if (n <= 6) return { cls: 'lv2', label: '⭐⭐ Средний', gridCls: '' };
+            return           { cls: 'lv3', label: '⭐⭐⭐ Сложный', gridCls: 'lv3' };
+        }
+
+        /* ── Запуск игры ─────────────────────────────── */
+        function startGame() {
+            // Сбросить состояние
+            clearInterval(timerInterval);
+            secondsElapsed = 0; timerStarted = false;
+            matchedPairs   = 0; attempts     = 0;
+            selectedCard   = null; lockBoard  = false;
+
+            // Взять новые слова
+            gameData = pickWords(currentPairs);
+
+            const info = levelInfo(currentPairs);
+
+            // Показать поле, скрыть остальное
+            document.getElementById('level-screen').style.display = 'none';
+            document.getElementById('win-screen').style.display   = 'none';
+            document.getElementById('header').classList.add('visible');
+            grid.classList.remove('hidden');
+            grid.className = 'grid visible' + (info.gridCls ? ' ' + info.gridCls : '');
+
+            timerDisplay.textContent  = '⏱ 00:00';
+            scoreDisplay.textContent  = `Пары: 0 / ${currentPairs}`;
+            levelLabel.textContent    = info.label;
+
+            buildCards();
         }
 
         /* ── Таймер ──────────────────────────────────── */
@@ -287,26 +460,18 @@
             grid.innerHTML = '';
             lockBoard = true;
 
-            // Левая колонка — иностранные слова, правая — переводы
-            // Каждая колонка перемешана независимо
             const leftCol  = shuffle(gameData.map((p, i) => ({ id: i, text: p.w })));
             const rightCol = shuffle(gameData.map((p, i) => ({ id: i, text: p.t })));
 
-            // Чередуем: left[0], right[0], left[1], right[1]...
-            // При grid-template-columns:1fr 1fr это даёт строки
-            for (let i = 0; i < TOTAL_PAIRS; i++) {
+            for (let i = 0; i < gameData.length; i++) {
                 [leftCol[i], rightCol[i]].forEach((item, side) => {
                     const card = document.createElement('div');
                     card.classList.add('card', 'dealing');
                     card.dataset.id = item.id;
 
-                    // лёгкий случайный наклон для эффекта броска
                     const rot = ((Math.random() * 10) - 5).toFixed(1);
                     card.style.setProperty('--r', rot + 'deg');
-
-                    // stagger: строки появляются сверху вниз
-                    const delay = (i * 2 + side) * 40;
-                    card.style.animationDelay = delay + 'ms';
+                    card.style.animationDelay = (i * 2 + side) * 40 + 'ms';
 
                     card.textContent = item.text;
                     card.addEventListener('click', onCardClick);
@@ -314,36 +479,30 @@
                 });
             }
 
-            // Разблокировать после конца всех анимаций
-            const totalMs = (TOTAL_PAIRS * 2 - 1) * 40 + 420;
+            const totalMs = (gameData.length * 2 - 1) * 40 + 420;
             setTimeout(() => {
                 lockBoard = false;
                 grid.querySelectorAll('.card').forEach(c => c.classList.remove('dealing'));
             }, totalMs);
         }
 
-        buildCards();
-
         /* ── Клик по карточке ────────────────────────── */
         function onCardClick() {
             if (lockBoard || this.classList.contains('matched')) return;
             startTimer();
 
-            // Снять выделение повторным кликом
             if (this === selectedCard) {
                 this.classList.remove('selected');
                 selectedCard = null;
                 return;
             }
 
-            // Первая карточка
             if (!selectedCard) {
                 this.classList.add('selected');
                 selectedCard = this;
                 return;
             }
 
-            // Вторая карточка
             const first  = selectedCard;
             const second = this;
             first.classList.remove('selected');
@@ -351,17 +510,15 @@
             attempts++;
 
             if (first.dataset.id === second.dataset.id) {
-                // ✅ Совпадение
                 first.classList.add('matched');
                 second.classList.add('matched');
                 first.removeEventListener('click', onCardClick);
                 second.removeEventListener('click', onCardClick);
                 matchedPairs++;
-                scoreDisplay.textContent = `Пары: ${matchedPairs} / ${TOTAL_PAIRS}`;
+                scoreDisplay.textContent = `Пары: ${matchedPairs} / ${currentPairs}`;
                 if (tg) tg.HapticFeedback?.impactOccurred('light');
-                if (matchedPairs === TOTAL_PAIRS) setTimeout(winGame, 450);
+                if (matchedPairs === currentPairs) setTimeout(winGame, 450);
             } else {
-                // ❌ Ошибка
                 lockBoard = true;
                 first.classList.add('wrong');
                 second.classList.add('wrong');
@@ -377,10 +534,16 @@
         /* ── Победа ──────────────────────────────────── */
         function winGame() {
             clearInterval(timerInterval);
-            grid.style.display = 'none';
-            document.getElementById('header').style.display = 'none';
+            grid.className = 'grid';
+            document.getElementById('header').classList.remove('visible');
 
-            const acc = attempts > 0 ? Math.round((TOTAL_PAIRS / attempts) * 100) : 100;
+            const acc  = attempts > 0 ? Math.round((currentPairs / attempts) * 100) : 100;
+            const info = levelInfo(currentPairs);
+
+            const badge = document.getElementById('win-badge');
+            badge.textContent  = info.label;
+            badge.className    = `level-badge ${info.cls}`;
+
             document.getElementById('final-stats').textContent =
                 `Время: ${fmt(secondsElapsed)} · Точность: ${acc}%`;
             document.getElementById('win-screen').style.display = 'flex';
@@ -388,26 +551,21 @@
             if (tg) tg.HapticFeedback?.notificationOccurred('success');
             setTimeout(() => {
                 if (tg) tg.sendData(JSON.stringify({
-                    game: 'match_pairs', time_seconds: secondsElapsed,
-                    pairs: TOTAL_PAIRS, attempts, accuracy: acc
+                    game: 'match_pairs', level: currentPairs,
+                    time_seconds: secondsElapsed, attempts, accuracy: acc
                 }));
             }, 2000);
         }
 
-        /* ── Рестарт ─────────────────────────────────── */
+        /* ── Сыграть снова (новые слова, тот же уровень) */
         document.getElementById('btn-restart').addEventListener('click', () => {
-            clearInterval(timerInterval);
-            secondsElapsed = 0; timerStarted = false;
-            matchedPairs   = 0; attempts     = 0;
-            selectedCard   = null; lockBoard  = false;
+            startGame();  // pickWords внутри — всегда новые
+        });
 
-            timerDisplay.textContent = '⏱ 00:00';
-            scoreDisplay.textContent = `Пары: 0 / ${TOTAL_PAIRS}`;
-
-            document.getElementById('win-screen').style.display = 'none';
-            document.getElementById('header').style.display     = '';
-            grid.style.display = '';
-            buildCards();
+        /* ── Сменить уровень ─────────────────────────── */
+        document.getElementById('btn-change-level').addEventListener('click', () => {
+            document.getElementById('win-screen').style.display    = 'none';
+            document.getElementById('level-screen').style.display  = 'flex';
         });
     </script>
 </body>
