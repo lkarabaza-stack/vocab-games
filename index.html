@@ -330,6 +330,34 @@
             gap:10px; margin-top:60px; color:var(--error);
             font-size:1rem; text-align:center;
         }
+
+        /* ── MINI COLLECT BAR (start screen) ─────────── */
+        .collect-bar {
+            width: 100%;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 14px;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(16,185,129,.35);
+            animation: fadeUp .3s ease both;
+        }
+        .collect-bar.show { display: flex; }
+        .collect-bar .cb-left  { display:flex; flex-direction:column; gap:2px; }
+        .collect-bar .cb-label { font-size:.72rem; opacity:.82; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+        .collect-bar .cb-xp    { font-size:1.4rem; font-weight:800; line-height:1; }
+        .collect-bar .cb-btn   {
+            flex-shrink:0; padding:10px 16px;
+            background:rgba(255,255,255,.22); border:2px solid rgba(255,255,255,.5);
+            color:#fff; border-radius:10px; font-size:.9rem; font-weight:800;
+            cursor:pointer; white-space:nowrap;
+            transition:background .15s, transform .1s;
+        }
+        .collect-bar .cb-btn:active { background:rgba(255,255,255,.35); transform:scale(.96); }
+
     </style>
 </head>
 <body>
@@ -367,6 +395,16 @@
             <span class="lv-left"><span class="lv-name">⭐⭐⭐ Сложный</span><span class="lv-sub">8 пар</span></span>
             <span class="lv-right"><span class="lv-xp">до 35 XP</span><span class="lv-record" id="rec-c8"></span></span>
         </button>
+    </div>
+
+
+    <!-- Накопленный XP — бар на стартовом экране -->
+    <div class="collect-bar" id="start-collect-bar">
+        <div class="cb-left">
+            <span class="cb-label">Накоплено за сессию</span>
+            <span class="cb-xp"><span id="start-xp-val">0</span> XP</span>
+        </div>
+        <button class="cb-btn" id="btn-collect-start">🎁 Забрать и выйти</button>
     </div>
 
     <div class="level-section" id="level-buttons-sprint" style="display:none">
@@ -1093,6 +1131,7 @@ function goToMenu() {
     hideAll();
     document.getElementById('start-screen').style.display = 'flex';
     updateAllRecordLabels();
+    syncCollectBar();
 }
 
 /* ══════════════════════════════════════════════════
@@ -1115,6 +1154,17 @@ document.getElementById('btn-restart').addEventListener('click', ()=>{
 });
 
 document.getElementById('btn-menu').addEventListener('click', goToMenu);
+
+document.getElementById('btn-collect-start').addEventListener('click', () => {
+    const records = getRecords();
+    const payload = {
+        action: 'collect_xp', session_xp: sessionXP,
+        best_times: { classic_4:records['classic-4']??null, classic_6:records['classic-6']??null, classic_8:records['classic-8']??null },
+        sprint_record: records['sprint']??null,
+    };
+    if (tg) tg.sendData(JSON.stringify(payload));
+    else alert(`Начислено ${sessionXP} XP!`);
+});
 </script>
 </body>
 </html>
