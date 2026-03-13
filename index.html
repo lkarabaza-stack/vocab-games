@@ -347,12 +347,297 @@ body{
 .bl-sound-btn:active { transform:scale(.92); }
 
 #error-screen{display:none;flex-direction:column;align-items:center;gap:10px;margin-top:60px;color:var(--error);font-size:1rem;text-align:center;}
+
+/* ═══════════════════════════════════════
+   STREAK BADGE
+═══════════════════════════════════════ */
+#streak-badge{
+    display:none;position:fixed;top:60px;right:14px;z-index:210;
+    background:linear-gradient(135deg,#f59e0b,#ef4444);
+    color:#fff;border-radius:20px;padding:5px 13px;
+    font-size:.82rem;font-weight:800;box-shadow:0 4px 14px rgba(245,158,11,.4);
+    animation:streakPop .3s cubic-bezier(.34,1.56,.64,1);
+    white-space:nowrap;
+}
+#streak-badge.show{display:block;}
+@keyframes streakPop{0%{transform:scale(.7) translateX(20px);opacity:0}100%{transform:scale(1) translateX(0);opacity:1}}
+
+/* ═══════════════════════════════════════
+   HINT BUTTON + HIGHLIGHT
+═══════════════════════════════════════ */
+#btn-hint{
+    position:fixed;bottom:18px;right:14px;z-index:200;
+    padding:9px 16px;border-radius:22px;border:none;cursor:pointer;
+    background:linear-gradient(135deg,#f59e0b,#f97316);
+    color:#fff;font-size:.88rem;font-weight:800;
+    box-shadow:0 4px 14px rgba(245,158,11,.45);
+    transition:opacity .2s,transform .12s;
+    display:none;
+}
+#btn-hint:active{transform:scale(.93);}
+#btn-hint.used{opacity:.4;pointer-events:none;}
+.card.hint-glow{
+    box-shadow:0 0 0 4px #f59e0b, 0 0 24px rgba(245,158,11,.6) !important;
+    border-color:#f59e0b !important;
+    animation:hintPulse .55s ease 3;
+}
+@keyframes hintPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+/* ═══════════════════════════════════════
+   XP PROGRESS BAR (persistent level)
+═══════════════════════════════════════ */
+#xp-progress-bar{
+    width:100%;max-width:380px;padding:10px 16px 4px;
+    display:flex;flex-direction:column;gap:4px;
+}
+.xp-pb-top{display:flex;justify-content:space-between;font-size:.72rem;font-weight:700;opacity:.65;}
+.xp-pb-track{width:100%;height:8px;background:rgba(0,0,0,.08);border-radius:6px;overflow:hidden;}
+.xp-pb-fill{
+    height:100%;border-radius:6px;
+    background:linear-gradient(90deg,#10b981,#3b82f6);
+    transition:width .6s cubic-bezier(.22,1,.36,1);
+}
+
+/* ═══════════════════════════════════════
+   IDLE CARD WOBBLE (sprint)
+═══════════════════════════════════════ */
+@keyframes cardIdle{
+    0%,100%{transform:rotate(-.8deg) translateY(0px);}
+    33%{transform:rotate(.6deg) translateY(-2px);}
+    66%{transform:rotate(-.4deg) translateY(1px);}
+}
+.sprint-left .card:not(.matched):not(.selected):not(.wrong){
+    animation:cardIdle var(--idle-dur, 3.2s) ease-in-out var(--idle-delay,0s) infinite;
+}
+
+/* ═══════════════════════════════════════
+   WIN SCREEN ANIMATED ROW REVEAL
+═══════════════════════════════════════ */
+.xp-row{
+    opacity:0;transform:translateY(8px);
+    transition:opacity .35s ease, transform .35s ease;
+}
+.xp-row.row-visible{opacity:1;transform:translateY(0);}
+
+/* ═══════════════════════════════════════
+   LOCAL CARD CONFETTI
+═══════════════════════════════════════ */
+.card-confetti{
+    position:fixed;pointer-events:none;z-index:9999;
+    width:6px;height:6px;border-radius:1px;
+    animation:cardConf var(--cc-dur) ease var(--cc-delay) forwards;
+}
+@keyframes cardConf{
+    0%{opacity:1;transform:translate(0,0) rotate(0deg) scale(1);}
+    80%{opacity:1;}
+    100%{opacity:0;transform:translate(var(--cc-tx),var(--cc-ty)) rotate(var(--cc-rot)) scale(.3);}
+}
+
+/* ═══════════════════════════════════════
+   DARK BLASTER (tg dark theme support)
+═══════════════════════════════════════ */
+@media (prefers-color-scheme:dark){
+    #blaster-wrap{
+        background:linear-gradient(180deg,#0a1a2e 0%,#0e2038 50%,#0a1e18 100%);
+    }
+    #bl-hud{background:linear-gradient(180deg,rgba(10,26,46,.95) 80%,transparent);}
+    #bl-word{color:#e0f0ff;}
+    .bl-lbl{color:#4d96ff;}
+    .bl-val{color:#b0d8ff;}
+}
+
+/* ═══════════════════════════════════════
+   SPRINT SHARD CANVAS
+═══════════════════════════════════════ */
+#sprint-shard-canvas{
+    position:fixed;inset:0;pointer-events:none;z-index:500;
+}
+
+/* ═══════════════════════════════════════
+   BLASTER REVERSE MODE BADGE
+═══════════════════════════════════════ */
+#bl-mode-badge{
+    position:absolute;top:74px;right:14px;z-index:10;
+    background:linear-gradient(135deg,#ff6b9d,#c44dff);
+    color:#fff;border-radius:10px;padding:3px 10px;
+    font-size:.65rem;font-weight:800;letter-spacing:.04em;
+    text-transform:uppercase;display:none;
+}
+.btn-level.blstr-rev{
+    background:linear-gradient(135deg,#ff6b9d,#c44dff);
+    color:#fff;box-shadow:0 5px 20px rgba(196,77,255,.4);
+}
+.btn-level.blstr-rev .lv-xp{background:rgba(255,255,255,.2);}
+.level-badge.blstr-rev{background:linear-gradient(135deg,#ff6b9d,#c44dff);}
+
+#sprint-speed{
+    text-align:center;font-size:.7rem;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;
+    margin-bottom:6px;opacity:.55;transition:color .4s,opacity .4s;
+    height:16px;
+}
+
+/* ═══════════════════════════════════════
+   HARD MODE TIMER BAR
+═══════════════════════════════════════ */
+#hard-timer-bar{
+    display:none;width:calc(100% - 16px);max-width:460px;
+    height:22px;background:rgba(0,0,0,.22);border-radius:11px;
+    overflow:visible;margin:4px 8px 10px;position:relative;
+}
+#hard-timer-bar.visible{display:block;}
+#hard-timer-fill{
+    height:100%;border-radius:11px;
+    background:linear-gradient(90deg,#b91c1c,#f97316,#fbbf24,#fef08a);
+    transition:width .95s linear;
+    position:relative;overflow:visible;
+    box-shadow:0 0 14px 5px rgba(255,100,0,.7), 0 0 32px 10px rgba(255,40,0,.4);
+    animation:barFlicker .1s ease-in-out infinite alternate;
+}
+@keyframes barFlicker{
+    0%{box-shadow:0 0 12px 4px rgba(255,140,0,.75),0 0 28px 8px rgba(255,60,0,.4);filter:brightness(1);}
+    100%{box-shadow:0 0 22px 8px rgba(255,100,0,1),0 0 44px 14px rgba(255,20,0,.55);filter:brightness(1.12);}
+}
+/* Spark canvas sits above the bar */
+#hard-spark-canvas{
+    position:absolute;left:0;top:-40px;
+    width:100%;height:80px;pointer-events:none;z-index:5;
+}
+
+/* ═══════════════════════════════════════
+   LOSE SCREEN (hard mode)
+═══════════════════════════════════════ */
+#lose-screen{
+    display:none;flex-direction:column;align-items:center;
+    gap:16px;margin-top:36px;animation:fadeUp .5s ease both;
+    text-align:center;width:100%;max-width:360px;
+}
+#lose-screen h1{font-size:2.2rem;}
+.lose-card{
+    width:100%;background:var(--card-bg);border-radius:16px;
+    padding:16px 20px;box-shadow:0 4px 16px rgba(0,0,0,.08);
+    font-size:.95rem;line-height:1.7;opacity:.8;
+}
+.lose-buttons{display:flex;flex-direction:column;gap:10px;width:100%;}
+
+/* ═══════════════════════════════════════
+   BLASTER SHIELD
+═══════════════════════════════════════ */
+#bl-shield{
+    position:absolute;bottom:130px;right:14px;z-index:20;
+    width:52px;height:52px;border-radius:50%;
+    border:2px solid rgba(100,200,255,.5);
+    background:rgba(10,30,60,.65);
+    font-size:1.4rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(6px);
+    box-shadow:0 0 18px rgba(0,229,255,.3);
+    transition:transform .12s,opacity .2s,box-shadow .2s;
+}
+#bl-shield:active{transform:scale(.90);}
+#bl-shield.shield-active{
+    background:rgba(0,200,255,.35);
+    box-shadow:0 0 28px rgba(0,229,255,.8);
+    animation:shieldPulse 1s ease infinite;
+}
+#bl-shield.shield-used{opacity:.28;pointer-events:none;}
+@keyframes shieldPulse{0%,100%{box-shadow:0 0 18px rgba(0,229,255,.5)}50%{box-shadow:0 0 36px rgba(0,229,255,1)}}
+#bl-shield-flash{
+    position:absolute;inset:0;z-index:9;pointer-events:none;
+    opacity:0;transition:opacity .07s;
+    background:radial-gradient(circle at 50% 50%,rgba(0,229,255,.3),transparent 70%);
+}
+
+/* ═══════════════════════════════════════
+   ANAGRAM OVERLAY
+═══════════════════════════════════════ */
+#anagram-wrap{
+    display:none;position:fixed;inset:0;z-index:50;
+    background:linear-gradient(180deg,#1a0a3a 0%,#2d0e5c 50%,#1a0a3a 100%);
+    touch-action:none;
+}
+#anagram-wrap.visible{display:block;}
+#ag-canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;}
+#ag-hud{
+    position:absolute;top:0;left:0;right:0;z-index:10;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 16px 6px;
+    background:linear-gradient(180deg,rgba(26,10,58,.95) 80%,transparent);
+    font-family:'Exo 2',sans-serif;
+}
+.ag-box{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.ag-lbl{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#c084fc;opacity:.8;font-weight:700;}
+.ag-val{font-size:1.05rem;font-weight:700;color:#e9d5ff;}
+#ag-translation{
+    position:absolute;top:68px;left:0;right:0;
+    z-index:10;text-align:center;padding:6px 12px 8px;
+    background:linear-gradient(180deg,rgba(26,10,58,.9) 60%,transparent);
+}
+.ag-trans-lbl{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#f0abfc;opacity:.9;font-weight:700;}
+#ag-trans-word{
+    font-family:'Exo 2',sans-serif;font-size:1.7rem;font-weight:800;
+    color:#f5d0fe;text-shadow:0 2px 8px rgba(192,132,252,.6);letter-spacing:.02em;
+}
+#ag-combo{
+    position:absolute;top:148px;left:50%;transform:translateX(-50%);z-index:10;
+    font-family:'Exo 2',sans-serif;font-size:.9rem;font-weight:900;
+    color:#f0abfc;text-shadow:0 2px 4px rgba(192,132,252,.5);
+    white-space:nowrap;display:none;
+}
+#ag-answer-row{
+    position:absolute;bottom:110px;left:0;right:0;z-index:10;
+    display:flex;justify-content:center;align-items:center;
+    gap:5px;padding:0 12px;font-family:'Exo 2',sans-serif;
+    flex-wrap:wrap;
+}
+.ag-slot{
+    min-width:28px;height:36px;border-radius:7px;
+    border:2px solid rgba(192,132,252,.4);
+    background:rgba(255,255,255,.07);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.05rem;font-weight:800;color:#f5d0fe;
+    padding:0 3px;transition:background .15s,border-color .15s,transform .12s;
+}
+.ag-slot.filled{background:rgba(192,132,252,.22);border-color:#c084fc;}
+.ag-slot.correct{background:rgba(16,185,129,.3);border-color:#10b981;color:#6ee7b7;animation:pop .32s cubic-bezier(.34,1.56,.64,1);}
+.ag-slot.wrong-flash{background:rgba(239,68,68,.3);border-color:#ef4444;animation:shake .35s ease;}
+#ag-controls{
+    position:absolute;bottom:28px;left:0;right:0;z-index:10;
+    display:flex;justify-content:center;gap:10px;align-items:center;
+}
+.ag-ctrl-btn{
+    padding:8px 20px;border-radius:20px;border:none;cursor:pointer;
+    font-size:.88rem;font-weight:800;font-family:'Exo 2',sans-serif;
+    transition:transform .1s,opacity .15s;
+}
+.ag-ctrl-btn:active{transform:scale(.93);}
+#ag-btn-skip{background:rgba(239,68,68,.22);color:#fca5a5;border:1.5px solid rgba(239,68,68,.38);}
+#ag-btn-back{background:rgba(148,163,184,.15);color:#cbd5e1;border:1.5px solid rgba(148,163,184,.3);min-width:44px;padding:8px 14px;font-size:1rem;}
+#ag-btn-back:disabled{opacity:.25;pointer-events:none;}
+#ag-btn-hint{background:rgba(245,158,11,.18);color:#fcd34d;border:1.5px solid rgba(245,158,11,.32);}
+#ag-btn-hint.used{opacity:.32;pointer-events:none;}
+.ag-sound-btn{
+    position:absolute;top:12px;right:12px;z-index:60;
+    width:38px;height:38px;border-radius:50%;
+    border:1.5px solid rgba(192,132,252,.35);
+    background:rgba(26,10,58,.6);
+    font-size:1.1rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(4px);transition:background .15s,transform .1s;
+}
+.ag-sound-btn:active{transform:scale(.92);}
 </style>
 </head>
 <body>
 
 <!-- ═══ SOUND TOGGLE ═══ -->
 <button id="btn-sound" title="Звук">🔊</button>
+
+<!-- ═══ STREAK BADGE ═══ -->
+<div id="streak-badge"></div>
+
+<!-- ═══ HINT BUTTON ═══ -->
+<button id="btn-hint" title="Подсказка (-5 XP)">💡 Подсказка</button>
 
 <!-- ═══ START SCREEN ═══ -->
 <div id="start-screen">
@@ -362,6 +647,7 @@ body{
         <button class="mode-btn active-classic" id="btn-mc" onclick="setMode('classic')">🎯 Классика</button>
         <button class="mode-btn"               id="btn-ms" onclick="setMode('sprint')">⚡ Спринт</button>
         <button class="mode-btn"               id="btn-mb" onclick="setMode('blaster')">💥 Бластер</button>
+        <button class="mode-btn"               id="btn-ma" onclick="setMode('anagram')">🔤 Анаграмма</button>
     </div>
 
     <div class="mode-desc" id="mode-desc"></div>
@@ -379,6 +665,10 @@ body{
         <button class="btn-level lv3" data-pairs="8" data-mode="classic">
             <span class="lv-left"><span class="lv-name">⭐⭐⭐ Сложный</span><span class="lv-sub">8 пар</span></span>
             <span class="lv-right"><span class="lv-xp">до 35 XP</span><span class="lv-record" id="rc8"></span></span>
+        </button>
+        <button class="btn-level lv3" data-pairs="8" data-mode="classic" data-hard="1" style="background:linear-gradient(135deg,#dc2626,#7f1d1d);box-shadow:0 5px 16px rgba(220,38,38,.4)">
+            <span class="lv-left"><span class="lv-name">💀 Хард</span><span class="lv-sub">8 пар · 20 сек · или смерть</span></span>
+            <span class="lv-right"><span class="lv-xp">до 60 XP</span><span class="lv-record" id="rc8h"></span></span>
         </button>
     </div>
 
@@ -400,9 +690,21 @@ body{
 
     <div class="level-section" id="lbs-blaster" style="display:none">
         <div class="section-label">60 секунд · аркада</div>
-        <button class="btn-level blstr" data-mode="blaster">
+        <button class="btn-level blstr" data-mode="blaster" data-reverse="0">
             <span class="lv-left"><span class="lv-name">🫧 Запустить</span><span class="lv-sub">4→6 пузырей · комбо · рогатка</span></span>
             <span class="lv-right"><span class="lv-xp">до 60+ XP</span><span class="lv-record" id="rcb"></span></span>
+        </button>
+        <button class="btn-level blstr-rev" data-mode="blaster" data-reverse="1">
+            <span class="lv-left"><span class="lv-name">🔄 Наоборот</span><span class="lv-sub">Рус → Нем · сложнее!</span></span>
+            <span class="lv-right"><span class="lv-xp">до 60+ XP</span><span class="lv-record" id="rcbr"></span></span>
+        </button>
+    </div>
+
+    <div class="level-section" id="lbs-anagram" style="display:none">
+        <div class="section-label">5 слов · собери буквы</div>
+        <button class="btn-level" data-mode="anagram" style="background:linear-gradient(135deg,#7c3aed,#c026d3);color:#fff;box-shadow:0 5px 20px rgba(124,58,237,.4)">
+            <span class="lv-left"><span class="lv-name">🔤 Запустить</span><span class="lv-sub">Буквы-пузыри · 5 слов · скорость</span></span>
+            <span class="lv-right"><span class="lv-xp">до 80 XP</span><span class="lv-record" id="rcag"></span></span>
         </button>
     </div>
 
@@ -413,6 +715,15 @@ body{
         </div>
         <button class="cb-btn" id="btn-collect-start">🎁 Забрать и выйти</button>
     </div>
+
+    <!-- XP Progress Bar -->
+    <div id="xp-progress-bar">
+        <div class="xp-pb-top">
+            <span id="xp-level-label">Уровень 1</span>
+            <span id="xp-level-total">0 / 100 XP</span>
+        </div>
+        <div class="xp-pb-track"><div class="xp-pb-fill" id="xp-pb-fill" style="width:0%"></div></div>
+    </div>
 </div>
 
 <!-- ═══ CLASSIC/SPRINT HEADER ═══ -->
@@ -421,12 +732,28 @@ body{
     <div id="level-label"></div>
     <div id="score">Пары: 0 / —</div>
 </div>
+<!-- Hard mode countdown bar -->
+<div id="hard-timer-bar">
+    <canvas id="hard-spark-canvas"></canvas>
+    <div id="hard-timer-fill" style="width:100%"></div>
+</div>
+
+<!-- ═══ LOSE SCREEN (hard mode) ═══ -->
+<div id="lose-screen">
+    <h1>💀 Время вышло!</h1>
+    <div class="lose-card" id="lose-info"></div>
+    <div class="lose-buttons">
+        <button class="btn" id="btn-lose-retry">🔥 Попробовать снова</button>
+        <button class="btn-outline" id="btn-lose-menu">← В меню</button>
+    </div>
+</div>
 
 <!-- ═══ CLASSIC GRID ═══ -->
 <div class="grid" id="grid"></div>
 
 <!-- ═══ SPRINT AREA ═══ -->
 <div id="sprint-area">
+    <div id="sprint-speed"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:5px">
         <div class="sprint-col-label">Слово</div>
         <div class="sprint-col-label">Перевод</div>
@@ -509,8 +836,44 @@ body{
         <div id="bl-word">—</div>
     </div>
     <div id="bl-flash"></div>
+    <div id="bl-shield-flash"></div>
+    <button id="bl-shield" title="Щит (1 раз)">🛡️</button>
     <button class="bl-sound-btn" id="btn-sound-bl" title="Звук">🔊</button>
+    <div id="bl-mode-badge">🔄 НАОБОРОТ</div>
 </div>
+
+<!-- ═══ ANAGRAM OVERLAY ═══ -->
+<div id="anagram-wrap">
+    <canvas id="ag-canvas"></canvas>
+    <div id="ag-hud">
+        <div class="ag-box"><span class="ag-lbl">Счёт</span><span class="ag-val" id="ag-score">0</span></div>
+        <div class="ag-box">
+            <svg viewBox="0 0 48 48" width="46" height="46">
+                <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(192,132,252,.15)" stroke-width="4"/>
+                <circle id="ag-arc" cx="24" cy="24" r="20" fill="none" stroke="#c084fc" stroke-width="4"
+                        stroke-dasharray="125.6" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 24 24)"/>
+                <text x="24" y="29" text-anchor="middle" font-family="Orbitron,monospace"
+                      font-size="11" font-weight="700" fill="#f5d0fe" id="ag-time-txt">60</text>
+            </svg>
+        </div>
+        <div class="ag-box"><span class="ag-lbl">Слова</span><span class="ag-val" id="ag-words">0</span></div>
+    </div>
+    <div id="ag-combo"></div>
+    <div id="ag-translation">
+        <div class="ag-trans-lbl">Собери слово</div>
+        <div id="ag-trans-word">—</div>
+    </div>
+    <div id="ag-answer-row"></div>
+    <div id="ag-controls">
+        <button class="ag-ctrl-btn" id="ag-btn-skip">⏭ Пропустить</button>
+        <button class="ag-ctrl-btn" id="ag-btn-back" disabled>⌫</button>
+        <button class="ag-ctrl-btn" id="ag-btn-hint">💡 (−5 XP)</button>
+    </div>
+    <button class="ag-sound-btn" id="btn-sound-ag" title="Звук">🔊</button>
+</div>
+
+<!-- ═══ SPRINT SHARD CANVAS ═══ -->
+<canvas id="sprint-shard-canvas"></canvas>
 
 <script>
 /* ════════════════════════════════════════════
@@ -570,13 +933,236 @@ function saveRec(k,v) { const r=getRecs(); r[k]=v; localStorage.setItem(RKEY,JSO
 function getBest(k)   { return getRecs()[k]??null; }
 
 /* ════════════════════════════════════════════
-   SESSION XP
+   PERSISTENT XP LEVEL SYSTEM
 ════════════════════════════════════════════ */
+const XP_KEY = 'mp_total_xp_v1';
+function getTotalXP()   { return parseInt(localStorage.getItem(XP_KEY)||'0'); }
+function addTotalXP(n)  { localStorage.setItem(XP_KEY, getTotalXP()+n); updateXPBar(); }
+function xpForLevel(lv) { return lv * 100; } // each level requires lv*100 XP
+function getLevel(total){
+    let lv=1, rem=total;
+    while(rem >= xpForLevel(lv)){ rem -= xpForLevel(lv); lv++; }
+    return {level:lv, current:rem, needed:xpForLevel(lv)};
+}
+function updateXPBar(){
+    const total = getTotalXP();
+    const {level, current, needed} = getLevel(total);
+    const el = document.getElementById('xp-level-label');
+    const elT = document.getElementById('xp-level-total');
+    const fill = document.getElementById('xp-pb-fill');
+    if(el)  el.textContent  = `Уровень ${level}`;
+    if(elT) elT.textContent = `${current} / ${needed} XP`;
+    if(fill) fill.style.width = Math.min(100, Math.round(current/needed*100))+'%';
+}
+updateXPBar();
+
+/* ════════════════════════════════════════════
+   STREAK
+════════════════════════════════════════════ */
+let currentStreak = 0;
+function resetStreak(){ currentStreak=0; hideStreakBadge(); }
+function addStreak(){
+    currentStreak++;
+    if(currentStreak>=2) showStreakBadge();
+}
+function showStreakBadge(){
+    const el=document.getElementById('streak-badge');
+    const mult=streakMultiplier();
+    el.textContent=`🔥 Серия ${currentStreak}×  ${mult>1?`(+${Math.round((mult-1)*100)}% XP)`:''}`;
+    el.classList.add('show');
+}
+function hideStreakBadge(){
+    document.getElementById('streak-badge').classList.remove('show');
+}
+function streakMultiplier(){
+    if(currentStreak>=8) return 2.0;
+    if(currentStreak>=5) return 1.5;
+    if(currentStreak>=3) return 1.25;
+    return 1.0;
+}
+
+/* ════════════════════════════════════════════
+   HINT SYSTEM
+════════════════════════════════════════════ */
+let hintUsed = false;
+let hintPenalty = 0;
+function initHint(mode){
+    hintUsed=false; hintPenalty=0;
+    const btn=document.getElementById('btn-hint');
+    btn.style.display = (mode==='classic'||mode==='sprint') ? 'block' : 'none';
+    btn.classList.remove('used');
+}
+function useHint(){
+    if(hintUsed) return;
+    hintUsed=true; hintPenalty=5;
+    document.getElementById('btn-hint').classList.add('used');
+    if(currentMode==='classic') hintClassic();
+    else if(currentMode==='sprint') hintSprint();
+}
+document.getElementById('btn-hint').addEventListener('click', useHint);
+
+function hintClassic(){
+    // Find first unmatched pair and briefly glow them
+    const cards=[...document.querySelectorAll('#grid .card:not(.matched)')];
+    if(!cards.length) return;
+    // pick random unmatched card, find its pair
+    const pick=cards[0|Math.random()*cards.length];
+    const id=pick.dataset.id;
+    const pair=cards.filter(c=>c.dataset.id===id);
+    pair.forEach(c=>{ c.classList.add('hint-glow'); setTimeout(()=>c.classList.remove('hint-glow'),1650); });
+    if(tg) tg.HapticFeedback?.impactOccurred('soft');
+}
+function hintSprint(){
+    // Glow left-selected or first left card + its matching right card
+    const leftCard = sprintSelL ? sprintSelL.el : (sprintSlots[0]?.el);
+    if(!leftCard||leftCard.classList.contains('matched')) return;
+    const targetId = sprintSelL ? sprintSelL.id : sprintSlots[0]?.id;
+    leftCard.classList.add('hint-glow');
+    setTimeout(()=>leftCard.classList.remove('hint-glow'),1650);
+    // find matching right card
+    const rights=[...document.querySelectorAll('#sprint-right .card:not(.matched):not(.slide-out)')];
+    const matchR=rights.find(r=>{ /* we need to track id on element */return r._hintId===targetId; });
+    if(matchR){ matchR.classList.add('hint-glow'); setTimeout(()=>matchR.classList.remove('hint-glow'),1650); }
+    if(tg) tg.HapticFeedback?.impactOccurred('soft');
+}
+
+
 let sessionXP = 0;
 
 /* ════════════════════════════════════════════
-   XP CONFIG
+   SPRINT CARD SHARD SYSTEM
 ════════════════════════════════════════════ */
+const shardCanvas = document.getElementById('sprint-shard-canvas');
+const shardCtx    = shardCanvas.getContext('2d');
+let   shardPieces = [];
+let   shardRAF    = null;
+
+// Blue shard colour palette
+const SHARD_COLORS = [
+    '#38bdf8','#7dd3fc','#bae6fd','#0ea5e9',
+    '#e0f2fe','#93c5fd','#60a5fa','#dbeafe',
+];
+
+function resizeShardCanvas(){
+    shardCanvas.width  = window.innerWidth;
+    shardCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeShardCanvas);
+resizeShardCanvas();
+
+// "Floor" = bottom of the viewport minus a small margin
+function shardFloor(){ return window.innerHeight - 56; }
+
+class Shard {
+    constructor(cardX, cardY, cardW, cardH){
+        // random spawn point spread across card face
+        this.cx = cardX + Math.random() * cardW;
+        this.cy = cardY + Math.random() * cardH;
+
+        // shape: irregular polygon relative to local origin
+        const sides = 3 + Math.floor(Math.random() * 3); // 3–5 sides
+        const size  = 2 + Math.random() * 9;             // tiny to medium
+        this.shape  = [];
+        for(let i = 0; i < sides; i++){
+            const ang = (Math.PI*2/sides)*i + (Math.random()-.5)*1.1;
+            const r   = size * (0.5 + Math.random()*.7);
+            this.shape.push([Math.cos(ang)*r, Math.sin(ang)*r]);
+        }
+
+        // physics — mostly fall down, tiny horizontal scatter
+        this.vx      = (Math.random()-.5) * 3.5;
+        this.vy      = -1 - Math.random() * 3.5;   // small upward kick
+        this.gravity = 0.28 + Math.random() * 0.18;
+        this.rot     = Math.random() * Math.PI * 2;
+        this.rotV    = (Math.random()-.5) * 0.30;
+
+        // colour
+        this.color  = SHARD_COLORS[Math.floor(Math.random()*SHARD_COLORS.length)];
+        this.border = '#0369a1';
+
+        // state: 'falling' → 'resting'
+        this.state    = 'falling';
+        this.restY    = 0;    // y when landed
+        this.restRot  = 0;    // rot when landed
+
+        // fade: only starts after REST_DELAY ms on the floor
+        this.life     = 1;
+        this.restTimer= 0;    // ms spent resting
+    }
+
+    update(dt){
+        if(this.state === 'falling'){
+            this.vx  *= 0.97;
+            this.vy  += this.gravity;
+            this.cx  += this.vx;
+            this.cy  += this.vy;
+            this.rot += this.rotV;
+
+            const floor = shardFloor();
+            if(this.cy >= floor){
+                this.cy      = floor;
+                this.state   = 'resting';
+                this.restY   = floor;
+                this.restRot = this.rot;
+                this.vx = 0; this.vy = 0; this.rotV = 0;
+            }
+        } else {
+            // lying on the floor — wait 2.5 s then slowly dissolve
+            this.restTimer += dt;
+            if(this.restTimer > 2500){
+                this.life -= 0.008;
+            }
+        }
+    }
+
+    draw(ctx){
+        if(this.life <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.life);
+        ctx.translate(this.cx, this.cy);
+        ctx.rotate(this.rot);
+        ctx.beginPath();
+        this.shape.forEach(([px,py],i)=>
+            i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py)
+        );
+        ctx.closePath();
+        ctx.fillStyle   = this.color;
+        ctx.strokeStyle = this.border;
+        ctx.lineWidth   = 0.8;
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
+function spawnShards(el){
+    const r     = el.getBoundingClientRect();
+    const count = 55 + Math.floor(Math.random()*15); // ~55-70 per card → 110-140 total for pair
+    for(let i = 0; i < count; i++)
+        shardPieces.push(new Shard(r.left, r.top, r.width, r.height));
+    if(!shardRAF) shardLoop();
+}
+
+let shardLastT = 0;
+function shardLoop(ts = 0){
+    const dt = ts - shardLastT;
+    shardLastT = ts;
+
+    shardCtx.clearRect(0, 0, shardCanvas.width, shardCanvas.height);
+
+    // update all, remove fully faded
+    shardPieces = shardPieces.filter(s => s.life > 0);
+    for(const s of shardPieces){ s.update(dt); s.draw(shardCtx); }
+
+    if(shardPieces.length > 0){
+        shardRAF = requestAnimationFrame(shardLoop);
+    } else {
+        shardRAF = null;
+        shardCtx.clearRect(0, 0, shardCanvas.width, shardCanvas.height);
+    }
+}
+
+
 const XP_CL = { 4:{base:10,spd:5,sec:15}, 6:{base:15,spd:10,sec:25}, 8:{base:20,spd:15,sec:35} };
 
 /* ════════════════════════════════════════════
@@ -585,7 +1171,8 @@ const XP_CL = { 4:{base:10,spd:5,sec:15}, 6:{base:15,spd:10,sec:25}, 8:{base:20,
 const MODE_DESCS = {
     classic: '<b>🎯 Классика</b> — найди все пары. Считается время и точность. Чем быстрее — тем больше XP.',
     sprint:  '<b>⚡ Спринт</b> — 60 секунд, бесконечный поток слов. Выбери уровень: 3, 6 или 8 пар одновременно. Угадай как можно больше!',
-    blaster: '<b>🫧 Бластер</b> — 60 секунд! Мыльные пузыри с переводами летают по экрану. Нажми на правильный — рогатка стреляет и пузырь лопается! Комбо × до ×2.0.',
+    blaster: '<b>🫧 Бластер</b> — 60 секунд! Мыльные пузыри с переводами летают по экрану. Нажми на правильный — рогатка стреляет и пузырь лопается! Комбо до ×2.0.',
+    anagram: '<b>🔤 Анаграмма</b> — 5 слов! Буквы немецкого слова летают как пузыри. Нажимай на них по порядку — собери слово. Внизу подсказка — русский перевод. Чем быстрее — тем больше XP!',
 };
 let currentMode = 'classic';
 let currentPairs = 4;
@@ -595,10 +1182,12 @@ function setMode(m) {
     document.getElementById('btn-mc').className = 'mode-btn'+(m==='classic' ?' active-classic':'');
     document.getElementById('btn-ms').className = 'mode-btn'+(m==='sprint'  ?' active-sprint' :'');
     document.getElementById('btn-mb').className = 'mode-btn'+(m==='blaster' ?' active-blaster':'');
+    document.getElementById('btn-ma').className = 'mode-btn'+(m==='anagram' ?' active-classic':'');
     document.getElementById('mode-desc').innerHTML = MODE_DESCS[m]||'';
     document.getElementById('lbs-classic').style.display = m==='classic' ?'':'none';
     document.getElementById('lbs-sprint').style.display  = m==='sprint'  ?'':'none';
     document.getElementById('lbs-blaster').style.display = m==='blaster' ?'':'none';
+    document.getElementById('lbs-anagram').style.display = m==='anagram' ?'':'none';
 }
 setMode('classic');
 updateRecordLabels();
@@ -607,12 +1196,15 @@ updateRecordLabels();
    RECORD LABELS
 ════════════════════════════════════════════ */
 function updateRecordLabels() {
-    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rcs:'sprint',rcb:'blaster'};
+    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram'};
     for(const [id,key] of Object.entries(map)) {
         const el=document.getElementById(id); if(!el) continue;
         const v=getBest(key);
         if(v===null){el.textContent='';continue;}
-        el.textContent = (key.startsWith('sprint')||key==='blaster') ? `🏆 ${v} слов` : `🏆 ${fmt(v)}`;
+        if(key.startsWith('sprint')||key.startsWith('blaster')||key==='anagram')
+            el.textContent=`🏆 ${v} слов`;
+        else if(key==='cl-8h') el.textContent=`🏆 ${fmt(v)}`;
+        else el.textContent=`🏆 ${fmt(v)}`;
     }
 }
 
@@ -621,12 +1213,15 @@ function updateRecordLabels() {
 ════════════════════════════════════════════ */
 document.querySelectorAll('.btn-level').forEach(btn => {
     btn.addEventListener('click', () => {
-        const m = btn.dataset.mode;
-        const p = parseInt(btn.dataset.pairs)||8;
+        const m    = btn.dataset.mode;
+        const p    = parseInt(btn.dataset.pairs)||8;
         const rows = parseInt(btn.dataset.rows)||8;
-        if(m==='classic') startClassic(p);
+        const rev  = btn.dataset.reverse === '1';
+        const hard = btn.dataset.hard === '1';
+        if(m==='classic') startClassic(p, hard);
         else if(m==='sprint') startSprint(rows);
-        else startBlaster();
+        else if(m==='anagram') startAnagram();
+        else startBlaster(rev);
     });
 });
 
@@ -636,22 +1231,30 @@ document.querySelectorAll('.btn-level').forEach(btn => {
 function hideAll() {
     document.getElementById('start-screen').style.display='none';
     document.getElementById('win-screen').style.display='none';
+    document.getElementById('lose-screen').style.display='none';
     document.getElementById('header').classList.remove('visible');
+    document.getElementById('hard-timer-bar').classList.remove('visible');
     document.getElementById('grid').className='grid';
     document.getElementById('sprint-area').classList.remove('visible');
     document.getElementById('sprint-left').innerHTML='';
     document.getElementById('sprint-right').innerHTML='';
     document.getElementById('blaster-wrap').classList.remove('visible');
+    document.getElementById('anagram-wrap').classList.remove('visible');
 }
 
 function goToMenu() {
     blasterStop();
     clearInterval(classicTimer);
     clearInterval(sprintTimer);
+    clearInterval(agTicker);
+    cancelAnimationFrame(agRAF); agRunning=false;
     hideAll();
     document.getElementById('start-screen').style.display='flex';
+    document.getElementById('btn-hint').style.display='none';
+    resetStreak();
     updateRecordLabels();
     syncCollectBar();
+    updateXPBar();
 }
 
 /* ════════════════════════════════════════════
@@ -666,11 +1269,28 @@ function syncCollectBar() {
 /* ════════════════════════════════════════════
    SHARED WIN SCREEN FILL
 ════════════════════════════════════════════ */
+function animateCount(el, target, suffix='', dur=700){
+    const start=performance.now();
+    const from=0;
+    function step(now){
+        const t=Math.min(1,(now-start)/dur);
+        const ease=1-Math.pow(1-t,3);
+        el.textContent=Math.round(from+(target-from)*ease)+suffix;
+        if(t<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
 function showWin({title,badgeCls,badgeText,base,showAcc,acc,bonusLabel,bonus,recBonus,roundXP,stats,isNew,recVal}) {
     sessionXP += roundXP;
+    addTotalXP(roundXP);
     document.getElementById('win-title').textContent = title;
     const badge=document.getElementById('win-badge');
     badge.textContent=badgeText; badge.className=`level-badge ${badgeCls}`;
+
+    // Reset row visibility for animation
+    document.querySelectorAll('.xp-row').forEach(r=>r.classList.remove('row-visible'));
+
     document.getElementById('xp-base').textContent   = `${base} XP`;
     document.getElementById('row-acc').style.display = showAcc?'':'none';
     document.getElementById('xp-acc-pct').textContent = acc;
@@ -678,8 +1298,8 @@ function showWin({title,badgeCls,badgeText,base,showAcc,acc,bonusLabel,bonus,rec
     document.getElementById('bonus-label').textContent = bonusLabel;
     document.getElementById('xp-bonus').textContent   = `+${bonus} XP`;
     document.getElementById('row-record').style.display = isNew?'':'none';
-    document.getElementById('xp-total').textContent  = `+${roundXP} XP`;
-    document.getElementById('sess-total').textContent = `${sessionXP} XP`;
+    document.getElementById('xp-total').textContent  = `+0 XP`;
+    document.getElementById('sess-total').textContent = `0 XP`;
     document.getElementById('collect-label').textContent = sessionXP;
     document.getElementById('final-stats').textContent = stats;
     const banner=document.getElementById('record-banner');
@@ -687,9 +1307,26 @@ function showWin({title,badgeCls,badgeText,base,showAcc,acc,bonusLabel,bonus,rec
         document.getElementById('record-val').textContent=recVal;
         banner.classList.add('show');
     } else banner.classList.remove('show');
+
+    // Hide hint button on win screen
+    document.getElementById('btn-hint').style.display='none';
+    hideStreakBadge();
+
     document.getElementById('win-screen').style.display='flex';
     updateRecordLabels();
     if(tg) tg.HapticFeedback?.notificationOccurred(isNew?'success':'warning');
+
+    // Animate rows appearing one by one
+    const rows=[...document.querySelectorAll('.xp-row')].filter(r=>r.closest('#win-screen') && r.style.display!=='none');
+    rows.forEach((r,i)=>setTimeout(()=>r.classList.add('row-visible'), 150+i*180));
+
+    // Animate XP total count-up
+    const totalEl=document.getElementById('xp-total');
+    const sessEl=document.getElementById('sess-total');
+    setTimeout(()=>{
+        animateCount(totalEl, roundXP, ' XP', 600);
+        animateCount(sessEl, sessionXP, ' XP', 700);
+    }, 150 + rows.length*180);
 }
 
 /* ════════════════════════════════════════════
@@ -752,21 +1389,35 @@ let matchedPairs=0, attempts=0;
 let selectedCard=null, lockBoard=false;
 let gameData=[];
 
-function startClassic(pairs) {
+let classicHardMode = false;
+const HARD_SECS = 20;
+
+function startClassic(pairs, hard=false) {
     currentMode='classic'; currentPairs=pairs;
+    classicHardMode = !!hard;
     gameData=pickWords(pairs);
     clearInterval(classicTimer);
     classicSecs=0; classicStarted=false; matchedPairs=0; attempts=0;
     selectedCard=null; lockBoard=false;
+    resetStreak();
     const info=levelInfo(pairs);
     hideAll();
     document.getElementById('header').classList.add('visible');
+    if(classicHardMode){
+        document.getElementById('hard-timer-bar').classList.add('visible');
+        const fill=document.getElementById('hard-timer-fill');
+        fill.style.transition='none';
+        fill.style.width='100%';
+        fill.style.background='linear-gradient(90deg,#ff4500,#ff8c00,#ffd700)';
+        startHardSparks();
+    }
     const g=document.getElementById('grid');
     g.className='grid visible'+(info.gcls?' '+info.gcls:'');
-    document.getElementById('timer').textContent='⏱ 00:00';
+    document.getElementById('timer').textContent = classicHardMode ? `⏱ ${fmt(HARD_SECS)}` : '⏱ 00:00';
     document.getElementById('timer').className='';
     document.getElementById('score').textContent=`Пары: 0 / ${pairs}`;
-    document.getElementById('level-label').textContent=info.label;
+    document.getElementById('level-label').textContent = classicHardMode ? '💀 ХАРД · 20 сек' : info.label;
+    initHint('classic');
     buildClassicCards();
 }
 function buildClassicCards(){
@@ -788,10 +1439,102 @@ function buildClassicCards(){
 }
 function startClassicTimer(){
     if(classicStarted) return; classicStarted=true;
-    classicTimer=setInterval(()=>{
-        classicSecs++;
-        document.getElementById('timer').textContent=`⏱ ${fmt(classicSecs)}`;
-    },1000);
+    if(classicHardMode){
+        // Hard: countdown from HARD_SECS
+        let remaining = HARD_SECS;
+        // Trigger CSS transition for the bar
+        requestAnimationFrame(()=>{
+            const fill=document.getElementById('hard-timer-fill');
+            fill.style.transition=`width ${HARD_SECS}s linear`;
+            fill.style.width='0%';
+        });
+        classicTimer=setInterval(()=>{
+            remaining--;
+            const td=document.getElementById('timer');
+            td.textContent=`⏱ ${fmt(remaining)}`;
+            // bar colour: green → yellow → red
+            const fill=document.getElementById('hard-timer-fill');
+            if(remaining<=6) fill.style.background='linear-gradient(90deg,#7f1d1d,#dc2626)';
+            else if(remaining<=12) fill.style.background='linear-gradient(90deg,#ff4500,#dc2626)';
+            td.classList.toggle('warn', remaining<=12 && remaining>6);
+            td.classList.toggle('danger', remaining<=6);
+            if(remaining<=6 && remaining>0) sndSprintTick();
+            if(remaining<=0){ clearInterval(classicTimer); loseHardMode(); }
+        },1000);
+    } else {
+        classicTimer=setInterval(()=>{
+            classicSecs++;
+            document.getElementById('timer').textContent=`⏱ ${fmt(classicSecs)}`;
+        },1000);
+    }
+}
+
+/* ── Hard Bar Spark Engine ── */
+let sparkRAF=null, sparkParticles=[], sparkCtx=null, sparkCanvas=null;
+class Spark {
+    constructor(x,barH){
+        this.x=x; this.y=barH/2;
+        this.vx=(Math.random()-.5)*3.5;
+        this.vy=-Math.random()*4-1.5;
+        this.life=1; this.decay=.04+Math.random()*.04;
+        const hue=Math.random()<.5?'255,140,0':'255,60,0';
+        this.col=`rgb(${hue})`;
+        this.r=1.5+Math.random()*2;
+    }
+    update(){ this.vy+=.18; this.x+=this.vx; this.y+=this.vy; this.life-=this.decay; }
+    draw(ctx){
+        ctx.save(); ctx.globalAlpha=Math.max(0,this.life);
+        ctx.fillStyle=this.col;
+        ctx.shadowColor=this.col; ctx.shadowBlur=6;
+        ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
+        ctx.restore();
+    }
+}
+function startHardSparks(){
+    sparkCanvas=document.getElementById('hard-spark-canvas');
+    if(!sparkCanvas) return;
+    sparkCanvas.width=sparkCanvas.offsetWidth||window.innerWidth;
+    sparkCanvas.height=80;
+    sparkCtx=sparkCanvas.getContext('2d');
+    sparkParticles=[];
+    if(sparkRAF) cancelAnimationFrame(sparkRAF);
+    sparkLoop();
+}
+function sparkLoop(){
+    if(!sparkCanvas||!sparkCtx) return;
+    // resize canvas to fill bar
+    const barW=document.getElementById('hard-timer-fill').offsetWidth;
+    sparkCanvas.width=document.getElementById('hard-timer-bar').offsetWidth||window.innerWidth;
+    sparkCtx.clearRect(0,0,sparkCanvas.width,sparkCanvas.height);
+    // spawn sparks from right edge of fill
+    const spawnX=barW;
+    const count=Math.ceil(Math.random()*3+1);
+    for(let i=0;i<count;i++) sparkParticles.push(new Spark(spawnX, 16));
+    sparkParticles=sparkParticles.filter(s=>s.life>0);
+    sparkParticles.forEach(s=>{ s.update(); s.draw(sparkCtx); });
+    sparkRAF=requestAnimationFrame(sparkLoop);
+}
+function stopHardSparks(){
+    if(sparkRAF){ cancelAnimationFrame(sparkRAF); sparkRAF=null; }
+    sparkParticles=[];
+    if(sparkCtx&&sparkCanvas) sparkCtx.clearRect(0,0,sparkCanvas.width,80);
+}
+
+function loseHardMode(){
+    clearInterval(classicTimer);
+    stopHardSparks();
+    document.getElementById('header').classList.remove('visible');
+    document.getElementById('hard-timer-bar').classList.remove('visible');
+    document.getElementById('grid').className='grid';
+    document.getElementById('btn-hint').style.display='none';
+    hideStreakBadge();
+    sndMismatch();
+    if(tg) tg.HapticFeedback?.notificationOccurred('error');
+    const info = document.getElementById('lose-info');
+    info.innerHTML=`Ты успел угадать <b>${matchedPairs} из ${currentPairs}</b> пар.<br>
+        Точность: <b>${attempts>0?Math.round(matchedPairs/attempts*100):0}%</b><br>
+        <span style="opacity:.6;font-size:.85rem">XP не начисляется. В следующий раз успеешь! 💪</span>`;
+    document.getElementById('lose-screen').style.display='flex';
 }
 function onClassicClick(){
     if(lockBoard||this.classList.contains('matched')) return;
@@ -806,22 +1549,74 @@ function onClassicClick(){
         matchedPairs++;
         document.getElementById('score').textContent=`Пары: ${matchedPairs} / ${currentPairs}`;
         sndMatch();
+        addStreak();
         if(tg) tg.HapticFeedback?.impactOccurred('light');
         spawnXPFloat(B,'✨');
+        spawnCardConfetti(B);
         if(matchedPairs===currentPairs) setTimeout(winClassic,450);
     } else {
         lockBoard=true;A.classList.add('wrong');B.classList.add('wrong');
         sndMismatch();
+        resetStreak();
         if(tg) tg.HapticFeedback?.notificationOccurred('error');
         setTimeout(()=>{A.classList.remove('wrong');B.classList.remove('wrong');lockBoard=false;},700);
     }
 }
+
+/* Local confetti burst from a card */
+function spawnCardConfetti(card){
+    const r=card.getBoundingClientRect();
+    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const cols=['#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#38bdf8'];
+    for(let i=0;i<16;i++){
+        const el=document.createElement('div');
+        el.classList.add('card-confetti');
+        const ang=Math.random()*Math.PI*2, dist=30+Math.random()*60;
+        const tx=Math.cos(ang)*dist, ty=Math.sin(ang)*dist-20;
+        const dur=.5+Math.random()*.4, delay=Math.random()*.1;
+        el.style.cssText=`left:${cx}px;top:${cy}px;background:${cols[i%cols.length]};`+
+            `--cc-tx:${tx}px;--cc-ty:${ty}px;--cc-rot:${(Math.random()-.5)*540}deg;`+
+            `--cc-dur:${dur}s;--cc-delay:${delay}s;`;
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),(dur+delay)*1000+50);
+    }
+}
+
 function winClassic(){
     clearInterval(classicTimer);
     sndWin();
     document.getElementById('header').classList.remove('visible');
+    document.getElementById('hard-timer-bar').classList.remove('visible');
+    stopHardSparks();
     document.getElementById('grid').className='grid';
     const acc=attempts>0?Math.round(currentPairs/attempts*100):100;
+
+    if(classicHardMode){
+        const key='cl-8h';
+        const timeUsed = HARD_SECS - /* remaining captured via classicSecs trick — use elapsed */ classicSecs;
+        // for hard mode we track time via remaining; just use a fixed bonus structure
+        const prev=getBest(key); const isNew=prev===null||true; // always save best attempt time
+        // Record fastest clear time
+        if(prev===null||classicSecs<prev) saveRec(key,classicSecs); // classicSecs unused in hard; store 0 as placeholder
+        const earned=Math.round(40*(acc/100));
+        const hardBonus=20; // extra for completing hard
+        const streakBonus=Math.round((earned)*(streakMultiplier()-1));
+        const roundXP=Math.max(0, earned+hardBonus+(prev===null?20:0)+streakBonus-hintPenalty);
+        const isFirstClear=prev===null;
+        showWin({
+            title:'💀 Выжил!',badgeCls:'lv3',badgeText:'💀 Хард',
+            base:40,showAcc:true,acc,
+            bonusLabel:`🔥 Хард-бонус${streakBonus>0?` + Серия ×${streakMultiplier()}`:''}`,
+            bonus:hardBonus+streakBonus,
+            recBonus:20,roundXP,
+            stats:`Точность: ${acc}% · Хард пройден!${hintPenalty?` · Подсказка: -${hintPenalty} XP`:''}`,
+            isNew:isFirstClear,
+            recVal:`Пройден!${isFirstClear?'  (первый раз!)':`  (снова!)`}`,
+        });
+        isFirstClear?setTimeout(celebrateRecord,120):celebrateWin();
+        return;
+    }
+
     const cfg=XP_CL[currentPairs]||XP_CL[8];
     const key=`cl-${currentPairs}`;
     const prev=getBest(key);
@@ -829,13 +1624,17 @@ function winClassic(){
     if(isNew) saveRec(key,classicSecs);
     const earned=Math.round(cfg.base*(acc/100));
     const spd=classicSecs<=cfg.sec?cfg.spd:0;
-    const roundXP=earned+spd+(isNew?20:0);
+    const streakBonus=Math.round((earned+spd)*(streakMultiplier()-1));
+    const roundXP=Math.max(0, earned+spd+(isNew?20:0)+streakBonus - hintPenalty);
     const info=levelInfo(currentPairs);
+    const bonusTotal=spd+streakBonus;
     showWin({
         title:'🎉 Отлично!',badgeCls:info.cls,badgeText:info.label,
-        base:cfg.base,showAcc:true,acc,bonusLabel:'⚡ Бонус за скорость',bonus:spd,
+        base:cfg.base,showAcc:true,acc,
+        bonusLabel:`⚡ Скорость${streakBonus>0?` + 🔥 Серия ×${streakMultiplier()}`:''}`,
+        bonus:bonusTotal,
         recBonus:20,roundXP,
-        stats:`Время: ${fmt(classicSecs)} · Точность: ${acc}% · Рекорд: ${fmt(getBest(key))}`,
+        stats:`Время: ${fmt(classicSecs)} · Точность: ${acc}% · Рекорд: ${fmt(getBest(key))}${hintPenalty?` · Подсказка: -${hintPenalty} XP`:''}`,
         isNew,recVal:`${fmt(classicSecs)}${prev!==null?` (было ${fmt(prev)})`:'  (первый рекорд!)'}`,
     });
     isNew?setTimeout(celebrateRecord,120):celebrateWin();
@@ -856,6 +1655,11 @@ function startSprint(rows){
     sprintLeft2=60;sprintStarted=false;sprintScore=0;sprintAttempts=0;
     sprintSelL=null;sprintSelR=null;
     sprintQueue2=shuffle(allData.map((_,i)=>i));sprintQPos=0;
+    resetStreak();
+    // clear leftover shards from previous round
+    shardPieces=[];
+    if(shardRAF){cancelAnimationFrame(shardRAF);shardRAF=null;}
+    shardCtx.clearRect(0,0,shardCanvas.width,shardCanvas.height);
     hideAll();
     document.getElementById('header').classList.add('visible');
     document.getElementById('sprint-area').classList.add('visible');
@@ -864,11 +1668,15 @@ function startSprint(rows){
     document.getElementById('score').innerHTML='<span class="sprint-pill">⚡ <span id="sp-score">0</span> пар</span>';
     const lvLabel=SPRINT_ROWS===3?'⭐ Лёгкий':SPRINT_ROWS===6?'⭐⭐ Средний':'⭐⭐⭐ Сложный';
     document.getElementById('level-label').textContent=`⚡ Спринт · ${lvLabel}`;
+    document.getElementById('sprint-speed').textContent='';
+    initHint('sprint');
     const SL=document.getElementById('sprint-left'),SR=document.getElementById('sprint-right');
     SL.innerHTML='';SR.innerHTML='';sprintSlots=[];
     for(let i=0;i<SPRINT_ROWS;i++){
         const id=nextSprintId();
         const el=makeSpCard(allData[id].w,'left',i*30);
+        el.style.setProperty('--idle-dur', (2.8+Math.random()*.8)+'s');
+        el.style.setProperty('--idle-delay', (Math.random()*1.5)+'s');
         el.addEventListener('click',()=>onSprintL(i));
         SL.appendChild(el);sprintSlots.push({id,el});
     }
@@ -892,6 +1700,7 @@ function rebuildSprintRight(ids){
     SR.innerHTML='';
     shuffle([...ids]).forEach((id,i)=>{
         const el=makeSpCard(allData[id].t,'right',i*30);
+        el._hintId=id;
         el.addEventListener('click',()=>onSprintR(id,el));
         SR.appendChild(el);
     });
@@ -917,36 +1726,65 @@ function checkSprintPair(){
     L.el.classList.remove('selected');R.el.classList.remove('selected');
     sprintSelL=null;sprintSelR=null;sprintAttempts++;
     if(L.id===R.id){
+        // Spawn shards BEFORE adding matched class (card still has original colour)
+        spawnShards(L.el);
+        spawnShards(R.el);
+        sndCrack();
         L.el.classList.add('matched');R.el.classList.add('matched');
         sprintScore++;
         const sv=document.getElementById('sp-score');if(sv)sv.textContent=sprintScore;
         sndMatch();
+        addStreak();
         if(tg) tg.HapticFeedback?.impactOccurred('light');
         spawnXPFloat(R.el,'✨');
+        spawnCardConfetti(R.el);
+        updateSprintSpeedIndicator();
         setTimeout(()=>replaceSprintSlot(L.idx,L.el,R.el),650);
     } else {
         lockBoard=true;L.el.classList.add('wrong');R.el.classList.add('wrong');
         sndMismatch();
+        resetStreak();
         if(tg) tg.HapticFeedback?.notificationOccurred('error');
         setTimeout(()=>{L.el.classList.remove('wrong');R.el.classList.remove('wrong');lockBoard=false;},600);
     }
 }
+
+/* Sprint speed indicator — accelerates message at high score */
+function updateSprintSpeedIndicator(){
+    const el=document.getElementById('sprint-speed');
+    if(!el) return;
+    if(sprintScore>=20){el.style.color='#ef4444';el.textContent='🔥 МЕГАСКОРОСТЬ!';}
+    else if(sprintScore>=14){el.style.color='#f59e0b';el.textContent='⚡ Темп растёт!';}
+    else if(sprintScore>=8){el.style.color='#10b981';el.textContent='✅ Хороший ритм';}
+    else el.textContent='';
+}
+
+function sprintSlideDelay(){
+    if(sprintScore>=20) return 120;
+    if(sprintScore>=14) return 160;
+    if(sprintScore>=8)  return 190;
+    return 220;
+}
 function replaceSprintSlot(idx,oldL,matchedR){
-    matchedR.classList.add('slide-out');setTimeout(()=>matchedR.remove(),220);
+    const delay=sprintSlideDelay();
+    matchedR.classList.add('slide-out');setTimeout(()=>matchedR.remove(),delay);
     oldL.classList.add('slide-out');
     const newId=nextSprintId();
     setTimeout(()=>{
         const newEl=makeSpCard(allData[newId].w,'left');
+        newEl.style.setProperty('--idle-dur', (2.8+Math.random()*.8)+'s');
+        newEl.style.setProperty('--idle-delay', (Math.random()*1.2)+'s');
         newEl.addEventListener('click',()=>onSprintL(idx));
         document.getElementById('sprint-left').replaceChild(newEl,oldL);
         sprintSlots[idx]={id:newId,el:newEl};
         const newR=makeSpCard(allData[newId].t,'right');
+        newR._hintId=newId;
         newR.addEventListener('click',()=>onSprintR(newId,newR));
         const SR=document.getElementById('sprint-right');
         const kids=[...SR.children].filter(c=>!c.classList.contains('slide-out'));
         const before=kids[0|Math.random()*(kids.length+1)];
         if(before)SR.insertBefore(newR,before);else SR.appendChild(newR);
-    },220);
+    },delay);
 }
 function startSprintTimer(){
     sprintStarted=true;lockBoard=false;
@@ -972,13 +1810,16 @@ function endSprint(){
     if(isNew) saveRec(spKey,sprintScore);
     const acc=sprintAttempts>0?Math.round(sprintScore/sprintAttempts*100):0;
     const baseXP=SPRINT_ROWS===3?20:SPRINT_ROWS===6?30:40;
-    const roundXP=baseXP+sprintScore+(isNew?20:0);
+    const streakBonus=Math.round(sprintScore*(streakMultiplier()-1));
+    const roundXP=Math.max(0, baseXP+sprintScore+(isNew?20:0)+streakBonus - hintPenalty);
     const lvLabel=SPRINT_ROWS===3?'⭐ Лёгкий':SPRINT_ROWS===6?'⭐⭐ Средний':'⭐⭐⭐ Сложный';
     showWin({
         title:'⏰ Время вышло!',badgeCls:'sprint',badgeText:`⚡ Спринт · ${lvLabel}`,
-        base:baseXP,showAcc:false,acc,bonusLabel:'⚡ Бонус за пары',bonus:sprintScore,
+        base:baseXP,showAcc:false,acc,
+        bonusLabel:`⚡ Пары${streakBonus>0?` + 🔥 Серия ×${streakMultiplier()}`:''}`,
+        bonus:sprintScore+streakBonus,
         recBonus:20,roundXP,
-        stats:`Угадано: ${sprintScore} пар · Точность: ${acc}% · Рекорд: ${getBest(spKey)} слов`,
+        stats:`Угадано: ${sprintScore} пар · Точность: ${acc}% · Рекорд: ${getBest(spKey)} слов${hintPenalty?` · Подсказка: -${hintPenalty} XP`:''}`,
         isNew,recVal:`${sprintScore} пар${prev!==null?` (было ${prev})`:'  (первый рекорд!)'}`,
     });
     if(isNew){sndRecord();setTimeout(celebrateRecord,120);}else{sndWin();celebrateWin();}
@@ -1099,6 +1940,24 @@ function sndCardFlip() {
     if(!soundEnabled) return;
     sndTone(800, 'sine', 0.07, 0.06, 0.002, 0.4);
 }
+function sndCrack() {
+    // glassy crack: sharp noise burst + high transient
+    if(!soundEnabled) return;
+    try{
+        const ac=sndCtx();
+        const buf=ac.createBuffer(1,ac.sampleRate*.06,ac.sampleRate);
+        const d=buf.getChannelData(0);
+        for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);
+        const src=ac.createBufferSource();
+        const gain=ac.createGain();
+        const filt=ac.createBiquadFilter();
+        filt.type='highpass'; filt.frequency.value=3000;
+        src.buffer=buf; src.connect(filt); filt.connect(gain); gain.connect(ac.destination);
+        gain.gain.setValueAtTime(0.22,ac.currentTime);
+        gain.gain.linearRampToValueAtTime(0,ac.currentTime+.06);
+        src.start(); src.stop(ac.currentTime+.08);
+    }catch(e){}
+}
 function sndSprintTick() {
     if(!soundEnabled) return;
     sndTone(1100, 'square', 0.05, 0.04, 0.001, 0.5);
@@ -1110,9 +1969,12 @@ let blRunning=false, blTimeLeft=BL_SECS, blTicker=null;
 let blScore=0, blWords=0, blShots=0, blCombo=0, blMaxCombo=0;
 let blWordQueue=[], blQPos=0, blCurIdx=0;
 let blBalls=[], blParticles=[], blLaser=null;
-let blCannon={x:0,y:0,angle:0,targetAngle:0,flash:0};
+let blCannon={x:0,y:0,angle:0,targetAngle:0,flash:0,squash:0};
 let blRAF=null, blLastT=0;
 let blPrevTime=BL_SECS;
+let blReverseMode=false; // 🔄 Наоборот: показывается русское, ищем немецкое
+
+let blShieldAvail=true, blShieldActive=false;
 
 /* ── Init / Resize ── */
 function blInit(){
@@ -1129,23 +1991,34 @@ function blResize(){
 }
 
 /* ── Start / Stop ── */
-function startBlaster(){
+function startBlaster(reverse=false){
     currentMode='blaster';
+    blReverseMode=!!reverse;
     if(!blCanvas) blInit();
     blRunning=false;cancelAnimationFrame(blRAF);clearInterval(blTicker);
     blScore=0;blWords=0;blShots=0;blCombo=0;blMaxCombo=0;
     blBalls=[];blParticles=[];blLaser=null;blTimeLeft=BL_SECS;blPrevTime=BL_SECS;
     blWordQueue=shuffle(allData.map((_,i)=>i));blQPos=0;
+    blShieldAvail=true; blShieldActive=false;
+    const shBtn=document.getElementById('bl-shield');
+    shBtn.className=''; shBtn.textContent='🛡️';
+    resetStreak();
     hideAll();
     document.getElementById('blaster-wrap').classList.add('visible');
+    document.getElementById('btn-hint').style.display='none';
+    // mode badge
+    const badge=document.getElementById('bl-mode-badge');
+    badge.style.display = blReverseMode ? 'block' : 'none';
     blResize();
     document.getElementById('bl-score').textContent='0';
     document.getElementById('bl-words').textContent='0';
     document.getElementById('bl-combo').style.display='none';
     blUpdateTimer();blNextWord();
     blRunning=true;
+    blStartAmbient();
     blTicker=setInterval(()=>{
         blTimeLeft--;blUpdateTimer();
+        blUpdateAmbient(blTimeLeft);
         if(blTimeLeft<=10 && blTimeLeft!==blPrevTime) blSndTick();
         blPrevTime=blTimeLeft;
         if(blTimeLeft<=0) blEnd();
@@ -1155,8 +2028,43 @@ function startBlaster(){
 }
 function blStop(){
     blRunning=false;cancelAnimationFrame(blRAF);clearInterval(blTicker);
+    blStopAmbient();
     document.getElementById('blaster-wrap').classList.remove('visible');
 }
+
+/* ── Blaster Ambient Sound ── */
+let _blAmbientOsc=null, _blAmbientGain=null;
+function blStartAmbient(){
+    if(!soundEnabled) return;
+    try{
+        const ac=sndCtx();
+        _blAmbientOsc=ac.createOscillator();
+        _blAmbientGain=ac.createGain();
+        _blAmbientOsc.connect(_blAmbientGain);
+        _blAmbientGain.connect(ac.destination);
+        _blAmbientOsc.type='sine';
+        _blAmbientOsc.frequency.setValueAtTime(60,ac.currentTime);
+        _blAmbientGain.gain.setValueAtTime(0,ac.currentTime);
+        _blAmbientGain.gain.linearRampToValueAtTime(0.04,ac.currentTime+1.5);
+        _blAmbientOsc.start();
+    }catch(e){}
+}
+function blUpdateAmbient(timeLeft){
+    if(!_blAmbientOsc||!_blAmbientGain||!soundEnabled) return;
+    try{
+        const ac=sndCtx();
+        // Increase pitch and volume as time runs out
+        const urgency=(BL_SECS-timeLeft)/BL_SECS;
+        _blAmbientOsc.frequency.setValueAtTime(60+urgency*80,ac.currentTime);
+        const vol=timeLeft<=10?0.07:timeLeft<=20?0.055:0.04;
+        _blAmbientGain.gain.setValueAtTime(vol,ac.currentTime);
+    }catch(e){}
+}
+function blStopAmbient(){
+    if(_blAmbientOsc){ try{_blAmbientOsc.stop();}catch(e){} _blAmbientOsc=null; }
+    _blAmbientGain=null;
+}
+
 function blasterStop(){blStop();}
 
 /* ── Word queue ── */
@@ -1166,7 +2074,10 @@ function blNextWordId(){
 }
 function blNextWord(){
     blCurIdx=blNextWordId();
-    document.getElementById('bl-word').textContent=allData[blCurIdx].w;
+    // reverse: show Russian (.t), find German (.w) in bubbles
+    // normal:  show German (.w), find Russian (.t) in bubbles
+    const displayWord = blReverseMode ? allData[blCurIdx].t : allData[blCurIdx].w;
+    document.getElementById('bl-word').textContent = displayWord;
     blSpawnBalls();
 }
 
@@ -1177,7 +2088,11 @@ function blBallSpeed(){ return 1+(BL_SECS-blTimeLeft)*0.016; }
 
 function blSpawnBalls(){
     const n=blBallCount(), sm=blBallSpeed();
-    const wrong=shuffle(allData.filter((_,i)=>i!==blCurIdx).map(d=>d.t)).slice(0,n-1);
+    // reverse: correct answer is German (.w), wrong answers are other German words
+    // normal:  correct answer is Russian (.t), wrong answers are other Russian words
+    const correctText = blReverseMode ? allData[blCurIdx].w : allData[blCurIdx].t;
+    const wrongPool   = allData.filter((_,i)=>i!==blCurIdx).map(d => blReverseMode ? d.w : d.t);
+    const wrong       = shuffle(wrongPool).slice(0, n-1);
     const cols=shuffle([...BL_COLORS]).slice(0,n);
     const cpos=0|Math.random()*n;
     blBalls=[]; let wi=0;
@@ -1204,15 +2119,16 @@ function blSpawnBalls(){
 
     for(let i=0;i<n;i++){
         const isCor=i===cpos;
-        const txt=isCor?allData[blCurIdx].t:wrong[wi++];
+        const txt=isCor ? correctText : wrong[wi++];
         const {x:bx,y:by}=positions[i];
+        const depth=0.7+Math.random()*0.6; // 0.7 = far/small, 1.3 = close/big
         blBalls.push({
-            id:i,text:txt,correct:isCor,col:cols[i],r:BL_R,
+            id:i,text:txt,correct:isCor,col:cols[i],r:BL_R*Math.min(1,depth*.85+.15),
             x:bx,y:by,vx:(Math.random()-.5)*1.2,vy:(Math.random()-.5)*1.2,
             ax:32+Math.random()*40,ay:20+Math.random()*28,
             fx:0.35+Math.random()*0.5,fy:0.3+Math.random()*0.45,
             px:Math.random()*Math.PI*2,py:Math.random()*Math.PI*2,
-            t:0,sm,opacity:0,pulse:0,shakeX:0,
+            t:0,sm:sm*(.7+depth*.3),opacity:0,pulse:0,shakeX:0,depth,
         });
     }
 }
@@ -1309,9 +2225,13 @@ function blDrawBubble(ctx, x, y, r, col, text) {
 }
 
 function blDrawBalls(){
-    for(const b of blBalls){
+    // Sort by depth: far bubbles drawn first (painter's algorithm)
+    const sorted=[...blBalls].sort((a,b)=>(a.depth||1)-(b.depth||1));
+    for(const b of sorted){
         blCtx.save(); blCtx.globalAlpha=b.opacity;
         const r=b.r*(1+b.pulse);
+        // depth-based opacity: farther = slightly more transparent
+        blCtx.globalAlpha=b.opacity*Math.min(1,(b.depth||1)*.55+.55);
         blDrawBubble(blCtx, b.x+b.shakeX, b.y, r, b.col, b.text);
         blCtx.restore();
     }
@@ -1341,6 +2261,12 @@ function blDrawCannon(){
     // cannon body rides on the rail
     blCtx.save(); blCtx.rotate(blCannon.angle);
     blCtx.translate(0,-arcR); // move to rail position
+
+    // squash & stretch: on fire compress X and stretch Y, then spring back
+    const sq=blCannon.squash||0;
+    const scaleX=1-sq*0.3, scaleY=1+sq*0.4;
+    blCtx.scale(scaleX, scaleY);
+    blCannon.squash=Math.max(0,(sq-0.12));
 
     // base disk
     const diskG=blCtx.createRadialGradient(0,0,2,0,0,16);
@@ -1394,6 +2320,7 @@ function blDrawCannon(){
 function blFireLaser(tx,ty,col){
     blLaser={x1:blCannon.x,y1:blCannon.y,x2:tx,y2:ty,col,life:1};
     blCannon.flash=1;
+    blCannon.squash=1; // trigger squash & stretch
     blSndLaser();
 }
 function blDrawLaser(){
@@ -1547,6 +2474,20 @@ function blOnHit(ball,correct){
         blBalls=[];
         setTimeout(blNextWord,380);
     } else {
+        // SHIELD absorbs the wrong hit
+        if(blShieldActive){
+            blShieldActive=false;
+            const shBtn=document.getElementById('bl-shield');
+            shBtn.className='shield-used'; shBtn.textContent='🛡️';
+            // shield flash
+            const sf=document.getElementById('bl-shield-flash');
+            sf.style.opacity=1; setTimeout(()=>sf.style.opacity=0,180);
+            blFloatText(ball.x,ball.y-ball.r,'🛡️ БЛОК!','#00e5ff');
+            if(tg) tg.HapticFeedback?.impactOccurred('light');
+            const startX=ball.shakeX||0;
+            [5,-5,3,-2,0].forEach((dx2,i)=>setTimeout(()=>{ball.shakeX=startX+dx2;},i*38));
+            return;
+        }
         blCombo=0; blScore=Math.max(0,blScore-5);
         document.getElementById('bl-score').textContent=blScore;
         blUpdateCombo();
@@ -1554,7 +2495,6 @@ function blOnHit(ball,correct){
         blFlash();
         blSndWrong();
         if(tg) tg.HapticFeedback?.notificationOccurred('error');
-        // shake the wrong bubble
         const startX=ball.shakeX||0;
         [8,-8,6,-6,4,-2,0].forEach((dx2,i)=>setTimeout(()=>{ball.shakeX=startX+dx2;},i*38));
     }
@@ -1618,19 +2558,22 @@ function blEnd(){
     const snap=[...blBalls]; blBalls=[];
     blBurstAll(snap,()=>{
         blStop();
-        const prev=getBest('blaster');
+        const recKey = blReverseMode ? 'blaster-rev' : 'blaster';
+        const prev=getBest(recKey);
         const isNew=prev===null||blWords>prev;
-        if(isNew) saveRec('blaster',blWords);
+        if(isNew) saveRec(recKey,blWords);
         const acc=blShots>0?Math.round(blWords/blShots*100):0;
         const comboXP=Math.max(0,(blMaxCombo-1))*5;
         const roundXP=blScore+comboXP+(isNew?20:0);
+        const modeLabel = blReverseMode ? '🔄 Наоборот' : '🫧 Бластер';
+        const badgeCls  = blReverseMode ? 'blstr-rev'   : 'blstr';
         showWin({
-            title:'\u23F0 \u0412\u0440\u0435\u043c\u044f!',badgeCls:'blstr',badgeText:'\uD83E\uDDE7 \u0411\u043b\u0430\u0441\u0442\u0435\u0440',
+            title:'⏰ Время!', badgeCls, badgeText:modeLabel,
             base:blScore,showAcc:false,acc,
-            bonusLabel:'\uD83D\uDD25 \u041A\u043E\u043C\u0431\u043E-\u0431\u043E\u043D\u0443\u0441',bonus:comboXP,
+            bonusLabel:'🔥 Комбо-бонус',bonus:comboXP,
             recBonus:20,roundXP,
-            stats:`\u0421\u043B\u043E\u0432: ${blWords} \u00B7 \u0422\u043E\u0447\u043D\u043E\u0441\u0442\u044C: ${acc}% \u00B7 \u041C\u0430\u043A\u0441. \u043A\u043E\u043C\u0431\u043E: ${blMaxCombo}\u00D7 \u00B7 \u0420\u0435\u043A\u043E\u0440\u0434: ${getBest('blaster')} \u0441\u043B\u043E\u0432`,
-            isNew,recVal:`${blWords} \u0441\u043B\u043E\u0432${prev!==null?` (\u0431\u044B\u043B\u043E ${prev})`:'  (\u043F\u0435\u0440\u0432\u044B\u0439 \u0440\u0435\u043A\u043E\u0440\u0434!)'}`,
+            stats:`Слов: ${blWords} · Точность: ${acc}% · Макс. комбо: ${blMaxCombo}× · Рекорд: ${getBest(recKey)} слов`,
+            isNew,recVal:`${blWords} слов${prev!==null?` (было ${prev})`:'  (первый рекорд!)'}`,
         });
         if(isNew){sndRecord();setTimeout(celebrateRecord,120);}else{sndWin();celebrateWin();}
     });
@@ -1674,11 +2617,407 @@ document.getElementById('btn-collect').addEventListener('click',collectAndSend);
 document.getElementById('btn-collect-start').addEventListener('click',collectAndSend);
 
 document.getElementById('btn-restart').addEventListener('click',()=>{
-    if(currentMode==='classic') startClassic(currentPairs);
+    if(currentMode==='classic') startClassic(currentPairs, classicHardMode);
     else if(currentMode==='sprint') startSprint(SPRINT_ROWS);
-    else startBlaster();
+    else if(currentMode==='anagram') startAnagram();
+    else startBlaster(blReverseMode);
 });
 document.getElementById('btn-menu').addEventListener('click',goToMenu);
+
+// Lose screen buttons
+document.getElementById('btn-lose-retry').addEventListener('click',()=>startClassic(currentPairs,true));
+document.getElementById('btn-lose-menu').addEventListener('click',goToMenu);
+
+// Blaster shield toggle
+document.getElementById('bl-shield').addEventListener('click',()=>{
+    if(!blShieldAvail||blShieldActive) return;
+    blShieldActive=true;
+    const btn=document.getElementById('bl-shield');
+    btn.className='shield-active';
+    // auto-deactivate after 8 sec if not triggered
+    setTimeout(()=>{
+        if(blShieldActive){
+            blShieldActive=false; blShieldAvail=false;
+            btn.className='shield-used';
+        }
+    },8000);
+});
+
+// Anagram sound button mirrors main toggle
+document.getElementById('btn-sound-ag').addEventListener('click',toggleSound);
+
+/* ════════════════════════════════════════════
+   ANAGRAM ENGINE
+════════════════════════════════════════════ */
+const AG_WORDS   = 5;      // words per round
+const AG_SECS    = 60;     // time limit (safety net)
+const AG_BUBBLE_COLORS = [
+    {fill:'rgba(192,132,252,0.82)',stroke:'#9333ea',glow:'#c084fc'},
+    {fill:'rgba(96,165,250,0.82)', stroke:'#2563eb',glow:'#60a5fa'},
+    {fill:'rgba(248,113,113,0.82)',stroke:'#dc2626',glow:'#f87171'},
+    {fill:'rgba(52,211,153,0.82)', stroke:'#059669',glow:'#34d399'},
+    {fill:'rgba(251,191,36,0.82)', stroke:'#d97706',glow:'#fbbf24'},
+    {fill:'rgba(244,114,182,0.82)',stroke:'#be185d',glow:'#f472b6'},
+];
+
+let agCanvas, agCtx, agW, agH;
+let agRunning=false, agTimeLeft=AG_SECS, agTicker=null, agRAF=null, agLastT=0;
+let agBubbles=[], agParticles=[];
+let agWordQueue=[], agQPos=0;
+let agCurrentWord='', agCurrentTrans='', agLetters=[], agAnswer=[];
+let agWordsDone=0, agWordsCorrect=0, agScore=0, agHintUsed=false, agHintPenalty=0;
+let agStarted=false;
+
+class AgBubble {
+    constructor(letter, idx, cx, cy){
+        this.letter = letter;
+        this.idx    = idx;
+        this.x = cx + (Math.random()-.5)*agW*.7;
+        this.y = cy + (Math.random()-.5)*agH*.35;
+        this.vx = (Math.random()-.5)*1.1;
+        this.vy = (Math.random()-.5)*.8;
+        this.r  = 24 + Math.random()*10;
+        const ci=idx % AG_BUBBLE_COLORS.length;
+        this.col=AG_BUBBLE_COLORS[ci];
+        this.depth = .7 + Math.random()*.6;
+        this.phase = Math.random()*Math.PI*2;
+        this.alive=true;
+        this.popping=false;
+        this.popScale=1; this.popAlpha=1;
+        // clicked: fly to slot
+        this.flying=false;
+        this.tx=0; this.ty=0;
+        this.slotIdx=-1;
+    }
+    update(dt){
+        if(this.popping){
+            this.popScale+=0.12; this.popAlpha-=0.12;
+            if(this.popAlpha<=0) this.alive=false;
+            return;
+        }
+        if(this.flying){
+            const dx=this.tx-this.x, dy=this.ty-this.y;
+            const dist=Math.sqrt(dx*dx+dy*dy);
+            if(dist<4){ this.x=this.tx; this.y=this.ty; this.flying=false; return; }
+            this.x += dx*.18; this.y += dy*.18;
+            return;
+        }
+        this.phase += .016*this.depth;
+        this.x += this.vx * this.depth;
+        this.y += this.vy * this.depth + Math.sin(this.phase)*.25*this.depth;
+        this.vx *= .995; this.vy *= .995;
+        const pad=this.r+10;
+        if(this.x<pad){this.x=pad;this.vx=Math.abs(this.vx);}
+        if(this.x>agW-pad){this.x=agW-pad;this.vx=-Math.abs(this.vx);}
+        if(this.y<pad+170){this.y=pad+170;this.vy=Math.abs(this.vy);}
+        if(this.y>agH-170){this.y=agH-170;this.vy=-Math.abs(this.vy);}
+    }
+    draw(ctx){
+        if(!this.alive) return;
+        ctx.save();
+        ctx.globalAlpha = this.popping ? Math.max(0,this.popAlpha) : 0.92;
+        ctx.translate(this.x,this.y);
+        ctx.scale(this.popping?this.popScale:1, this.popping?this.popScale:1);
+        // glow
+        const gr=ctx.createRadialGradient(0,0,0,0,0,this.r*1.3);
+        gr.addColorStop(0,this.col.glow+'44'); gr.addColorStop(1,'transparent');
+        ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(0,0,this.r*1.5,0,Math.PI*2); ctx.fill();
+        // body
+        const bg=ctx.createRadialGradient(-this.r*.3,-this.r*.3,0,0,0,this.r);
+        bg.addColorStop(0,'rgba(255,255,255,.55)'); bg.addColorStop(1,this.col.fill);
+        ctx.beginPath(); ctx.arc(0,0,this.r,0,Math.PI*2);
+        ctx.fillStyle=bg; ctx.fill();
+        ctx.strokeStyle=this.col.stroke; ctx.lineWidth=1.8; ctx.stroke();
+        // letter
+        ctx.fillStyle='#fff';
+        ctx.font=`bold ${Math.round(this.r*.85)}px 'Exo 2',sans-serif`;
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.shadowColor=this.col.stroke; ctx.shadowBlur=6;
+        ctx.fillText(this.letter,0,1);
+        ctx.restore();
+    }
+    containsPoint(px,py){
+        const dx=px-this.x, dy=py-this.y;
+        return dx*dx+dy*dy <= this.r*this.r;
+    }
+    pop(){this.popping=true;}
+}
+
+class AgFloat {
+    constructor(x,y,txt,col){
+        this.x=x;this.y=y;this.txt=txt;this.col=col;
+        this.life=1;this.vy=-1.4;
+    }
+    update(){ this.y+=this.vy; this.life-=.025; }
+    draw(ctx){
+        ctx.save(); ctx.globalAlpha=Math.max(0,this.life);
+        ctx.fillStyle=this.col;
+        ctx.font='bold 1.1rem "Exo 2",sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.shadowColor=this.col; ctx.shadowBlur=8;
+        ctx.fillText(this.txt,this.x,this.y); ctx.restore();
+    }
+}
+
+function agInit(){
+    agCanvas=document.getElementById('ag-canvas');
+    agCtx=agCanvas.getContext('2d');
+    agResize();
+    window.addEventListener('resize',agResize);
+    agCanvas.addEventListener('pointerdown',agOnTap);
+}
+function agResize(){
+    if(!agCanvas) return;
+    agW=agCanvas.width=window.innerWidth;
+    agH=agCanvas.height=window.innerHeight;
+}
+
+function startAnagram(){
+    currentMode='anagram';
+    if(!agCanvas) agInit();
+    clearInterval(agTicker); cancelAnimationFrame(agRAF);
+    agBubbles=[]; agParticles=[];
+    agWordQueue=shuffle(allData.map((_,i)=>i)); agQPos=0;
+    agWordsDone=0; agWordsCorrect=0; agScore=0;
+    agStarted=false; agTimeLeft=AG_SECS;
+    resetStreak();
+    hideAll();
+    document.getElementById('anagram-wrap').classList.add('visible');
+    document.getElementById('btn-hint').style.display='none';
+    document.getElementById('ag-score').textContent='0';
+    document.getElementById('ag-words').textContent=`0/${AG_WORDS}`;
+    document.getElementById('ag-time-txt').textContent=AG_SECS;
+    document.getElementById('ag-arc').style.strokeDashoffset='0';
+    document.getElementById('ag-combo').style.display='none';
+    agResize();
+    agLoadWord();
+    agRAF=requestAnimationFrame(agLoop);
+    // start on first tap
+    agCanvas.addEventListener('pointerdown', agStartTimer, {once:true});
+    document.getElementById('ag-btn-skip').onclick  = agSkip;
+    document.getElementById('ag-btn-hint').onclick  = agHint;
+    document.getElementById('ag-btn-back').onclick  = agBack;
+    document.getElementById('ag-btn-hint').className='ag-ctrl-btn';
+}
+
+function agLoadWord(){
+    if(agWordsDone>=AG_WORDS){ agEnd(); return; }
+    if(agQPos>=agWordQueue.length){ agWordQueue=shuffle(allData.map((_,i)=>i)); agQPos=0; }
+    const idx=agWordQueue[agQPos++];
+    agCurrentWord = allData[idx].w;
+    agCurrentTrans= allData[idx].t;
+    agHintUsed=false; agHintPenalty=0;
+    document.getElementById('ag-btn-hint').className='ag-ctrl-btn';
+    document.getElementById('ag-trans-word').textContent=agCurrentTrans;
+
+    // shuffle letters
+    agLetters = shuffle([...agCurrentWord.toUpperCase()]);
+    agAnswer  = [];
+    agBubbles = [];
+    agParticles=[];
+
+    // spawn bubbles spread in the play area
+    const cx=agW/2, cy=agH*.45;
+    agLetters.forEach((ch,i)=>{
+        agBubbles.push(new AgBubble(ch,i,cx,cy));
+    });
+    agBuildSlots();
+    document.getElementById('ag-words').textContent=`${agWordsDone}/${AG_WORDS}`;
+}
+
+function agBuildSlots(){
+    const row=document.getElementById('ag-answer-row');
+    row.innerHTML='';
+    const word=agCurrentWord.toUpperCase();
+    for(let i=0;i<word.length;i++){
+        const sl=document.createElement('div');
+        sl.className='ag-slot';
+        sl.dataset.idx=i;
+        row.appendChild(sl);
+    }
+}
+
+function agUpdateBackBtn(){
+    const btn=document.getElementById('ag-btn-back');
+    if(btn) btn.disabled=agAnswer.length===0;
+}
+
+function agBack(){
+    if(agAnswer.length===0) return;
+    const last=agAnswer.pop();
+    // clear that slot
+    const slot=document.querySelector(`.ag-slot[data-idx="${last.slotIdx}"]`);
+    if(slot){ slot.textContent=''; slot.className='ag-slot'; }
+    // respawn bubble at centre
+    const cx=agW/2, cy=agH*.45;
+    const b=new AgBubble(last.letter, last.bubbleIdx, cx, cy);
+    b.x=cx+(Math.random()-.5)*agW*.4;
+    b.y=cy+(Math.random()-.5)*agH*.2;
+    agBubbles.push(b);
+    agUpdateBackBtn();
+}
+
+function agFillSlot(letterCh, bubbleRef){
+    const slots=[...document.querySelectorAll('.ag-slot')];
+    const nextEmpty=slots.find(s=>!s.classList.contains('filled'));
+    if(!nextEmpty) return false;
+    const slotIdx=parseInt(nextEmpty.dataset.idx);
+    // fly bubble to slot position
+    const rect=nextEmpty.getBoundingClientRect();
+    bubbleRef.flying=true;
+    bubbleRef.tx=rect.left+rect.width/2;
+    bubbleRef.ty=rect.top+rect.height/2;
+    bubbleRef.slotIdx=slotIdx;
+    // show letter in slot
+    nextEmpty.textContent=letterCh;
+    nextEmpty.classList.add('filled');
+    agAnswer.push({letter:letterCh, slotIdx, bubbleIdx:bubbleRef.idx});
+    agUpdateBackBtn();
+    // check after brief delay for fly animation
+    setTimeout(()=>{
+        bubbleRef.pop();
+        agCheckAnswer();
+    },240);
+    return true;
+}
+
+function agCheckAnswer(){
+    const slots=[...document.querySelectorAll('.ag-slot')];
+    const filled=slots.filter(s=>s.classList.contains('filled'));
+    if(filled.length<agCurrentWord.length) return; // not complete yet
+    const assembled=filled.map(s=>s.textContent).join('');
+    const target=agCurrentWord.toUpperCase();
+    if(assembled===target){
+        // CORRECT
+        slots.forEach(s=>s.classList.add('correct'));
+        agWordsCorrect++; agWordsDone++;
+        const base=10; const timeBonus=agStarted?Math.max(0,Math.round((agTimeLeft/AG_SECS)*5)):0;
+        const streakBonus2=Math.round((base+timeBonus)*(streakMultiplier()-1));
+        const gained=base+timeBonus+streakBonus2-agHintPenalty;
+        agScore+=Math.max(0,gained);
+        addStreak();
+        document.getElementById('ag-score').textContent=agScore;
+        agFloatText(agW/2,agH*.55,`+${Math.max(0,gained)} XP`,'#c084fc');
+        sndMatch(); if(tg) tg.HapticFeedback?.impactOccurred('medium');
+        if(agStarted) agStartTimer(); // keep timer running
+        setTimeout(agLoadWord, 700);
+    } else {
+        // WRONG — flash red, clear answer
+        slots.forEach(s=>{ if(s.classList.contains('filled')) s.classList.add('wrong-flash'); });
+        sndMismatch(); if(tg) tg.HapticFeedback?.notificationOccurred('error');
+        resetStreak();
+        setTimeout(()=>{
+            agClearAnswer();
+        },350);
+    }
+}
+
+function agClearAnswer(){
+    const slots=[...document.querySelectorAll('.ag-slot')];
+    slots.forEach(s=>{ s.className='ag-slot'; s.textContent=''; });
+    agAnswer=[];
+    // revive all bubbles
+    agBubbles=[];
+    const cx=agW/2, cy=agH*.45;
+    agLetters.forEach((ch,i)=>{
+        const b=new AgBubble(ch,i,cx,cy);
+        b.x+=  (Math.random()-.5)*agW*.5;
+        b.y+=  (Math.random()-.5)*agH*.25;
+        agBubbles.push(b);
+    });
+}
+
+function agSkip(){
+    agWordsDone++;
+    resetStreak();
+    agBubbles=[]; agParticles=[];
+    agFloatText(agW/2,agH*.5,'⏭ Пропущено','#f87171');
+    setTimeout(agLoadWord,300);
+}
+
+function agHint(){
+    if(agHintUsed) return;
+    agHintUsed=true; agHintPenalty=5;
+    document.getElementById('ag-btn-hint').classList.add('used');
+    // find next empty slot index
+    const slots=[...document.querySelectorAll('.ag-slot')];
+    const nextEmpty=slots.find(s=>!s.classList.contains('filled'));
+    if(!nextEmpty) return;
+    const slotIdx=parseInt(nextEmpty.dataset.idx);
+    const correctLetter=agCurrentWord.toUpperCase()[slotIdx];
+    // find a bubble with that letter that hasn't been used
+    const usedLetters=agAnswer.map(a=>a.letter);
+    const bubble=agBubbles.find(b=>b.alive&&!b.flying&&!b.popping&&b.letter===correctLetter);
+    if(bubble) agFillSlot(correctLetter,bubble);
+    agFloatText(agW/2,agH*.35,'💡 Подсказка −5 XP','#fcd34d');
+}
+
+function agOnTap(e){
+    if(!agRunning&&!agStarted) return;
+    const rect=agCanvas.getBoundingClientRect();
+    const px=(e.clientX-rect.left), py=(e.clientY-rect.top);
+    for(const b of agBubbles){
+        if(!b.alive||b.flying||b.popping) continue;
+        if(b.containsPoint(px,py)){
+            agFillSlot(b.letter,b);
+            sndCardFlip();
+            break;
+        }
+    }
+}
+
+function agStartTimer(){
+    if(agStarted) return;
+    agStarted=true; agRunning=true;
+    agTicker=setInterval(()=>{
+        agTimeLeft--;
+        document.getElementById('ag-time-txt').textContent=agTimeLeft;
+        const pct=agTimeLeft/AG_SECS;
+        document.getElementById('ag-arc').style.strokeDashoffset=`${125.6*(1-pct)}`;
+        if(agTimeLeft<=10) sndSprintTick();
+        if(agTimeLeft<=0){ clearInterval(agTicker); agEnd(); }
+    },1000);
+}
+
+function agFloatText(x,y,txt,col){ agParticles.push(new AgFloat(x,y,txt,col)); }
+
+function agLoop(ts){
+    const dt=ts-agLastT; agLastT=ts;
+    agCtx.clearRect(0,0,agW,agH);
+    agBubbles=agBubbles.filter(b=>b.alive);
+    agBubbles.forEach(b=>{ b.update(dt); b.draw(agCtx); });
+    agParticles=agParticles.filter(p=>p.life>0);
+    agParticles.forEach(p=>{ p.update(); p.draw(agCtx); });
+    agRAF=requestAnimationFrame(agLoop);
+}
+
+function agEnd(){
+    agRunning=false; clearInterval(agTicker); cancelAnimationFrame(agRAF);
+    document.getElementById('anagram-wrap').classList.remove('visible');
+    sndWin();
+    const prev=getBest('anagram');
+    const isNew=prev===null||agWordsCorrect>prev;
+    if(isNew) saveRec('anagram',agWordsCorrect);
+    const baseXP=agWordsCorrect*10;
+    const streakBonus3=Math.round(baseXP*(streakMultiplier()-1));
+    const roundXP=Math.max(0,baseXP+streakBonus3+(isNew?20:0));
+    showWin({
+        title: agWordsCorrect===AG_WORDS ? '🏆 Идеально!' : agWordsCorrect>=3 ? '🎉 Отлично!' : '💪 Неплохо!',
+        badgeCls:'lv3', badgeText:'🔤 Анаграмма',
+        base:baseXP, showAcc:false,
+        bonusLabel:`🔥 Серия${streakBonus3>0?` ×${streakMultiplier()}`:''}`,
+        bonus:streakBonus3,
+        recBonus:20, roundXP,
+        stats:`Собрано: ${agWordsCorrect} из ${AG_WORDS} слов · Рекорд: ${prev!==null?prev+' слов':'нет'}`,
+        isNew,
+        recVal:`${agWordsCorrect} слов`,
+    });
+    isNew?setTimeout(celebrateRecord,120):celebrateWin();
+    updateRecordLabels();
+}
+
+// Also update goToMenu to stop anagram
+
 </script>
 </body>
 </html>
