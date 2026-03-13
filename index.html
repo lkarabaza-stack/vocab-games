@@ -511,6 +511,17 @@ body{
     position:absolute;left:0;top:50%;transform:translateY(-50%);
     width:calc(100% + 80px);height:58px;pointer-events:none;z-index:5;
 }
+#sprint-timer-bar{
+    display:none;width:calc(100% - 16px);max-width:440px;
+    height:7px;background:rgba(255,255,255,.08);border-radius:4px;
+    margin:2px 8px 8px;overflow:hidden;
+}
+#sprint-timer-bar.visible{display:block;}
+#sprint-timer-fill{
+    height:100%;width:100%;border-radius:4px;
+    background:linear-gradient(90deg,#6366f1,#38bdf8,#22d3ee);
+    transition:width 1s linear;
+}
 
 /* ═══════════════════════════════════════
    LOSE SCREEN (hard mode)
@@ -991,6 +1002,7 @@ body{
     <div id="level-label"></div>
     <div id="score">Пары: 0 / —</div>
 </div>
+<div id="sprint-timer-bar"><div id="sprint-timer-fill"></div></div>
 <!-- Hard mode countdown bar -->
 <div id="hard-timer-bar">
     <canvas id="hard-spark-canvas"></canvas>
@@ -1555,6 +1567,7 @@ function hideAll() {
     document.getElementById('lose-screen').style.display='none';
     document.getElementById('header').classList.remove('visible');
     document.getElementById('hard-timer-bar').classList.remove('visible');
+    document.getElementById('sprint-timer-bar').classList.remove('visible');
     document.getElementById('grid').className='grid';
     document.getElementById('sprint-area').classList.remove('visible');
     document.getElementById('sprint-left').innerHTML='';
@@ -2031,6 +2044,9 @@ function startSprint(rows){
     hideAll();
     document.getElementById('header').classList.add('visible');
     document.getElementById('sprint-area').classList.add('visible');
+    const _spFill=document.getElementById('sprint-timer-fill');
+    _spFill.style.transition='none'; _spFill.style.width='100%';
+    document.getElementById('sprint-timer-bar').classList.add('visible');
     document.getElementById('timer').textContent='⏱ 1:00';
     document.getElementById('timer').className='';
     document.getElementById('score').innerHTML='<span class="sprint-pill">⚡ <span id="sp-score">0</span> пар</span>';
@@ -2156,6 +2172,11 @@ function replaceSprintSlot(idx,oldL,matchedR){
 }
 function startSprintTimer(){
     sprintStarted=true;lockBoard=false;
+    requestAnimationFrame(()=>{
+        const f=document.getElementById('sprint-timer-fill');
+        f.style.transition='width 60s linear';
+        f.style.width='0%';
+    });
     sprintTimer=setInterval(()=>{
         sprintLeft2--;
         const m=0|sprintLeft2/60,s=String(sprintLeft2%60).padStart(2,'0');
@@ -2169,6 +2190,7 @@ function startSprintTimer(){
 }
 function endSprint(){
     clearInterval(sprintTimer);
+    document.getElementById('sprint-timer-bar').classList.remove('visible');
     sndWin();
     document.getElementById('header').classList.remove('visible');
     document.getElementById('sprint-area').classList.remove('visible');
@@ -3415,8 +3437,8 @@ function agLoadWord(){
     document.getElementById('ag-btn-hint').className='ag-ctrl-btn';
     document.getElementById('ag-trans-word').textContent=agCurrentTrans;
 
-    // shuffle letters
-    agLetters = shuffle([...agCurrentWord.toUpperCase()]);
+    // split word into shuffled 2-3 letter chunks
+    agLetters = agMakeChunks(agCurrentWord.toUpperCase());
     agAnswer  = [];
     agBubbles = [];
     agParticles=[];
@@ -3430,16 +3452,36 @@ function agLoadWord(){
     document.getElementById('ag-words').textContent=`${agWordsDone}/${AG_WORDS}`;
 }
 
+/* split word into ordered chunks (deterministic, used for slots) */
+function agOrderedChunks(word){
+    const chunks=[];
+    let i=0;
+    while(i<word.length){
+        const rem=word.length-i;
+        let size = rem<=1?1 : rem<=2?2 : rem===3?3 : (i%2===0?3:2);
+        if(i+size>word.length) size=word.length-i;
+        chunks.push(word.slice(i,i+size));
+        i+=size;
+    }
+    return chunks;
+}
+
+/* split word into shuffled chunks (used for bubbles) */
+function agMakeChunks(word){
+    return shuffle(agOrderedChunks(word));
+}
+
 function agBuildSlots(){
     const row=document.getElementById('ag-answer-row');
     row.innerHTML='';
-    const word=agCurrentWord.toUpperCase();
-    for(let i=0;i<word.length;i++){
+    const chunks=agOrderedChunks(agCurrentWord.toUpperCase());
+    chunks.forEach((ch,i)=>{
         const sl=document.createElement('div');
         sl.className='ag-slot';
         sl.dataset.idx=i;
+        sl.dataset.chunk=ch;
         row.appendChild(sl);
-    }
+    });
 }
 
 function agUpdateBackBtn(){
@@ -3489,7 +3531,7 @@ function agFillSlot(letterCh, bubbleRef){
 function agCheckAnswer(){
     const slots=[...document.querySelectorAll('.ag-slot')];
     const filled=slots.filter(s=>s.classList.contains('filled'));
-    if(filled.length<agCurrentWord.length) return; // not complete yet
+    if(filled.length<slots.length) return;
     const assembled=filled.map(s=>s.textContent).join('');
     const target=agCurrentWord.toUpperCase();
     if(assembled===target){
@@ -3544,16 +3586,12 @@ function agHint(){
     if(agHintUsed) return;
     agHintUsed=true; agHintPenalty=5;
     document.getElementById('ag-btn-hint').classList.add('used');
-    // find next empty slot index
     const slots=[...document.querySelectorAll('.ag-slot')];
     const nextEmpty=slots.find(s=>!s.classList.contains('filled'));
     if(!nextEmpty) return;
-    const slotIdx=parseInt(nextEmpty.dataset.idx);
-    const correctLetter=agCurrentWord.toUpperCase()[slotIdx];
-    // find a bubble with that letter that hasn't been used
-    const usedLetters=agAnswer.map(a=>a.letter);
-    const bubble=agBubbles.find(b=>b.alive&&!b.flying&&!b.popping&&b.letter===correctLetter);
-    if(bubble) agFillSlot(correctLetter,bubble);
+    const correctChunk=nextEmpty.dataset.chunk;
+    const bubble=agBubbles.find(b=>b.alive&&!b.flying&&!b.popping&&b.letter===correctChunk);
+    if(bubble) agFillSlot(correctChunk, bubble);
     agFloatText(agW/2,agH*.35,'💡 Подсказка −5 XP','#fcd34d');
 }
 
@@ -3659,34 +3697,77 @@ let aqCurrent=null;
 let aqQuestionNum=0, aqScore=0, aqStreak=0, aqBestStreak=0;
 let aqAnswered=false;
 let aqVoice=null;
+let aqCurrentAudio=null;
 
-/* ── find German TTS voice ── */
 function aqGetVoice(){
     if(aqVoice) return aqVoice;
     try {
         const voices=speechSynthesis.getVoices();
-        aqVoice = voices.find(v=>v.lang==='de-DE')
-               || voices.find(v=>v.lang.startsWith('de'))
-               || null;
+        aqVoice=voices.find(v=>v.lang==='de-DE')||voices.find(v=>v.lang.startsWith('de'))||null;
     } catch(e){ aqVoice=null; }
     return aqVoice;
 }
 
-function aqSpeak(word, onEnd){
+/* ── Google TTS (primary) ── */
+function aqSpeakGoogle(word, cb){
     try {
-        if(!window.speechSynthesis){ onEnd&&onEnd(false); return; }
-        speechSynthesis.cancel();
-        const utt=new SpeechSynthesisUtterance(word);
-        const voice=aqGetVoice();
-        if(!voice){ onEnd&&onEnd(false); return; }
-        utt.voice=voice; utt.lang='de-DE'; utt.rate=0.9; utt.pitch=1;
-        utt.onend=()=>onEnd&&onEnd(true);
-        utt.onerror=()=>onEnd&&onEnd(false);
-        speechSynthesis.speak(utt);
-    } catch(e){ onEnd&&onEnd(false); }
+        if(aqCurrentAudio){ aqCurrentAudio.pause(); aqCurrentAudio.src=''; }
+        const url=`https://translate.google.com/translate_tts?ie=UTF-8&tl=de-DE&client=tw-ob&q=${encodeURIComponent(word)}`;
+        const audio=new Audio(url);
+        aqCurrentAudio=audio;
+        audio.onended=()=>cb('ok');
+        audio.onerror=()=>cb('err');
+        const p=audio.play();
+        if(p&&p.catch) p.catch(()=>cb('blocked'));
+    } catch(e){ cb('err'); }
 }
 
-/* ── start ── */
+/* ── Web Speech (fallback) ── */
+function aqSpeakWebSpeech(word, cb){
+    try {
+        if(!window.speechSynthesis){ cb(false); return; }
+        speechSynthesis.cancel();
+        const voice=aqGetVoice();
+        if(!voice){ cb(false); return; }
+        const utt=new SpeechSynthesisUtterance(word);
+        utt.voice=voice; utt.lang='de-DE'; utt.rate=0.9; utt.pitch=1;
+        utt.onend=()=>cb(true);
+        utt.onerror=()=>cb(false);
+        speechSynthesis.speak(utt);
+    } catch(e){ cb(false); }
+}
+
+function aqStop(){
+    try {
+        if(aqCurrentAudio){ aqCurrentAudio.pause(); aqCurrentAudio.src=''; aqCurrentAudio=null; }
+        speechSynthesis?.cancel();
+    } catch(e){}
+}
+
+function aqDoSpeak(){
+    const speakBtn=document.getElementById('aq-speak-btn');
+    speakBtn.classList.add('speaking');
+    speakBtn.disabled=true;
+    const word=allData[aqCurrent.correctIdx].w;
+
+    function onDone(ok){
+        speakBtn.classList.remove('speaking');
+        speakBtn.disabled=false;
+        if(!ok && !aqAnswered){
+            document.getElementById('aq-word-hidden').style.display='none';
+            document.getElementById('aq-word-fallback').textContent=word;
+            document.getElementById('aq-word-fallback').style.display='block';
+        }
+    }
+
+    aqSpeakGoogle(word, result=>{
+        if(result==='ok'){ onDone(true); return; }
+        if(result==='blocked'){ speakBtn.classList.remove('speaking'); speakBtn.disabled=false; return; }
+        // err → try Web Speech
+        aqSpeakWebSpeech(word, ok=>onDone(ok));
+    });
+}
+
 function startAudioQuiz(){
     currentMode='audioquiz';
     aqQueue=shuffle(allData.map((_,i)=>i)); aqQPos=0;
@@ -3769,7 +3850,7 @@ function aqDoSpeak(){
 function aqAnswer(chosenIdx, btn){
     if(aqAnswered) return;
     aqAnswered=true;
-    try { speechSynthesis?.cancel(); } catch(e){}
+    aqStop();
 
     const correct=chosenIdx===aqCurrent.correctIdx;
     const allBtns=[...document.querySelectorAll('.aq-ans-btn')];
