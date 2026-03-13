@@ -45,10 +45,22 @@ body{
 .tagline{font-size:.9rem;opacity:.55;text-align:center;}
 
 .mode-toggle{
-    display:flex;width:100%;background:var(--card-bg);
+    display:grid;grid-template-columns:repeat(3,1fr);
+    width:100%;background:var(--card-bg);
     border-radius:14px;padding:4px;gap:4px;
     box-shadow:0 2px 8px rgba(0,0,0,.07);
 }
+/* divider between row 1 and row 2 */
+.mode-toggle::after{
+    content:'';display:block;
+    grid-column:1/-1;height:1px;
+    background:rgba(99,102,241,.18);
+    margin:2px 4px;
+}
+/* push row-2 buttons after the pseudo-divider */
+#btn-ma{ order:4; }
+#btn-msw{ order:5; }
+#btn-maq{ order:6; }
 .mode-btn{
     flex:1;padding:10px 6px;border:none;border-radius:10px;
     font-size:.88rem;font-weight:700;cursor:pointer;
@@ -58,6 +70,8 @@ body{
 .mode-btn.active-classic{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;opacity:1;}
 .mode-btn.active-sprint {background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;opacity:1;}
 .mode-btn.active-blaster{background:linear-gradient(135deg,#00e5ff,#0066aa);color:#05101a;opacity:1;}
+.mode-btn.active-swiper  {background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;opacity:1;}
+.mode-btn.active-audioquiz{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;opacity:1;}
 
 .mode-desc{
     width:100%;background:var(--card-bg);border-radius:14px;
@@ -727,6 +741,132 @@ body{
     backdrop-filter:blur(4px);transition:transform .1s;
 }
 .sw-sound-btn:active{transform:scale(.92);}
+
+/* ═══════════════════════════════════════
+   AUDIO QUIZ OVERLAY
+═══════════════════════════════════════ */
+#aq-wrap{
+    display:none;position:fixed;inset:0;z-index:50;
+    background:linear-gradient(180deg,#0a1628 0%,#0f2744 50%,#0a1628 100%);
+    font-family:'Exo 2',sans-serif;
+    flex-direction:column;align-items:center;
+}
+#aq-wrap.visible{display:flex;}
+#aq-hud{
+    width:100%;display:flex;justify-content:space-between;align-items:center;
+    padding:12px 16px 6px;
+}
+#aq-progress-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;}
+#aq-progress{font-size:1.1rem;font-weight:800;color:#e2e8f0;}
+.aq-lbl{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:#64748b;font-weight:700;}
+#aq-score-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;}
+#aq-score{font-size:1.1rem;font-weight:800;color:#38bdf8;}
+#aq-streak-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;}
+#aq-streak{font-size:1.1rem;font-weight:800;color:#fbbf24;}
+
+/* Word reveal panel */
+#aq-word-panel{
+    margin:12px 0 6px;text-align:center;
+    min-height:72px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:4px;
+}
+#aq-word-hidden{
+    font-size:2.8rem;letter-spacing:.3em;color:rgba(99,162,255,.25);
+    font-weight:900;
+}
+#aq-word-revealed{
+    font-size:2.2rem;font-weight:900;color:#38bdf8;
+    text-shadow:0 0 20px rgba(56,189,248,.5);
+    display:none;
+    animation:fadeUp .3s ease both;
+}
+#aq-word-fallback{
+    font-size:1.4rem;font-weight:700;color:#94a3b8;
+    display:none;font-style:italic;
+}
+
+/* Speak button */
+#aq-speak-btn{
+    width:80px;height:80px;border-radius:50%;border:none;
+    background:linear-gradient(135deg,#0ea5e9,#6366f1);
+    font-size:2rem;cursor:pointer;
+    box-shadow:0 0 24px rgba(99,102,241,.5),0 4px 16px rgba(0,0,0,.4);
+    transition:transform .12s,box-shadow .12s;
+    margin:8px 0;
+    animation:speakPulse 2s ease infinite;
+}
+#aq-speak-btn:active{transform:scale(.88);}
+#aq-speak-btn.speaking{
+    animation:speakPulse .6s ease infinite;
+    box-shadow:0 0 40px rgba(56,189,248,.8),0 4px 16px rgba(0,0,0,.4);
+}
+#aq-speak-btn.answered{animation:none;opacity:.5;}
+@keyframes speakPulse{
+    0%,100%{box-shadow:0 0 20px rgba(99,102,241,.45),0 4px 16px rgba(0,0,0,.4);}
+    50%{box-shadow:0 0 40px rgba(56,189,248,.75),0 4px 16px rgba(0,0,0,.4);}
+}
+
+/* Answer grid */
+#aq-answers{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:10px;padding:0 14px;width:100%;max-width:400px;
+    margin-top:8px;
+}
+.aq-ans-btn{
+    padding:18px 10px;border-radius:14px;border:none;cursor:pointer;
+    font-size:1.05rem;font-weight:700;
+    background:rgba(255,255,255,.07);
+    color:#e2e8f0;border:1.5px solid rgba(99,162,255,.2);
+    transition:transform .1s,background .15s,border-color .15s;
+    line-height:1.3;
+}
+.aq-ans-btn:active{transform:scale(.95);}
+.aq-ans-btn.correct{
+    background:rgba(34,197,94,.25);border-color:#22c55e;color:#86efac;
+    animation:pop .3s cubic-bezier(.34,1.56,.64,1);
+}
+.aq-ans-btn.wrong{
+    background:rgba(239,68,68,.2);border-color:#ef4444;color:#fca5a5;
+    animation:shake .35s ease;
+}
+.aq-ans-btn.reveal-correct{
+    background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.5);color:#86efac;
+}
+.aq-ans-btn:disabled{cursor:default;}
+
+/* Next button */
+#aq-next-btn{
+    margin:14px 0 8px;
+    padding:12px 36px;border-radius:22px;border:none;cursor:pointer;
+    font-size:1rem;font-weight:800;font-family:'Exo 2',sans-serif;
+    background:linear-gradient(135deg,#0ea5e9,#6366f1);
+    color:#fff;box-shadow:0 4px 16px rgba(99,102,241,.4);
+    transition:transform .1s,opacity .2s;
+    display:none;
+}
+#aq-next-btn:active{transform:scale(.93);}
+#aq-exit-btn{
+    margin-top:auto;
+    margin-bottom:20px;
+    width:calc(100% - 32px);max-width:400px;
+    padding:16px 28px;border-radius:18px;border:none;cursor:pointer;
+    font-size:1.05rem;font-weight:800;font-family:'Exo 2',sans-serif;
+    background:rgba(255,255,255,.07);color:#94a3b8;
+    border:1px solid rgba(255,255,255,.15);
+    transition:transform .1s,background .15s;
+}
+#aq-exit-btn:active{transform:scale(.97);background:rgba(255,255,255,.12);}
+
+.aq-sound-btn{
+    position:absolute;top:12px;right:12px;z-index:60;
+    width:38px;height:38px;border-radius:50%;
+    border:1.5px solid rgba(56,189,248,.25);
+    background:rgba(10,22,40,.65);
+    font-size:1.1rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(4px);transition:transform .1s;
+}
+.aq-sound-btn:active{transform:scale(.92);}
 </style>
 </head>
 <body>
@@ -750,6 +890,7 @@ body{
         <button class="mode-btn"               id="btn-mb" onclick="setMode('blaster')">💥 Бластер</button>
         <button class="mode-btn"               id="btn-ma" onclick="setMode('anagram')">🔤 Анаграмма</button>
         <button class="mode-btn"               id="btn-msw" onclick="setMode('swiper')">👈 Свайпер</button>
+        <button class="mode-btn"               id="btn-maq" onclick="setMode('audioquiz')">🔊 Аудио</button>
     </div>
 
     <div class="mode-desc" id="mode-desc"></div>
@@ -815,6 +956,14 @@ body{
         <button class="btn-level" data-mode="swiper" style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;box-shadow:0 5px 20px rgba(99,102,241,.4)">
             <span class="lv-left"><span class="lv-name">👈 Запустить</span><span class="lv-sub">Верно/Неверно · свайп · 3 сек/карта</span></span>
             <span class="lv-right"><span class="lv-xp">до 100+ XP</span><span class="lv-record" id="rcsw"></span></span>
+        </button>
+    </div>
+
+    <div class="level-section" id="lbs-audioquiz" style="display:none">
+        <div class="section-label">10 вопросов · слушай и выбирай</div>
+        <button class="btn-level" data-mode="audioquiz" style="background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;box-shadow:0 5px 20px rgba(14,165,233,.4)">
+            <span class="lv-left"><span class="lv-name">🔊 Запустить</span><span class="lv-sub">Слово на слух · 4 варианта · немецкий TTS</span></span>
+            <span class="lv-right"><span class="lv-xp">до 60 XP</span><span class="lv-record" id="rcaq"></span></span>
         </button>
     </div>
 
@@ -1012,6 +1161,30 @@ body{
 
 <!-- ═══ SPRINT SHARD CANVAS ═══ -->
 <canvas id="sprint-shard-canvas"></canvas>
+
+<!-- ═══ AUDIO QUIZ OVERLAY ═══ -->
+<div id="aq-wrap">
+    <div id="aq-hud">
+        <div id="aq-progress-wrap"><span class="aq-lbl">Вопрос</span><span id="aq-progress">1 / 10</span></div>
+        <div id="aq-score-wrap"><span class="aq-lbl">Счёт</span><span id="aq-score">0</span></div>
+        <div id="aq-streak-wrap"><span class="aq-lbl">Серия</span><span id="aq-streak">0</span></div>
+    </div>
+
+    <div id="aq-word-panel">
+        <div id="aq-word-hidden">• • • •</div>
+        <div id="aq-word-revealed"></div>
+        <div id="aq-word-fallback"></div>
+    </div>
+
+    <button id="aq-speak-btn" title="Произнести слово">🔊</button>
+
+    <div id="aq-answers"></div>
+
+    <button id="aq-next-btn">Следующее →</button>
+    <button id="aq-exit-btn">🏁 Завершить</button>
+
+    <button class="aq-sound-btn" id="btn-sound-aq" title="Звук">🔊</button>
+</div>
 
 <script>
 /* ════════════════════════════════════════════
@@ -1311,24 +1484,27 @@ const MODE_DESCS = {
     sprint:  '<b>⚡ Спринт</b> — 60 секунд, бесконечный поток слов. Выбери уровень: 3, 6 или 8 пар одновременно. Угадай как можно больше!',
     blaster: '<b>🫧 Бластер</b> — 60 секунд! Мыльные пузыри с переводами летают по экрану. Нажми на правильный — рогатка стреляет и пузырь лопается! Комбо до ×2.0.',
     anagram: '<b>🔤 Анаграмма</b> — 5 слов! Буквы немецкого слова летают как пузыри. Нажимай на них по порядку — собери слово. Внизу подсказка — русский перевод. Чем быстрее — тем больше XP!',
-    swiper:  '<b>👈 Свайпер</b> — карточка с парой слов. Верный перевод — свайп вправо, неверный — влево. 3 секунды на карточку. Три ошибки или тайм-аут — игра окончена!',
+    swiper:     '<b>👈 Свайпер</b> — карточка с парой слов. Верный перевод — свайп вправо, неверный — влево. 3 секунды на карточку. Три ошибки или тайм-аут — игра окончена!',
+    audioquiz:  '<b>🔊 Аудио-Викторина</b> — слово произносится голосом, текст скрыт. Выбери правильный перевод из 4 вариантов. 10 вопросов. Тренирует восприятие на слух!',
 };
 let currentMode = 'classic';
 let currentPairs = 4;
 
 function setMode(m) {
     currentMode = m;
-    document.getElementById('btn-mc').className  = 'mode-btn'+(m==='classic' ?' active-classic':'');
-    document.getElementById('btn-ms').className  = 'mode-btn'+(m==='sprint'  ?' active-sprint' :'');
-    document.getElementById('btn-mb').className  = 'mode-btn'+(m==='blaster' ?' active-blaster':'');
-    document.getElementById('btn-ma').className  = 'mode-btn'+(m==='anagram' ?' active-classic':'');
-    document.getElementById('btn-msw').className = 'mode-btn'+(m==='swiper'  ?' active-classic':'');
+    document.getElementById('btn-mc').className  = 'mode-btn'+(m==='classic'    ?' active-classic':'');
+    document.getElementById('btn-ms').className  = 'mode-btn'+(m==='sprint'     ?' active-sprint' :'');
+    document.getElementById('btn-mb').className  = 'mode-btn'+(m==='blaster'    ?' active-blaster':'');
+    document.getElementById('btn-ma').className  = 'mode-btn'+(m==='anagram'    ?' active-classic':'');
+    document.getElementById('btn-msw').className = 'mode-btn'+(m==='swiper'     ?' active-swiper'  :'');
+    document.getElementById('btn-maq').className = 'mode-btn'+(m==='audioquiz'  ?' active-audioquiz':'');
     document.getElementById('mode-desc').innerHTML = MODE_DESCS[m]||'';
-    document.getElementById('lbs-classic').style.display = m==='classic' ?'':'none';
-    document.getElementById('lbs-sprint').style.display  = m==='sprint'  ?'':'none';
-    document.getElementById('lbs-blaster').style.display = m==='blaster' ?'':'none';
-    document.getElementById('lbs-anagram').style.display = m==='anagram' ?'':'none';
-    document.getElementById('lbs-swiper').style.display  = m==='swiper'  ?'':'none';
+    document.getElementById('lbs-classic').style.display   = m==='classic'   ?'':'none';
+    document.getElementById('lbs-sprint').style.display    = m==='sprint'    ?'':'none';
+    document.getElementById('lbs-blaster').style.display   = m==='blaster'   ?'':'none';
+    document.getElementById('lbs-anagram').style.display   = m==='anagram'   ?'':'none';
+    document.getElementById('lbs-swiper').style.display    = m==='swiper'    ?'':'none';
+    document.getElementById('lbs-audioquiz').style.display = m==='audioquiz' ?'':'none';
 }
 setMode('classic');
 updateRecordLabels();
@@ -1337,14 +1513,15 @@ updateRecordLabels();
    RECORD LABELS
 ════════════════════════════════════════════ */
 function updateRecordLabels() {
-    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram',rcsw:'swiper'};
+    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram',rcsw:'swiper',rcaq:'audioquiz'};
     for(const [id,key] of Object.entries(map)) {
         const el=document.getElementById(id); if(!el) continue;
         const v=getBest(key);
         if(v===null){el.textContent='';continue;}
         if(key.startsWith('sprint')||key.startsWith('blaster')||key==='anagram')
             el.textContent=`🏆 ${v} слов`;
-        else if(key==='swiper') el.textContent=`🏆 ${v} карт`;
+        else if(key==='swiper')    el.textContent=`🏆 ${v} карт`;
+        else if(key==='audioquiz') el.textContent=`🏆 ${v}/10`;
         else if(key==='cl-8h') el.textContent=`🏆 ${fmt(v)}`;
         else el.textContent=`🏆 ${fmt(v)}`;
     }
@@ -1364,6 +1541,7 @@ document.querySelectorAll('.btn-level').forEach(btn => {
         else if(m==='sprint') startSprint(rows);
         else if(m==='anagram') startAnagram();
         else if(m==='swiper') startSwiper();
+        else if(m==='audioquiz') startAudioQuiz();
         else startBlaster(rev);
     });
 });
@@ -1384,6 +1562,7 @@ function hideAll() {
     document.getElementById('blaster-wrap').classList.remove('visible');
     document.getElementById('anagram-wrap').classList.remove('visible');
     document.getElementById('swiper-wrap').classList.remove('visible');
+    document.getElementById('aq-wrap').classList.remove('visible');
 }
 
 function goToMenu() {
@@ -1393,6 +1572,7 @@ function goToMenu() {
     clearInterval(agTicker);
     cancelAnimationFrame(agRAF); agRunning=false;
     swStop();
+    aqStop();
     hideAll();
     document.getElementById('start-screen').style.display='flex';
     document.getElementById('btn-hint').style.display='none';
@@ -2809,6 +2989,7 @@ document.getElementById('btn-restart').addEventListener('click',()=>{
     else if(currentMode==='sprint') startSprint(SPRINT_ROWS);
     else if(currentMode==='anagram') startAnagram();
     else if(currentMode==='swiper') startSwiper();
+    else if(currentMode==='audioquiz') startAudioQuiz();
     else startBlaster(blReverseMode);
 });
 document.getElementById('btn-menu').addEventListener('click',goToMenu);
@@ -3467,6 +3648,204 @@ function agEnd(){
 }
 
 // Also update goToMenu to stop anagram
+
+document.getElementById('btn-sound-aq').addEventListener('click', toggleSound);
+
+/* ════════════════════════════════════════════
+   AUDIO QUIZ ENGINE
+════════════════════════════════════════════ */
+let aqQueue=[], aqQPos=0;
+let aqCurrent=null;
+let aqQuestionNum=0, aqScore=0, aqStreak=0, aqBestStreak=0;
+let aqAnswered=false;
+let aqVoice=null;
+
+/* ── find German TTS voice ── */
+function aqGetVoice(){
+    if(aqVoice) return aqVoice;
+    try {
+        const voices=speechSynthesis.getVoices();
+        aqVoice = voices.find(v=>v.lang==='de-DE')
+               || voices.find(v=>v.lang.startsWith('de'))
+               || null;
+    } catch(e){ aqVoice=null; }
+    return aqVoice;
+}
+
+function aqSpeak(word, onEnd){
+    try {
+        if(!window.speechSynthesis){ onEnd&&onEnd(false); return; }
+        speechSynthesis.cancel();
+        const utt=new SpeechSynthesisUtterance(word);
+        const voice=aqGetVoice();
+        if(!voice){ onEnd&&onEnd(false); return; }
+        utt.voice=voice; utt.lang='de-DE'; utt.rate=0.9; utt.pitch=1;
+        utt.onend=()=>onEnd&&onEnd(true);
+        utt.onerror=()=>onEnd&&onEnd(false);
+        speechSynthesis.speak(utt);
+    } catch(e){ onEnd&&onEnd(false); }
+}
+
+/* ── start ── */
+function startAudioQuiz(){
+    currentMode='audioquiz';
+    aqQueue=shuffle(allData.map((_,i)=>i)); aqQPos=0;
+    aqQuestionNum=0; aqScore=0; aqStreak=0; aqBestStreak=0; aqAnswered=false;
+    resetStreak();
+    hideAll();
+    document.getElementById('aq-wrap').classList.add('visible');
+    document.getElementById('btn-hint').style.display='none';
+    aqNextQuestion();
+}
+
+function aqStop(){
+    try { speechSynthesis?.cancel(); } catch(e){}
+}
+
+/* ── build question ── */
+function aqNextQuestion(){
+    if(aqQPos>=aqQueue.length){ aqQueue=shuffle(allData.map((_,i)=>i)); aqQPos=0; }
+    const correctIdx=aqQueue[aqQPos++];
+    const wrongs=shuffle(allData.map((_,i)=>i).filter(i=>i!==correctIdx)).slice(0,3);
+    const options=shuffle([correctIdx,...wrongs]);
+
+    aqCurrent={correctIdx, options};
+    aqAnswered=false;
+    aqQuestionNum++;
+
+    // HUD
+    document.getElementById('aq-progress').textContent=`${aqQuestionNum}`;
+    document.getElementById('aq-score').textContent=aqScore;
+    document.getElementById('aq-streak').textContent=aqStreak>0?`🔥${aqStreak}`:aqStreak;
+
+    // word panel — always hidden until answered
+    document.getElementById('aq-word-hidden').style.display='block';
+    document.getElementById('aq-word-hidden').textContent='• • • •';
+    document.getElementById('aq-word-revealed').style.display='none';
+    document.getElementById('aq-word-revealed').textContent='';
+    document.getElementById('aq-word-fallback').style.display='none';
+    document.getElementById('aq-word-fallback').textContent='';
+
+    // answer buttons
+    const grid=document.getElementById('aq-answers');
+    grid.innerHTML='';
+    options.forEach(idx=>{
+        const btn=document.createElement('button');
+        btn.className='aq-ans-btn';
+        btn.textContent=allData[idx].t;
+        btn.dataset.idx=idx;
+        btn.addEventListener('click',()=>aqAnswer(idx, btn));
+        grid.appendChild(btn);
+    });
+
+    document.getElementById('aq-next-btn').style.display='none';
+
+    const speakBtn=document.getElementById('aq-speak-btn');
+    speakBtn.classList.remove('speaking','answered');
+    speakBtn.disabled=false;
+
+    // auto-speak — word stays hidden
+    aqDoSpeak();
+}
+
+function aqDoSpeak(){
+    const speakBtn=document.getElementById('aq-speak-btn');
+    speakBtn.classList.add('speaking');
+    speakBtn.disabled=true;
+
+    aqSpeak(allData[aqCurrent.correctIdx].w, (ok)=>{
+        speakBtn.classList.remove('speaking');
+        speakBtn.disabled=false;
+        if(!ok && !aqAnswered){
+            // no TTS — show word as fallback so question is still playable
+            document.getElementById('aq-word-hidden').style.display='none';
+            document.getElementById('aq-word-fallback').textContent=allData[aqCurrent.correctIdx].w;
+            document.getElementById('aq-word-fallback').style.display='block';
+        }
+    });
+}
+
+/* ── answer ── */
+function aqAnswer(chosenIdx, btn){
+    if(aqAnswered) return;
+    aqAnswered=true;
+    try { speechSynthesis?.cancel(); } catch(e){}
+
+    const correct=chosenIdx===aqCurrent.correctIdx;
+    const allBtns=[...document.querySelectorAll('.aq-ans-btn')];
+    allBtns.forEach(b=>b.disabled=true);
+
+    if(correct){
+        btn.classList.add('correct');
+        aqScore++;
+        aqStreak++;
+        if(aqStreak>aqBestStreak) aqBestStreak=aqStreak;
+        addStreak();
+        sndMatch();
+        if(tg) tg.HapticFeedback?.impactOccurred('light');
+    } else {
+        btn.classList.add('wrong');
+        aqStreak=0;
+        resetStreak();
+        allBtns.find(b=>+b.dataset.idx===aqCurrent.correctIdx)?.classList.add('reveal-correct');
+        sndMismatch();
+        if(tg) tg.HapticFeedback?.notificationOccurred('error');
+    }
+
+    document.getElementById('aq-score').textContent=aqScore;
+    document.getElementById('aq-streak').textContent=aqStreak>0?`🔥${aqStreak}`:aqStreak;
+
+    // reveal word after answer
+    document.getElementById('aq-word-hidden').style.display='none';
+    document.getElementById('aq-word-fallback').style.display='none';
+    const rev=document.getElementById('aq-word-revealed');
+    rev.textContent=allData[aqCurrent.correctIdx].w;
+    rev.style.display='block';
+
+    document.getElementById('aq-speak-btn').classList.remove('answered');
+    document.getElementById('aq-speak-btn').disabled=false;
+
+    document.getElementById('aq-next-btn').style.display='block';
+}
+
+document.getElementById('aq-speak-btn').addEventListener('click', aqDoSpeak);
+document.getElementById('aq-next-btn').addEventListener('click', aqNextQuestion);
+document.getElementById('aq-exit-btn').addEventListener('click', aqEnd);
+
+/* ── end ── */
+function aqEnd(){
+    aqStop();
+    document.getElementById('aq-wrap').classList.remove('visible');
+    if(aqScore===0){ goToMenu(); return; }
+    sndWin();
+    const prev=getBest('audioquiz');
+    const isNew=prev===null||aqScore>prev;
+    if(isNew) saveRec('audioquiz',aqScore);
+    const baseXP=aqScore*5;
+    const streakBonus=Math.round(baseXP*(streakMultiplier()-1));
+    const roundXP=Math.max(0,baseXP+streakBonus+(isNew?20:0));
+    const acc=aqQuestionNum>0?Math.round(aqScore/aqQuestionNum*100):0;
+    showWin({
+        title: acc===100?'🏆 Идеально!':acc>=80?'🎉 Отлично!':acc>=50?'💪 Неплохо!':'🔈 Тренируй слух!',
+        badgeCls:'lv3', badgeText:'🔊 Аудио',
+        base:baseXP, showAcc:true, acc,
+        bonusLabel:`🔥 Серия${streakBonus>0?` ×${streakMultiplier()}`:''}`,
+        bonus:streakBonus,
+        recBonus:20, roundXP,
+        stats:`Правильно: ${aqScore} из ${aqQuestionNum} · Серия: ${aqBestStreak} · Рекорд: ${prev!==null?prev:'нет'}`,
+        isNew,
+        recVal:`${aqScore} отв.`,
+    });
+    isNew?setTimeout(celebrateRecord,120):celebrateWin();
+    updateRecordLabels();
+}
+
+try {
+    if(window.speechSynthesis)
+        speechSynthesis.addEventListener('voiceschanged',()=>{ aqVoice=null; aqGetVoice(); });
+} catch(e){}
+
+
 
 </script>
 </body>
