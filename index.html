@@ -620,6 +620,113 @@ body{
     backdrop-filter:blur(4px);transition:background .15s,transform .1s;
 }
 .ag-sound-btn:active{transform:scale(.92);}
+
+/* ═══════════════════════════════════════
+   SWIPER OVERLAY
+═══════════════════════════════════════ */
+#swiper-wrap{
+    display:none;position:fixed;inset:0;z-index:50;
+    background:linear-gradient(180deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);
+    touch-action:none;overflow:hidden;
+    font-family:'Exo 2',sans-serif;
+}
+#swiper-wrap.visible{display:flex;flex-direction:column;align-items:center;}
+
+/* HUD */
+#sw-hud{
+    width:100%;display:flex;justify-content:space-between;align-items:center;
+    padding:12px 16px 6px;z-index:10;
+}
+#sw-lives{font-size:1.4rem;letter-spacing:3px;}
+#sw-score-box{display:flex;flex-direction:column;align-items:center;}
+#sw-score{font-size:1.3rem;font-weight:800;color:#e2e8f0;}
+.sw-lbl{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;font-weight:700;}
+#sw-streak-box{display:flex;flex-direction:column;align-items:center;}
+#sw-streak{font-size:1.1rem;font-weight:800;color:#fbbf24;}
+
+/* Timer arc */
+#sw-timer-wrap{
+    position:relative;width:52px;height:52px;margin:0 auto;
+}
+#sw-timer-svg{transform:rotate(-90deg);}
+#sw-timer-arc{
+    stroke:#6366f1;stroke-width:4;fill:none;
+    stroke-dasharray:132;stroke-dashoffset:0;
+    stroke-linecap:round;
+    transition:stroke .4s;
+}
+#sw-timer-num{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:1rem;font-weight:800;color:#e2e8f0;
+}
+
+/* Card stack area */
+#sw-card-area{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    width:100%;position:relative;
+}
+.sw-card{
+    position:absolute;
+    width:min(320px, 88vw);
+    background:linear-gradient(145deg,#1e293b,#0f172a);
+    border:1.5px solid rgba(99,102,241,.35);
+    border-radius:20px;
+    padding:32px 24px;
+    text-align:center;
+    box-shadow:0 8px 32px rgba(0,0,0,.5);
+    cursor:grab;
+    user-select:none;
+    will-change:transform;
+    transition:box-shadow .15s;
+}
+.sw-card:active{cursor:grabbing;}
+.sw-card-word{font-size:1.9rem;font-weight:800;color:#f1f5f9;margin-bottom:12px;letter-spacing:.02em;}
+.sw-card-sep{height:1px;background:rgba(99,102,241,.25);margin:12px 0;}
+.sw-card-trans{font-size:1.4rem;font-weight:700;color:#a5b4fc;letter-spacing:.01em;}
+.sw-card.tilt-right{border-color:rgba(34,197,94,.6);box-shadow:0 8px 40px rgba(34,197,94,.25);}
+.sw-card.tilt-left {border-color:rgba(239,68,68,.6); box-shadow:0 8px 40px rgba(239,68,68,.25);}
+
+/* Verdict overlay on card */
+.sw-verdict{
+    position:absolute;inset:0;border-radius:20px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:3rem;opacity:0;pointer-events:none;
+    transition:opacity .1s;
+}
+.sw-verdict.show-right{opacity:1;background:rgba(34,197,94,.18);}
+.sw-verdict.show-left {opacity:1;background:rgba(239,68,68,.18);}
+
+/* Hint labels */
+#sw-hints{
+    display:flex;justify-content:space-between;width:min(320px,88vw);
+    padding:0 4px;margin-bottom:8px;
+}
+.sw-hint{font-size:.75rem;font-weight:700;color:#475569;letter-spacing:.05em;}
+
+/* Tap buttons */
+#sw-btns{
+    display:flex;gap:24px;padding:16px 0 24px;
+}
+.sw-btn{
+    width:130px;height:130px;border-radius:20px;border:none;
+    font-size:3.2rem;cursor:pointer;
+    transition:transform .1s,box-shadow .1s;
+    box-shadow:0 6px 24px rgba(0,0,0,.4);
+}
+.sw-btn:active{transform:scale(.90);}
+#sw-btn-wrong{background:linear-gradient(135deg,#ef4444,#b91c1c);}
+#sw-btn-right{background:linear-gradient(135deg,#22c55e,#15803d);}
+
+.sw-sound-btn{
+    position:absolute;top:12px;right:12px;z-index:60;
+    width:38px;height:38px;border-radius:50%;
+    border:1.5px solid rgba(99,102,241,.3);
+    background:rgba(15,23,42,.65);
+    font-size:1.1rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(4px);transition:transform .1s;
+}
+.sw-sound-btn:active{transform:scale(.92);}
 </style>
 </head>
 <body>
@@ -642,6 +749,7 @@ body{
         <button class="mode-btn"               id="btn-ms" onclick="setMode('sprint')">⚡ Спринт</button>
         <button class="mode-btn"               id="btn-mb" onclick="setMode('blaster')">💥 Бластер</button>
         <button class="mode-btn"               id="btn-ma" onclick="setMode('anagram')">🔤 Анаграмма</button>
+        <button class="mode-btn"               id="btn-msw" onclick="setMode('swiper')">👈 Свайпер</button>
     </div>
 
     <div class="mode-desc" id="mode-desc"></div>
@@ -699,6 +807,14 @@ body{
         <button class="btn-level" data-mode="anagram" style="background:linear-gradient(135deg,#7c3aed,#c026d3);color:#fff;box-shadow:0 5px 20px rgba(124,58,237,.4)">
             <span class="lv-left"><span class="lv-name">🔤 Запустить</span><span class="lv-sub">Буквы-пузыри · 5 слов · скорость</span></span>
             <span class="lv-right"><span class="lv-xp">до 80 XP</span><span class="lv-record" id="rcag"></span></span>
+        </button>
+    </div>
+
+    <div class="level-section" id="lbs-swiper" style="display:none">
+        <div class="section-label">∞ карточек · 3 жизни</div>
+        <button class="btn-level" data-mode="swiper" style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;box-shadow:0 5px 20px rgba(99,102,241,.4)">
+            <span class="lv-left"><span class="lv-name">👈 Запустить</span><span class="lv-sub">Верно/Неверно · свайп · 3 сек/карта</span></span>
+            <span class="lv-right"><span class="lv-xp">до 100+ XP</span><span class="lv-record" id="rcsw"></span></span>
         </button>
     </div>
 
@@ -864,6 +980,34 @@ body{
         <button class="ag-ctrl-btn" id="ag-btn-hint">💡 (−5 XP)</button>
     </div>
     <button class="ag-sound-btn" id="btn-sound-ag" title="Звук">🔊</button>
+</div>
+
+<!-- ═══ SWIPER OVERLAY ═══ -->
+<div id="swiper-wrap">
+    <div id="sw-hud">
+        <div id="sw-lives">❤️❤️❤️</div>
+        <div id="sw-score-box"><span class="sw-lbl">Счёт</span><span id="sw-score">0</span></div>
+        <div id="sw-timer-wrap">
+            <svg id="sw-timer-svg" width="52" height="52" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="21" stroke="rgba(99,102,241,.2)" stroke-width="4" fill="none"/>
+                <circle id="sw-timer-arc" cx="26" cy="26" r="21"/>
+            </svg>
+            <div id="sw-timer-num">3</div>
+        </div>
+        <div id="sw-streak-box"><span class="sw-lbl">Серия</span><span id="sw-streak">0</span></div>
+    </div>
+    <div id="sw-card-area">
+        <!-- cards injected here -->
+    </div>
+    <div id="sw-hints">
+        <span class="sw-hint">👈 НЕВЕРНО</span>
+        <span class="sw-hint">ВЕРНО 👉</span>
+    </div>
+    <div id="sw-btns">
+        <button class="sw-btn" id="sw-btn-wrong">✗</button>
+        <button class="sw-btn" id="sw-btn-right">✓</button>
+    </div>
+    <button class="sw-sound-btn" id="btn-sound-sw" title="Звук">🔊</button>
 </div>
 
 <!-- ═══ SPRINT SHARD CANVAS ═══ -->
@@ -1167,21 +1311,24 @@ const MODE_DESCS = {
     sprint:  '<b>⚡ Спринт</b> — 60 секунд, бесконечный поток слов. Выбери уровень: 3, 6 или 8 пар одновременно. Угадай как можно больше!',
     blaster: '<b>🫧 Бластер</b> — 60 секунд! Мыльные пузыри с переводами летают по экрану. Нажми на правильный — рогатка стреляет и пузырь лопается! Комбо до ×2.0.',
     anagram: '<b>🔤 Анаграмма</b> — 5 слов! Буквы немецкого слова летают как пузыри. Нажимай на них по порядку — собери слово. Внизу подсказка — русский перевод. Чем быстрее — тем больше XP!',
+    swiper:  '<b>👈 Свайпер</b> — карточка с парой слов. Верный перевод — свайп вправо, неверный — влево. 3 секунды на карточку. Три ошибки или тайм-аут — игра окончена!',
 };
 let currentMode = 'classic';
 let currentPairs = 4;
 
 function setMode(m) {
     currentMode = m;
-    document.getElementById('btn-mc').className = 'mode-btn'+(m==='classic' ?' active-classic':'');
-    document.getElementById('btn-ms').className = 'mode-btn'+(m==='sprint'  ?' active-sprint' :'');
-    document.getElementById('btn-mb').className = 'mode-btn'+(m==='blaster' ?' active-blaster':'');
-    document.getElementById('btn-ma').className = 'mode-btn'+(m==='anagram' ?' active-classic':'');
+    document.getElementById('btn-mc').className  = 'mode-btn'+(m==='classic' ?' active-classic':'');
+    document.getElementById('btn-ms').className  = 'mode-btn'+(m==='sprint'  ?' active-sprint' :'');
+    document.getElementById('btn-mb').className  = 'mode-btn'+(m==='blaster' ?' active-blaster':'');
+    document.getElementById('btn-ma').className  = 'mode-btn'+(m==='anagram' ?' active-classic':'');
+    document.getElementById('btn-msw').className = 'mode-btn'+(m==='swiper'  ?' active-classic':'');
     document.getElementById('mode-desc').innerHTML = MODE_DESCS[m]||'';
     document.getElementById('lbs-classic').style.display = m==='classic' ?'':'none';
     document.getElementById('lbs-sprint').style.display  = m==='sprint'  ?'':'none';
     document.getElementById('lbs-blaster').style.display = m==='blaster' ?'':'none';
     document.getElementById('lbs-anagram').style.display = m==='anagram' ?'':'none';
+    document.getElementById('lbs-swiper').style.display  = m==='swiper'  ?'':'none';
 }
 setMode('classic');
 updateRecordLabels();
@@ -1190,13 +1337,14 @@ updateRecordLabels();
    RECORD LABELS
 ════════════════════════════════════════════ */
 function updateRecordLabels() {
-    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram'};
+    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram',rcsw:'swiper'};
     for(const [id,key] of Object.entries(map)) {
         const el=document.getElementById(id); if(!el) continue;
         const v=getBest(key);
         if(v===null){el.textContent='';continue;}
         if(key.startsWith('sprint')||key.startsWith('blaster')||key==='anagram')
             el.textContent=`🏆 ${v} слов`;
+        else if(key==='swiper') el.textContent=`🏆 ${v} карт`;
         else if(key==='cl-8h') el.textContent=`🏆 ${fmt(v)}`;
         else el.textContent=`🏆 ${fmt(v)}`;
     }
@@ -1215,6 +1363,7 @@ document.querySelectorAll('.btn-level').forEach(btn => {
         if(m==='classic') startClassic(p, hard);
         else if(m==='sprint') startSprint(rows);
         else if(m==='anagram') startAnagram();
+        else if(m==='swiper') startSwiper();
         else startBlaster(rev);
     });
 });
@@ -1234,6 +1383,7 @@ function hideAll() {
     document.getElementById('sprint-right').innerHTML='';
     document.getElementById('blaster-wrap').classList.remove('visible');
     document.getElementById('anagram-wrap').classList.remove('visible');
+    document.getElementById('swiper-wrap').classList.remove('visible');
 }
 
 function goToMenu() {
@@ -1242,6 +1392,7 @@ function goToMenu() {
     clearInterval(sprintTimer);
     clearInterval(agTicker);
     cancelAnimationFrame(agRAF); agRunning=false;
+    swStop();
     hideAll();
     document.getElementById('start-screen').style.display='flex';
     document.getElementById('btn-hint').style.display='none';
@@ -2657,6 +2808,7 @@ document.getElementById('btn-restart').addEventListener('click',()=>{
     if(currentMode==='classic') startClassic(currentPairs, classicHardMode);
     else if(currentMode==='sprint') startSprint(SPRINT_ROWS);
     else if(currentMode==='anagram') startAnagram();
+    else if(currentMode==='swiper') startSwiper();
     else startBlaster(blReverseMode);
 });
 document.getElementById('btn-menu').addEventListener('click',goToMenu);
@@ -2682,6 +2834,241 @@ document.getElementById('bl-shield').addEventListener('click',()=>{
 
 // Anagram sound button mirrors main toggle
 document.getElementById('btn-sound-ag').addEventListener('click',toggleSound);
+document.getElementById('btn-sound-sw').addEventListener('click',toggleSound);
+
+/* ════════════════════════════════════════════
+   SWIPER ENGINE
+════════════════════════════════════════════ */
+const SW_SECS    = 3;    // seconds per card
+const SW_LIVES   = 3;
+
+let swLives=SW_LIVES, swScore=0, swStreak=0, swBestStreak=0;
+let swQueue=[], swQPos=0;
+let swTicker=null, swTimeLeft=SW_SECS;
+let swCard=null;          // current DOM card
+let swLocked=false;
+// swipe tracking
+let swDragStartX=0, swDragStartY=0, swDragging=false;
+
+function startSwiper(){
+    currentMode='swiper';
+    swLives=SW_LIVES; swScore=0; swStreak=0; swBestStreak=0;
+    swQueue=shuffle(allData.map((_,i)=>i)); swQPos=0;
+    swLocked=false;
+    hideAll();
+    document.getElementById('swiper-wrap').classList.add('visible');
+    document.getElementById('btn-hint').style.display='none';
+    resetStreak();
+    swUpdateHUD();
+    swNextCard();
+}
+
+function swStop(){
+    clearInterval(swTicker); swTicker=null;
+    swCard=null;
+}
+
+/* ── generate a card object ── */
+function swMakeCardData(){
+    if(swQPos>=swQueue.length){ swQueue=shuffle(allData.map((_,i)=>i)); swQPos=0; }
+    const correctIdx=swQueue[swQPos++];
+    const isCorrect = Math.random() < 0.5;
+    let shownTrans;
+    if(isCorrect){
+        shownTrans = allData[correctIdx].t;
+    } else {
+        // pick a different word's translation
+        let wrongIdx;
+        do { wrongIdx=Math.floor(Math.random()*allData.length); }
+        while(wrongIdx===correctIdx);
+        shownTrans = allData[wrongIdx].t;
+    }
+    return { word: allData[correctIdx].w, trans: shownTrans, correct: isCorrect };
+}
+
+/* ── build DOM card ── */
+function swBuildCard(data){
+    const area=document.getElementById('sw-card-area');
+    area.innerHTML='';
+    const el=document.createElement('div');
+    el.className='sw-card';
+    el.innerHTML=`
+        <div class="sw-card-word">${data.word}</div>
+        <div class="sw-card-sep"></div>
+        <div class="sw-card-trans">${data.trans}</div>
+        <div class="sw-verdict" id="sw-verdict"></div>`;
+    area.appendChild(el);
+    swCard=el;
+    swCardData=data;
+    // animate in
+    el.style.transform='scale(.85) translateY(30px)';
+    el.style.opacity='0';
+    el.style.transition='transform .25s cubic-bezier(.34,1.56,.64,1), opacity .2s';
+    requestAnimationFrame(()=>{ el.style.transform='scale(1) translateY(0)'; el.style.opacity='1'; });
+    // attach swipe listeners
+    el.addEventListener('pointerdown', swOnDown);
+    el.addEventListener('pointermove', swOnMove);
+    el.addEventListener('pointerup',   swOnUp);
+    el.addEventListener('pointercancel',swOnUp);
+    el.setPointerCapture;
+}
+
+let swCardData=null;
+
+/* ── timer ── */
+function swStartTimer(){
+    clearInterval(swTicker);
+    swTimeLeft=SW_SECS;
+    swUpdateTimerArc(1);
+    document.getElementById('sw-timer-num').textContent=swTimeLeft;
+    swTicker=setInterval(()=>{
+        swTimeLeft--;
+        document.getElementById('sw-timer-num').textContent=swTimeLeft;
+        const pct=swTimeLeft/SW_SECS;
+        swUpdateTimerArc(pct);
+        if(swTimeLeft<=1) document.getElementById('sw-timer-arc').style.stroke='#ef4444';
+        else if(swTimeLeft<=2) document.getElementById('sw-timer-arc').style.stroke='#f59e0b';
+        else document.getElementById('sw-timer-arc').style.stroke='#6366f1';
+        if(swTimeLeft<=0){ clearInterval(swTicker); swJudge(null); } // timeout = wrong
+    },1000);
+}
+
+function swUpdateTimerArc(pct){
+    const circ=132;
+    document.getElementById('sw-timer-arc').style.strokeDashoffset=`${circ*(1-pct)}`;
+}
+
+function swNextCard(){
+    if(swLives<=0) return;
+    swLocked=false;
+    const data=swMakeCardData();
+    swBuildCard(data);
+    swStartTimer();
+}
+
+/* ── judgment ── */
+function swJudge(swiped){ // swiped: true=right, false=left, null=timeout
+    if(swLocked) return;
+    swLocked=true;
+    clearInterval(swTicker);
+    const correct = swCardData.correct;
+    const hit = (swiped===true && correct) || (swiped===false && !correct);
+    const verdict=document.getElementById('sw-verdict');
+    if(hit){
+        swScore++;
+        swStreak++;
+        if(swStreak>swBestStreak) swBestStreak=swStreak;
+        addStreak();
+        if(verdict){ verdict.textContent='✅'; verdict.className='sw-verdict show-right'; }
+        sndMatch();
+        if(tg) tg.HapticFeedback?.impactOccurred('light');
+    } else {
+        swLives=Math.max(0,swLives-1);
+        swStreak=0;
+        resetStreak();
+        if(verdict){ verdict.textContent=swiped===null?'⏱️':'❌'; verdict.className='sw-verdict show-left'; }
+        sndMismatch();
+        if(tg) tg.HapticFeedback?.notificationOccurred('error');
+    }
+    swUpdateHUD();
+    if(swLives<=0){
+        // fly card out then end
+        swFlyCard(hit?1:-1, ()=>swEnd());
+        return;
+    }
+    swFlyCard(swiped===true?1:-1, ()=>swNextCard());
+}
+
+/* ── fly card off screen ── */
+function swFlyCard(dir, cb){
+    if(!swCard) return cb&&cb();
+    const el=swCard;
+    el.style.transition='transform .35s cubic-bezier(.4,0,.6,1), opacity .3s';
+    el.style.transform=`translateX(${dir*110}vw) rotate(${dir*18}deg)`;
+    el.style.opacity='0';
+    setTimeout(()=>{ el.remove(); cb&&cb(); },360);
+}
+
+/* ── drag/swipe ── */
+function swOnDown(e){
+    if(swLocked) return;
+    swDragging=true;
+    swDragStartX=e.clientX; swDragStartY=e.clientY;
+    swCard.style.transition='none';
+}
+function swOnMove(e){
+    if(!swDragging||swLocked) return;
+    const dx=e.clientX-swDragStartX;
+    const dy=e.clientY-swDragStartY;
+    const rot=dx*0.08;
+    swCard.style.transform=`translateX(${dx}px) translateY(${dy*.2}px) rotate(${rot}deg)`;
+    // tint
+    const verdict=document.getElementById('sw-verdict');
+    if(dx>40){
+        swCard.className='sw-card tilt-right';
+        if(verdict){ verdict.textContent='✅'; verdict.className='sw-verdict show-right'; }
+    } else if(dx<-40){
+        swCard.className='sw-card tilt-left';
+        if(verdict){ verdict.textContent='❌'; verdict.className='sw-verdict show-left'; }
+    } else {
+        swCard.className='sw-card';
+        if(verdict) verdict.className='sw-verdict';
+    }
+}
+function swOnUp(e){
+    if(!swDragging) return;
+    swDragging=false;
+    const dx=e.clientX-swDragStartX;
+    if(dx>60)       swJudge(true);
+    else if(dx<-60) swJudge(false);
+    else {
+        // snap back
+        swCard.style.transition='transform .3s cubic-bezier(.34,1.56,.64,1)';
+        swCard.style.transform='translateX(0) rotate(0deg)';
+        swCard.className='sw-card';
+        const verdict=document.getElementById('sw-verdict');
+        if(verdict) verdict.className='sw-verdict';
+    }
+}
+
+/* ── HUD ── */
+function swUpdateHUD(){
+    const hearts='❤️'.repeat(swLives)+'🖤'.repeat(SW_LIVES-swLives);
+    document.getElementById('sw-lives').textContent=hearts;
+    document.getElementById('sw-score').textContent=swScore;
+    document.getElementById('sw-streak').textContent=swStreak>0?`🔥${swStreak}`:swStreak;
+}
+
+/* ── End ── */
+function swEnd(){
+    swStop();
+    sndWin();
+    document.getElementById('swiper-wrap').classList.remove('visible');
+    const prev=getBest('swiper');
+    const isNew=prev===null||swScore>prev;
+    if(isNew) saveRec('swiper',swScore);
+    const baseXP=swScore*3;
+    const streakBonus=Math.round(baseXP*(streakMultiplier()-1));
+    const roundXP=Math.max(0,baseXP+streakBonus+(isNew?20:0));
+    showWin({
+        title: swScore>=20?'🏆 Легенда!':swScore>=10?'🎉 Отлично!':'💪 Неплохо!',
+        badgeCls:'lv3', badgeText:'👈 Свайпер',
+        base:baseXP, showAcc:false,
+        bonusLabel:`🔥 Серия${streakBonus>0?` ×${streakMultiplier()}`:''}`,
+        bonus:streakBonus,
+        recBonus:20, roundXP,
+        stats:`Карточек: ${swScore} · Лучшая серия: ${swBestStreak} · Рекорд: ${prev!==null?prev+' карт':'нет'}`,
+        isNew,
+        recVal:`${swScore} карт`,
+    });
+    isNew?setTimeout(celebrateRecord,120):celebrateWin();
+    updateRecordLabels();
+}
+
+// button controls
+document.getElementById('sw-btn-wrong').addEventListener('click',()=>swJudge(false));
+document.getElementById('sw-btn-right').addEventListener('click',()=>swJudge(true));
+
 
 /* ════════════════════════════════════════════
    ANAGRAM ENGINE
