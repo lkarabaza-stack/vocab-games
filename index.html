@@ -3708,17 +3708,19 @@ function aqGetVoice(){
     return aqVoice;
 }
 
-/* ── Google TTS (primary) ── */
+/* ── Google TTS (primary) — googleapis endpoint обходит CORS ── */
 function aqSpeakGoogle(word, cb){
     try {
         if(aqCurrentAudio){ aqCurrentAudio.pause(); aqCurrentAudio.src=''; }
-        const url=`https://translate.google.com/translate_tts?ie=UTF-8&tl=de-DE&client=tw-ob&q=${encodeURIComponent(word)}`;
+        const url=`https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=de&client=gtx&q=${encodeURIComponent(word)}`;
         const audio=new Audio(url);
         aqCurrentAudio=audio;
-        audio.onended=()=>cb('ok');
-        audio.onerror=()=>cb('err');
+        let called=false;
+        const done=(r)=>{ if(!called){ called=true; cb(r); } };
+        audio.onended=()=>done('ok');
+        audio.onerror=()=>done('err');
         const p=audio.play();
-        if(p&&p.catch) p.catch(()=>cb('blocked'));
+        if(p&&p.catch) p.catch(()=>done('blocked'));
     } catch(e){ cb('err'); }
 }
 
@@ -3768,6 +3770,7 @@ function aqDoSpeak(){
     });
 }
 
+/* ── start ── */
 function startAudioQuiz(){
     currentMode='audioquiz';
     aqQueue=shuffle(allData.map((_,i)=>i)); aqQPos=0;
@@ -3777,10 +3780,6 @@ function startAudioQuiz(){
     document.getElementById('aq-wrap').classList.add('visible');
     document.getElementById('btn-hint').style.display='none';
     aqNextQuestion();
-}
-
-function aqStop(){
-    try { speechSynthesis?.cancel(); } catch(e){}
 }
 
 /* ── build question ── */
@@ -3827,23 +3826,6 @@ function aqNextQuestion(){
 
     // auto-speak — word stays hidden
     aqDoSpeak();
-}
-
-function aqDoSpeak(){
-    const speakBtn=document.getElementById('aq-speak-btn');
-    speakBtn.classList.add('speaking');
-    speakBtn.disabled=true;
-
-    aqSpeak(allData[aqCurrent.correctIdx].w, (ok)=>{
-        speakBtn.classList.remove('speaking');
-        speakBtn.disabled=false;
-        if(!ok && !aqAnswered){
-            // no TTS — show word as fallback so question is still playable
-            document.getElementById('aq-word-hidden').style.display='none';
-            document.getElementById('aq-word-fallback').textContent=allData[aqCurrent.correctIdx].w;
-            document.getElementById('aq-word-fallback').style.display='block';
-        }
-    });
 }
 
 /* ── answer ── */
