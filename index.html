@@ -846,16 +846,14 @@ body{
 }
 #aq-next-btn:active{transform:scale(.93);}
 #aq-exit-btn{
-    margin-top:auto;
-    margin-bottom:20px;
-    width:calc(100% - 32px);max-width:400px;
-    padding:16px 28px;border-radius:18px;border:none;cursor:pointer;
-    font-size:1.05rem;font-weight:800;font-family:'Exo 2',sans-serif;
+    margin:4px 0 10px;
+    padding:9px 28px;border-radius:18px;border:none;cursor:pointer;
+    font-size:.85rem;font-weight:700;font-family:'Exo 2',sans-serif;
     background:rgba(255,255,255,.07);color:#94a3b8;
-    border:1px solid rgba(255,255,255,.15);
-    transition:transform .1s,background .15s;
+    border:1px solid rgba(255,255,255,.12);
+    transition:transform .1s,opacity .2s;
 }
-#aq-exit-btn:active{transform:scale(.97);background:rgba(255,255,255,.12);}
+#aq-exit-btn:active{transform:scale(.93);}
 
 .aq-sound-btn{
     position:absolute;top:12px;right:12px;z-index:60;
@@ -3755,7 +3753,7 @@ function aqDoSpeak(){
 
     aqSpeak(allData[aqCurrent.correctIdx].w, (ok)=>{
         speakBtn.classList.remove('speaking');
-        speakBtn.disabled=false;
+        speakBtn.disabled=aqAnswered;
         if(!ok && !aqAnswered){
             // no TTS — show word as fallback so question is still playable
             document.getElementById('aq-word-hidden').style.display='none';
@@ -3802,13 +3800,15 @@ function aqAnswer(chosenIdx, btn){
     rev.textContent=allData[aqCurrent.correctIdx].w;
     rev.style.display='block';
 
-    document.getElementById('aq-speak-btn').classList.remove('answered');
-    document.getElementById('aq-speak-btn').disabled=false;
+    document.getElementById('aq-speak-btn').classList.add('answered');
+    document.getElementById('aq-speak-btn').disabled=true;
 
     document.getElementById('aq-next-btn').style.display='block';
 }
 
-document.getElementById('aq-speak-btn').addEventListener('click', aqDoSpeak);
+document.getElementById('aq-speak-btn').addEventListener('click',()=>{
+    if(!aqAnswered) aqDoSpeak();
+});
 document.getElementById('aq-next-btn').addEventListener('click', aqNextQuestion);
 document.getElementById('aq-exit-btn').addEventListener('click', aqEnd);
 
