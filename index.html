@@ -3696,114 +3696,56 @@ let aqQueue=[], aqQPos=0;
 let aqCurrent=null;
 let aqQuestionNum=0, aqScore=0, aqStreak=0, aqBestStreak=0;
 let aqAnswered=false;
-let aqVoice=null;
 let aqCurrentAudio=null;
 
-function aqGetVoice(){
-    if(aqVoice) return aqVoice;
-    try {
-        const voices=speechSynthesis.getVoices();
-        aqVoice=voices.find(v=>v.lang==='de-DE')||voices.find(v=>v.lang.startsWith('de'))||null;
-    } catch(e){ aqVoice=null; }
-    return aqVoice;
-}
-
-/* ════════════════════════════════════════════
-   TTS ENGINE — 3 уровня fallback
-   1. Нажатие пользователя уже есть (autoplay разрешён в Telegram)
-   2. Пробуем soundoftext.com (простой GET, нет CORS)
-   3. Пробуем translate.googleapis.com
-   4. Web Speech API
-════════════════════════════════════════════ */
-
-function aqPlayUrl(url, cb){
-    try {
-        if(aqCurrentAudio){ aqCurrentAudio.pause(); aqCurrentAudio.src=''; }
-        const audio = new Audio();
-        aqCurrentAudio = audio;
-        let settled = false;
-        const done = r => { if(!settled){ settled=true; cb(r); } };
-        audio.oncanplaythrough = () => {
-            const p = audio.play();
-            if(p && p.catch) p.catch(() => done('blocked'));
-        };
-        audio.onended  = () => done('ok');
-        audio.onerror  = () => done('err');
-        // timeout — если ничего не произошло за 4 сек
-        setTimeout(() => done('timeout'), 4000);
-        audio.src = url;
-        audio.load();
-    } catch(e){ cb('err'); }
-}
-
-function aqSpeakGoogle(word, cb){
-    const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=de&client=gtx&q=${encodeURIComponent(word)}`;
-    aqPlayUrl(url, cb);
-}
-
-function aqSpeakSoundOfText(word, cb){
-    // soundoftext.com — бесплатный, нет CORS, MP3
-    const url = `https://soundoftext.com/api/sounds?text=${encodeURIComponent(word)}&language=de-DE`;
-    fetch(url)
-        .then(r => r.json())
-        .then(data => {
-            if(data?.location) aqPlayUrl(data.location, cb);
-            else cb('err');
-        })
-        .catch(() => cb('err'));
-}
-
-/* ── Web Speech (последний шанс) ── */
-function aqSpeakWebSpeech(word, cb){
-    try {
-        if(!window.speechSynthesis){ cb(false); return; }
-        speechSynthesis.cancel();
-        const voice = aqGetVoice();
-        if(!voice){ cb(false); return; }
-        const utt = new SpeechSynthesisUtterance(word);
-        utt.voice = voice; utt.lang = 'de-DE'; utt.rate = 0.9; utt.pitch = 1;
-        utt.onend  = () => cb(true);
-        utt.onerror = () => cb(false);
-        speechSynthesis.speak(utt);
-    } catch(e){ cb(false); }
-}
+const TTS_PROXY = 'https://tts-proxy-two.vercel.app/api/tts';
 
 function aqStop(){
     try {
         if(aqCurrentAudio){ aqCurrentAudio.pause(); aqCurrentAudio.src=''; aqCurrentAudio=null; }
-        speechSynthesis?.cancel();
     } catch(e){}
 }
 
 function aqDoSpeak(){
     const speakBtn = document.getElementById('aq-speak-btn');
+    const word = allData[aqCurrent.correctIdx].w;
     speakBtn.classList.add('speaking');
     speakBtn.disabled = true;
-    const word = allData[aqCurrent.correctIdx].w;
 
-    function showFallbackText(){
-        if(!aqAnswered){
-            document.getElementById('aq-word-hidden').style.display = 'none';
-            document.getElementById('aq-word-fallback').textContent = word;
-            document.getElementById('aq-word-fallback').style.display = 'block';
-        }
-    }
-    function onDone(ok){
-        speakBtn.classList.remove('speaking');
-        speakBtn.disabled = false;
-        if(!ok) showFallbackText();
-    }
-
-    // Цепочка: googleapis → soundoftext → WebSpeech → текст
-    aqSpeakGoogle(word, r1 => {
-        if(r1 === 'ok'){ onDone(true); return; }
-        if(r1 === 'blocked'){ speakBtn.classList.remove('speaking'); speakBtn.disabled=false; return; }
-        aqSpeakSoundOfText(word, r2 => {
-            if(r2 === 'ok'){ onDone(true); return; }
-            aqSpeakWebSpeech(word, ok => onDone(ok));
+    fetch(`${TTS_PROXY}?text=${encodeURIComponent(word)}&lang=de`)
+        .then(r => {
+            if(!r.ok) throw new Error('proxy error ' + r.status);
+            return r.blob();
+        })
+        .then(blob => {
+            const blobUrl = URL.createObjectURL(blob);
+            if(aqCurrentAudio){ aqCurrentAudio.pause(); aqCurrentAudio.src=''; }
+            const audio = new Audio(blobUrl);
+            aqCurrentAudio = audio;
+            audio.onended = () => {
+                speakBtn.classList.remove('speaking');
+                speakBtn.disabled = false;
+                URL.revokeObjectURL(blobUrl);
+            };
+            audio.onerror = () => {
+                speakBtn.classList.remove('speaking');
+                speakBtn.disabled = false;
+                URL.revokeObjectURL(blobUrl);
+            };
+            return audio.play();
+        })
+        .catch(() => {
+            // прокси недоступен — показываем слово текстом
+            speakBtn.classList.remove('speaking');
+            speakBtn.disabled = false;
+            if(!aqAnswered){
+                document.getElementById('aq-word-hidden').style.display = 'none';
+                document.getElementById('aq-word-fallback').textContent = word;
+                document.getElementById('aq-word-fallback').style.display = 'block';
+            }
         });
-    });
 }
+
 
 
 /* ── start ── */
