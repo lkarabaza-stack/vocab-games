@@ -9,19 +9,17 @@ body{font-family:sans-serif;padding:20px;background:#1e1b4b;color:#fff;}
 button{display:block;width:100%;padding:14px;margin:10px 0;border-radius:12px;border:none;
 font-size:1rem;font-weight:700;cursor:pointer;}
 .log{background:#0f172a;padding:12px;border-radius:8px;font-size:.8rem;
-font-family:monospace;margin-top:10px;min-height:100px;white-space:pre-wrap;}
+font-family:monospace;margin-top:10px;min-height:120px;white-space:pre-wrap;word-break:break-all;}
 </style>
 </head>
 <body>
-<h2>🔊 TTS Test</h2>
-<p>Слово для теста: <b>Hund</b></p>
+<h2>🔊 TTS Test 2 — Blob</h2>
+<p>Слово: <b>Hund</b></p>
 
-<button onclick="testWebSpeech()" style="background:#6366f1">1. Web Speech API</button>
-<button onclick="testGoogleAPIs()" style="background:#0ea5e9">2. Google TTS (googleapis)</button>
-<button onclick="testGoogleTW()" style="background:#0284c7">3. Google TTS (tw-ob)</button>
-<button onclick="testDict()" style="background:#7c3aed">4. dict.cc audio</button>
-<button onclick="testForvo()" style="background:#059669">5. Forvo (fetch MP3)</button>
-<button onclick="clearLog()" style="background:#374151">Очистить лог</button>
+<button onclick="testFetchBlob()" style="background:#6366f1">1. fetch → blob → Audio</button>
+<button onclick="testFetchBlobGTX()" style="background:#0ea5e9">2. fetch googleapis → blob</button>
+<button onclick="testBase64()" style="background:#7c3aed">3. fetch → ArrayBuffer → AudioContext</button>
+<button onclick="clearLog()" style="background:#374151">Очистить</button>
 
 <div class="log" id="log">Нажми кнопку...\n</div>
 
@@ -29,54 +27,68 @@ font-family:monospace;margin-top:10px;min-height:100px;white-space:pre-wrap;}
 const word = 'Hund';
 const log = s => { document.getElementById('log').textContent += s + '\n'; };
 
-function testWebSpeech(){
-    log('--- Web Speech ---');
-    if(!window.speechSynthesis){ log('❌ speechSynthesis недоступен'); return; }
-    const voices = speechSynthesis.getVoices();
-    log('Всего голосов: ' + voices.length);
-    const de = voices.filter(v=>v.lang.startsWith('de'));
-    log('Немецких: ' + de.length);
-    de.forEach(v=>log('  • '+v.name+' ('+v.lang+')'));
-    if(!de.length){ log('❌ Нет нем. голоса'); return; }
-    const utt = new SpeechSynthesisUtterance(word);
-    utt.voice = de[0]; utt.lang='de-DE'; utt.rate=0.9;
-    utt.onstart = ()=>log('▶️ играет...');
-    utt.onend   = ()=>log('✅ закончил');
-    utt.onerror = e=>log('❌ ошибка: '+e.error);
-    speechSynthesis.speak(utt);
+async function testFetchBlob(){
+    log('--- fetch tw-ob → blob → Audio ---');
+    try {
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=de-DE&client=tw-ob&q=${encodeURIComponent(word)}`;
+        log('fetching...');
+        const res = await fetch(url);
+        log('fetch status: ' + res.status + ' ' + res.statusText);
+        log('content-type: ' + res.headers.get('content-type'));
+        const blob = await res.blob();
+        log('blob size: ' + blob.size + ' type: ' + blob.type);
+        const blobUrl = URL.createObjectURL(blob);
+        const audio = new Audio(blobUrl);
+        audio.onplay   = ()=>log('▶️ играет');
+        audio.onended  = ()=>{ log('✅ готово'); URL.revokeObjectURL(blobUrl); };
+        audio.onerror  = e=>log('❌ ошибка: '+(audio.error?.message||'?'));
+        await audio.play();
+        log('play() OK');
+    } catch(e){ log('❌ exception: '+e.message); }
 }
 
-function playUrl(label, url){
-    log('--- '+label+' ---');
-    log('URL: '+url.slice(0,80)+'...');
-    const a = new Audio(url);
-    a.oncanplay   = ()=>log('✅ canplay');
-    a.onplay      = ()=>log('▶️ играет');
-    a.onended     = ()=>log('✅ закончил');
-    a.onerror     = e=>log('❌ ошибка кода: '+(a.error?.code||'?')+' msg: '+(a.error?.message||'?'));
-    a.play().then(()=>log('play() resolved')).catch(e=>log('❌ play() rejected: '+e.message));
+async function testFetchBlobGTX(){
+    log('--- fetch googleapis → blob → Audio ---');
+    try {
+        const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=de&client=gtx&q=${encodeURIComponent(word)}`;
+        log('fetching...');
+        const res = await fetch(url);
+        log('fetch status: ' + res.status);
+        const blob = await res.blob();
+        log('blob size: ' + blob.size + ' type: ' + blob.type);
+        const blobUrl = URL.createObjectURL(blob);
+        const audio = new Audio(blobUrl);
+        audio.onplay  = ()=>log('▶️ играет');
+        audio.onended = ()=>{ log('✅ готово'); URL.revokeObjectURL(blobUrl); };
+        audio.onerror = ()=>log('❌ ошибка: '+(audio.error?.message||'?'));
+        await audio.play();
+        log('play() OK');
+    } catch(e){ log('❌ exception: '+e.message); }
 }
 
-function testGoogleAPIs(){
-    playUrl('googleapis', `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=de&client=gtx&q=${encodeURIComponent(word)}`);
+async function testBase64(){
+    log('--- fetch → AudioContext.decodeAudio ---');
+    try {
+        const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=de&client=gtx&q=${encodeURIComponent(word)}`;
+        log('fetching...');
+        const res = await fetch(url);
+        log('status: ' + res.status);
+        const arrayBuffer = await res.arrayBuffer();
+        log('arrayBuffer size: ' + arrayBuffer.byteLength);
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        log('AudioContext state: ' + ctx.state);
+        const decoded = await ctx.decodeAudioData(arrayBuffer);
+        log('decoded duration: ' + decoded.duration.toFixed(2) + 's');
+        const source = ctx.createBufferSource();
+        source.buffer = decoded;
+        source.connect(ctx.destination);
+        source.onended = ()=>log('✅ готово');
+        source.start(0);
+        log('▶️ играет через AudioContext');
+    } catch(e){ log('❌ exception: '+e.message); }
 }
-function testGoogleTW(){
-    playUrl('google tw-ob', `https://translate.google.com/translate_tts?ie=UTF-8&tl=de-DE&client=tw-ob&q=${encodeURIComponent(word)}`);
-}
-function testDict(){
-    // pons.com прямой mp3
-    playUrl('PONS', `https://sounds.pons.com/audio_tts/de/${encodeURIComponent(word)}`);
-}
-function testForvo(){
-    log('--- Forvo API (нужен ключ) ---');
-    log('⚠️ Требует API key — пропускаем');
-}
+
 function clearLog(){ document.getElementById('log').textContent=''; }
-
-// Voices load async
-speechSynthesis?.addEventListener('voiceschanged', ()=>{
-    log('[voiceschanged] голоса загружены: '+speechSynthesis.getVoices().length);
-});
 </script>
 </body>
 </html>
