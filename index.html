@@ -65,54 +65,73 @@
    LOADING SCREEN
 ══════════════════════════════════════ */
 #loading-screen{
-    position:fixed;inset:0;z-index:1000;
+    position:fixed;inset:0;z-index:2000;
+    background:#06070f;overflow:hidden;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    background:linear-gradient(160deg,#0f172a 0%,#1e1b4b 55%,#0a0f2e 100%);
-    overflow:hidden;
-    transition:opacity .45s ease;
+    transition:opacity .7s ease;
 }
 #loading-screen.fade-out{opacity:0;pointer-events:none;}
 
-#ld-cards-wrap{
-    position:relative;width:230px;height:120px;margin-bottom:18px;
+/* Мозг в центре */
+#ld-brain{
+    font-size:5rem;line-height:1;
+    opacity:0;transform:scale(0) rotate(-20deg);
+    transition:opacity .45s ease, transform .6s cubic-bezier(.34,1.56,.64,1),
+               filter .4s ease;
+    filter:drop-shadow(0 0 0px #6366f1);
+    z-index:2;position:relative;
 }
-.ld-card{
-    position:absolute;
-    width:90px;height:54px;border-radius:10px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:1rem;font-weight:800;
-    border:2px solid rgba(99,102,241,.55);
-    background:rgba(30,27,75,.95);color:#e2e8f0;
-    box-shadow:0 6px 24px rgba(99,102,241,.35);
-    opacity:0;will-change:transform,opacity;
+#ld-brain.show{
+    opacity:1;transform:scale(1) rotate(0deg);
+    filter:drop-shadow(0 0 28px #818cf8);
 }
-#ld-logo{
+#ld-brain.pulse{
+    animation:ldBrainPulse .55s ease both;
+}
+@keyframes ldBrainPulse{
+    0%  {transform:scale(1);}
+    45% {transform:scale(1.22);filter:drop-shadow(0 0 55px #a5b4fc);}
+    100%{transform:scale(1);filter:drop-shadow(0 0 28px #818cf8);}
+}
+
+/* Название */
+#ld-title{
     font-family:'Exo 2',sans-serif;
-    font-size:1.65rem;font-weight:900;color:#e2e8f0;
-    letter-spacing:.05em;
-    opacity:0;transform:translateY(10px) scale(.85);
-    transition:opacity .4s ease,transform .5s cubic-bezier(.34,1.56,.64,1);
-    text-shadow:0 0 30px rgba(99,102,241,.7);
+    font-size:2.1rem;font-weight:900;color:#e2e8f0;
+    letter-spacing:.05em;margin-top:16px;
+    opacity:0;transform:translateY(22px);
+    transition:opacity .5s ease,transform .65s cubic-bezier(.34,1.56,.64,1);
+    text-shadow:0 0 36px rgba(99,102,241,.9);
+    position:relative;z-index:2;
 }
-#ld-logo.show{opacity:1;transform:translateY(0) scale(1);}
+#ld-title.show{opacity:1;transform:translateY(0);}
+
+/* Подзаголовок */
 #ld-sub{
-    font-size:.75rem;color:#475569;letter-spacing:.14em;
-    text-transform:uppercase;margin-top:5px;
-    opacity:0;transition:opacity .4s .25s ease;
+    font-size:.72rem;color:#374151;letter-spacing:.16em;
+    text-transform:uppercase;margin-top:6px;
+    opacity:0;transition:opacity .5s .28s ease;
+    position:relative;z-index:2;
 }
-#ld-sub.show{opacity:1;}
-#ld-dots{display:flex;gap:8px;margin-top:20px;}
-.ld-dot{
-    width:8px;height:8px;border-radius:50%;
-    background:rgba(99,102,241,.3);
-    animation:ldDot 1.2s ease-in-out infinite;
+#ld-sub.show{opacity:1;color:#6b7280;}
+
+/* Карточки-снаряды */
+.ld-bullet{
+    position:fixed;pointer-events:none;z-index:3;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:8px;font-weight:800;white-space:nowrap;
+    border:1.5px solid rgba(255,255,255,.15);
+    box-shadow:0 3px 12px rgba(0,0,0,.5);
 }
-.ld-dot:nth-child(2){animation-delay:.2s;}
-.ld-dot:nth-child(3){animation-delay:.4s;}
-@keyframes ldDot{
-    0%,100%{background:rgba(99,102,241,.3);transform:scale(1);}
-    50%{background:#818cf8;transform:scale(1.5);}
+
+/* Вспышка */
+#ld-flash{
+    position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0;
+    background:radial-gradient(circle at 50% 50%,rgba(129,140,248,.55) 0%,transparent 65%);
+    transition:opacity .14s ease;
 }
+#ld-flash.on{opacity:1;}
+#ld-flash.off{opacity:0;transition:opacity .7s ease;}
 
 /* ══════════════════════════════════════
    GOLD RECORD GLOW
@@ -1064,19 +1083,10 @@ body{
 
 <!-- ═══ LOADING SCREEN ═══ -->
 <div id="loading-screen">
-    <div id="ld-cards-wrap">
-        <div class="ld-card" id="ldc0">Ma</div>
-        <div class="ld-card" id="ldc1">tch</div>
-        <div class="ld-card" id="ldc2">Pa</div>
-        <div class="ld-card" id="ldc3">irs</div>
-    </div>
-    <div id="ld-logo">🧠 Match Pairs</div>
+    <div id="ld-flash"></div>
+    <div id="ld-brain">🧠</div>
+    <div id="ld-title">Match Pairs</div>
     <div id="ld-sub">Учи слова · Бей рекорды</div>
-    <div id="ld-dots">
-        <div class="ld-dot"></div>
-        <div class="ld-dot"></div>
-        <div class="ld-dot"></div>
-    </div>
 </div>
 
 <!-- ═══ THEME BUTTON ═══ -->
@@ -1405,55 +1415,114 @@ body{
 const tg = window.Telegram?.WebApp;
 if (tg) tg.expand();
 
-/* ════ LOADING SCREEN — карточки падают и складываются в лого ════ */
+/* ════════════════════════════════════════════
+   LOADING — мозг появляется, выстреливает карточки
+════════════════════════════════════════════ */
 (function(){
-    const IDS    = ['ldc0','ldc1','ldc2','ldc3'];
-    // конечные позиции — два ряда по 2
-    const LAND   = [{l:0,t:30},{l:100,t:30},{l:0,t:92},{l:100,t:92}];
-    // стартовые — над экраном, разные X
-    const START  = [{l:-40,t:-200},{l:120,t:-240},{l:-20,t:-180},{l:140,t:-220}];
-    const TILTS  = [-12, 10, 14, -8];
+    const LS = document.getElementById('loading-screen');
+    if(!LS) return;
+    const W = window.innerWidth, H = window.innerHeight;
+    const CX = W/2, CY = H/2;
 
-    IDS.forEach((id,i)=>{
-        const c=document.getElementById(id);
-        c.style.cssText+=`left:${START[i].l}px;top:${START[i].t}px;`+
-            `transform:rotate(${TILTS[i]}deg);`;
-    });
+    const WORDS = [
+        'Hund','Haus','Auto','Buch','Kind','Baum','Welt','Zeit',
+        'Hand','Berg','Meer','Weg','Tag','Jahr','Tier','Feuer',
+        'A','B','C','D','E','F','lernen','lesen','lieben',
+        'Katze','Apfel','Brot','Schule','Freund',
+    ];
+    const BG = [
+        'rgba(79,50,180,.92)','rgba(30,80,180,.92)','rgba(99,102,241,.92)',
+        'rgba(20,130,100,.92)','rgba(120,40,160,.92)','rgba(160,80,20,.92)',
+        'rgba(180,40,80,.92)','rgba(20,100,140,.92)',
+    ];
+    const TC = ['#c4b5fd','#93c5fd','#e0e7ff','#6ee7b7','#f0abfc','#fcd34d','#fda4af','#67e8f9'];
 
-    // Падаем по одной с интервалом
-    IDS.forEach((id,i)=>{
-        setTimeout(()=>{
-            const c=document.getElementById(id);
-            c.style.opacity='1';
-            c.style.transition=
-                `left .5s cubic-bezier(.22,1,.36,1),`+
-                `top .5s cubic-bezier(.22,1,.36,1),`+
-                `transform .5s cubic-bezier(.34,1.56,.64,1)`;
-            c.style.left      = LAND[i].l+'px';
-            c.style.top       = LAND[i].t+'px';
-            c.style.transform = 'rotate(0deg)';
-        }, 150 + i*180);
-    });
-
-    // После приземления всех — карточки схлопываются, лого появляется
-    const allLanded = 150 + 3*180 + 450;
+    // ── Шаг 1: мозг появляется с bounce (0ms) ──
     setTimeout(()=>{
-        IDS.forEach(id=>{
-            const c=document.getElementById(id);
-            c.style.transition='transform .3s ease,opacity .3s ease';
-            c.style.transform='scale(.5)';
-            c.style.opacity='0';
+        document.getElementById('ld-brain').classList.add('show');
+    }, 100);
+
+    // ── Шаг 2: pulse + выстреливает карточки (700ms) ──
+    setTimeout(()=>{
+        const brain = document.getElementById('ld-brain');
+        brain.classList.add('pulse');
+
+        // Вспышка
+        const flash = document.getElementById('ld-flash');
+        flash.classList.add('on');
+        setTimeout(()=>flash.classList.replace('on','off'), 160);
+
+        // Создаём ~28 карточек и выстреливаем
+        WORDS.forEach((w, i)=>{
+            const el = document.createElement('div');
+            el.className = 'ld-bullet';
+            const bi = i % BG.length;
+            const isShort = w.length <= 2;
+            const cw = isShort ? 36 : 44 + w.length*7;
+            const ch = 26;
+            el.textContent = w;
+            el.style.cssText =
+                `width:${cw}px;height:${ch}px;`+
+                `font-size:${isShort?'.85rem':'.75rem'};`+
+                `background:${BG[bi]};color:${TC[bi]};`+
+                `left:${CX - cw/2}px;top:${CY - ch/2}px;`+
+                `opacity:0;transform:scale(0);`;
+            LS.appendChild(el);
+
+            // Стартуем с небольшой задержкой каждую
+            setTimeout(()=>{
+                el.style.transition = 'none';
+                el.style.opacity    = '1';
+                el.style.transform  = 'scale(1)';
+
+                // Летит в случайном направлении
+                const angle  = (i / WORDS.length) * Math.PI*2 + (Math.random()-.5)*.8;
+                const dist   = 120 + Math.random()*Math.min(W,H)*.38;
+                const tx     = CX + Math.cos(angle)*dist - cw/2;
+                const ty     = CY + Math.sin(angle)*dist - ch/2;
+                const spd    = (.35+Math.random()*.25).toFixed(2);
+
+                requestAnimationFrame(()=>{
+                    el.style.transition =
+                        `left ${spd}s cubic-bezier(.2,.9,.3,1),`+
+                        `top  ${spd}s cubic-bezier(.2,.9,.3,1),`+
+                        `transform .3s ease`;
+                    el.style.left      = tx+'px';
+                    el.style.top       = ty+'px';
+                    el.style.transform = `rotate(${(Math.random()-.5)*30}deg) scale(1)`;
+                });
+
+                // Падает вниз и исчезает
+                const fallDelay = (+spd*1000) + 200 + Math.random()*200;
+                setTimeout(()=>{
+                    el.style.transition =
+                        `top .5s ease-in,`+
+                        `opacity .4s ease`;
+                    el.style.top     = (H + 80)+'px';
+                    el.style.opacity = '0';
+                    setTimeout(()=>el.remove(), 550);
+                }, fallDelay);
+
+            }, i * 30);
         });
-        document.getElementById('ld-logo').classList.add('show');
-        document.getElementById('ld-sub').classList.add('show');
-    }, allLanded);
 
-    // Скрываем весь экран
+    }, 700);
+
+    // ── Шаг 3: название (1300ms) ──
     setTimeout(()=>{
-        const ls=document.getElementById('loading-screen');
-        ls.classList.add('fade-out');
-        setTimeout(()=>ls?.remove(), 500);
-    }, allLanded + 900);
+        document.getElementById('ld-title').classList.add('show');
+    }, 1300);
+
+    // ── Шаг 4: подзаголовок (1650ms) ──
+    setTimeout(()=>{
+        document.getElementById('ld-sub').classList.add('show');
+    }, 1650);
+
+    // ── Скрытие (2600ms) ──
+    setTimeout(()=>{
+        LS.classList.add('fade-out');
+        setTimeout(()=>LS.remove(), 720);
+    }, 2600);
 })();
 
 /* ════ THEME SWITCHER ════ */
