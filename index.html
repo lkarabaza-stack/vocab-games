@@ -196,33 +196,121 @@ body{
 .tagline{font-size:.9rem;opacity:.55;text-align:center;}
 
 .mode-toggle{
-    display:grid;grid-template-columns:repeat(3,1fr);
+    display:grid;grid-template-columns:1fr 1fr 1fr;
     width:100%;background:var(--card-bg);
     border-radius:14px;padding:4px;gap:4px;
     box-shadow:0 2px 8px rgba(0,0,0,.07);
 }
-/* divider between row 1 and row 2 */
-.mode-toggle::after{
-    content:'';display:block;
+.mode-sep{
     grid-column:1/-1;height:1px;
     background:rgba(99,102,241,.18);
-    margin:2px 4px;
+    margin:1px 4px;
 }
-/* push row-2 buttons after the pseudo-divider */
-#btn-ma{ order:4; }
-#btn-msw{ order:5; }
-#btn-maq{ order:6; }
+#btn-mws{ grid-column:1/-1; }
 .mode-btn{
-    flex:1;padding:10px 6px;border:none;border-radius:10px;
+    padding:10px 6px;border:none;border-radius:10px;
     font-size:.88rem;font-weight:700;cursor:pointer;
     background:transparent;color:var(--text);opacity:.5;
     transition:background .2s,opacity .2s,color .2s;
 }
-.mode-btn.active-classic{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;opacity:1;}
-.mode-btn.active-sprint {background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;opacity:1;}
-.mode-btn.active-blaster{background:linear-gradient(135deg,#00e5ff,#0066aa);color:#05101a;opacity:1;}
-.mode-btn.active-swiper  {background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;opacity:1;}
-.mode-btn.active-audioquiz{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;opacity:1;}
+.mode-btn.active-classic   {background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;opacity:1;}
+.mode-btn.active-sprint    {background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;opacity:1;}
+.mode-btn.active-blaster   {background:linear-gradient(135deg,#00e5ff,#0066aa);color:#05101a;opacity:1;}
+.mode-btn.active-anagram   {background:linear-gradient(135deg,#7c3aed,#c026d3);color:#fff;opacity:1;}
+.mode-btn.active-swiper    {background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;opacity:1;}
+.mode-btn.active-audioquiz {background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;opacity:1;}
+.mode-btn.active-wordsearch{background:linear-gradient(135deg,#0f766e,#0ea5e9);color:#fff;opacity:1;}
+
+/* ═══════════════════════════════════════
+   WORD SEARCH
+═══════════════════════════════════════ */
+#ws-wrap{
+    display:none;position:fixed;inset:0;z-index:50;
+    background:linear-gradient(180deg,#0a1628 0%,#0f2040 100%);
+    font-family:'Exo 2',sans-serif;
+    flex-direction:column;align-items:center;overflow:hidden;
+}
+#ws-wrap.visible{display:flex;}
+#ws-hud{
+    width:100%;display:flex;justify-content:space-between;align-items:center;
+    padding:10px 16px 4px;flex-shrink:0;
+}
+#ws-timer{font-size:1.15rem;font-weight:800;color:#e2e8f0;}
+#ws-found{font-size:1rem;font-weight:700;color:#38bdf8;}
+#ws-streak-hud{font-size:1rem;font-weight:800;color:#fbbf24;}
+#ws-grid-wrap{
+    flex-shrink:0;padding:3px;margin:4px 0;
+    background:rgba(255,255,255,.04);
+    border-radius:10px;border:1px solid rgba(99,162,255,.12);
+    touch-action:none;user-select:none;
+}
+#ws-grid{display:grid;gap:2px;}
+.ws-cell{
+    display:flex;align-items:center;justify-content:center;
+    border-radius:4px;font-weight:800;
+    color:#475569;background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.05);
+    transition:background .08s,color .08s;
+}
+.ws-cell.hl   {background:rgba(99,162,255,.45);color:#fff;border-color:rgba(99,162,255,.7);}
+.ws-cell.found{background:rgba(34,197,94,.22);color:#86efac;border-color:rgba(34,197,94,.4);}
+.ws-cell.found.hl{background:rgba(34,197,94,.5);}
+#ws-words{
+    flex:1;width:100%;overflow-y:auto;
+    padding:4px 12px 76px;display:flex;flex-direction:column;gap:5px;
+}
+.ws-item{
+    display:flex;align-items:center;gap:8px;
+    padding:7px 10px;border-radius:9px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.07);
+}
+.ws-item.done{ border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08); }
+.ws-dir{font-size:.9rem;min-width:18px;text-align:center;color:#6366f1;font-weight:900;}
+.ws-de{
+    font-size:.9rem;font-weight:800;color:#38bdf8;
+    min-width:0;overflow:hidden;max-width:0;
+    transition:max-width .4s ease, opacity .3s ease;
+    opacity:0;white-space:nowrap;
+}
+.ws-item.done .ws-de{ max-width:120px; opacity:1; }
+.ws-ru{font-size:.88rem;color:#e2e8f0;font-weight:700;flex:1;}
+#ws-btns{
+    position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+    display:flex;gap:10px;z-index:10;
+}
+#ws-hint-btn{
+    padding:13px 22px;border-radius:20px;border:none;cursor:pointer;
+    font-size:.95rem;font-weight:800;font-family:'Exo 2',sans-serif;
+    background:rgba(251,191,36,.15);color:#fbbf24;
+    border:1px solid rgba(251,191,36,.35);
+    transition:background .15s,opacity .2s;
+}
+#ws-hint-btn:active{background:rgba(251,191,36,.28);}
+#ws-hint-btn:disabled{opacity:.35;cursor:default;}
+#ws-exit-btn{
+    padding:13px 22px;border-radius:20px;border:none;cursor:pointer;
+    font-size:.95rem;font-weight:800;font-family:'Exo 2',sans-serif;
+    background:rgba(255,255,255,.07);color:#94a3b8;
+    border:1px solid rgba(255,255,255,.12);
+    transition:background .15s;
+}
+#ws-exit-btn:active{background:rgba(255,255,255,.14);}
+/* Подсветка подсказки */
+.ws-cell.hint-hl{
+    background:rgba(251,191,36,.45)!important;
+    color:#fff!important;
+    border-color:rgba(251,191,36,.8)!important;
+    animation:wsHintPulse .6s ease 3;
+}
+@keyframes wsHintPulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.12);}
+}
+/* Немецкое слово открыто подсказкой */
+.ws-item.hint-revealed .ws-de{
+    max-width:120px;opacity:.5;color:#fbbf24;
+}
 
 .mode-desc{
     width:100%;background:var(--card-bg);border-radius:14px;
@@ -609,6 +697,53 @@ body{
     #bl-word{color:#e0f0ff;}
     .bl-lbl{color:#4d96ff;}
     .bl-val{color:#b0d8ff;}
+}
+
+/* data-theme dark */
+[data-theme="dark"] #blaster-wrap{
+    background:linear-gradient(180deg,#071220 0%,#0c1a30 50%,#071a12 100%);
+}
+[data-theme="dark"] #blaster-wrap::before{
+    background-image:radial-gradient(circle at 20% 30%,rgba(56,189,248,.08) 0%,transparent 55%),
+                     radial-gradient(circle at 80% 70%,rgba(99,102,241,.07) 0%,transparent 55%);
+}
+[data-theme="dark"] #bl-hud{
+    background:linear-gradient(180deg,rgba(7,18,32,.97) 80%,transparent);
+}
+[data-theme="dark"] #bl-word{ color:#e0f0ff; }
+[data-theme="dark"] #bl-word-panel .bl-word-lbl{ color:#f472b6; }
+[data-theme="dark"] .bl-lbl{ color:#38bdf8; }
+[data-theme="dark"] .bl-val{ color:#bae6fd; }
+[data-theme="dark"] #bl-combo{ color:#fb923c; text-shadow:0 0 12px rgba(251,146,60,.5); }
+[data-theme="dark"] #bl-flash{ background:rgba(255,60,60,.18); }
+
+/* data-theme neon */
+[data-theme="neon"] #blaster-wrap{
+    background:linear-gradient(180deg,#050010 0%,#0a0020 50%,#001408 100%);
+}
+[data-theme="neon"] #blaster-wrap::before{
+    background-image:radial-gradient(circle at 20% 30%,rgba(0,255,231,.06) 0%,transparent 55%),
+                     radial-gradient(circle at 80% 70%,rgba(255,0,170,.06) 0%,transparent 55%);
+}
+[data-theme="neon"] #bl-hud{
+    background:linear-gradient(180deg,rgba(5,0,16,.97) 80%,transparent);
+    border-bottom:1px solid rgba(0,255,231,.12);
+}
+[data-theme="neon"] #bl-word{
+    color:#00ffe7;
+    text-shadow:0 0 18px rgba(0,255,231,.7), 0 0 40px rgba(0,255,231,.3);
+}
+[data-theme="neon"] #bl-word-panel .bl-word-lbl{ color:#ff00aa; }
+[data-theme="neon"] .bl-lbl{ color:#00ffe7; opacity:.9; }
+[data-theme="neon"] .bl-val{ color:#ffffff; text-shadow:0 0 8px rgba(0,255,231,.6); }
+[data-theme="neon"] #bl-combo{
+    color:#ff00aa;
+    text-shadow:0 0 14px rgba(255,0,170,.8), 0 0 30px rgba(255,0,170,.4);
+}
+[data-theme="neon"] #bl-flash{ background:rgba(0,255,231,.12); }
+[data-theme="neon"] .bl-sound-btn{
+    border-color:rgba(0,255,231,.4);
+    background:rgba(0,255,231,.08);
 }
 
 /* ═══════════════════════════════════════
@@ -1106,12 +1241,15 @@ body{
     <div><h1>🧠 Match Pairs</h1><p class="tagline">Выбери режим и уровень</p></div>
 
     <div class="mode-toggle">
-        <button class="mode-btn active-classic" id="btn-mc" onclick="setMode('classic')">🎯 Классика</button>
-        <button class="mode-btn"               id="btn-ms" onclick="setMode('sprint')">⚡ Спринт</button>
-        <button class="mode-btn"               id="btn-mb" onclick="setMode('blaster')">💥 Бластер</button>
-        <button class="mode-btn"               id="btn-ma" onclick="setMode('anagram')">🔤 Анаграмма</button>
+        <button class="mode-btn active-classic" id="btn-mc"  onclick="setMode('classic')">🎯 Классика</button>
+        <button class="mode-btn"               id="btn-ms"  onclick="setMode('sprint')">⚡ Спринт</button>
+        <button class="mode-btn"               id="btn-mb"  onclick="setMode('blaster')">💥 Бластер</button>
+        <div class="mode-sep"></div>
+        <button class="mode-btn"               id="btn-ma"  onclick="setMode('anagram')">🔤 Анаграмма</button>
         <button class="mode-btn"               id="btn-msw" onclick="setMode('swiper')">👈 Свайпер</button>
         <button class="mode-btn"               id="btn-maq" onclick="setMode('audioquiz')">🔊 Аудио</button>
+        <div class="mode-sep"></div>
+        <button class="mode-btn"               id="btn-mws" onclick="setMode('wordsearch')">🔍 Поиск слов</button>
     </div>
 
     <div class="mode-desc" id="mode-desc"></div>
@@ -1181,10 +1319,22 @@ body{
     </div>
 
     <div class="level-section" id="lbs-audioquiz" style="display:none">
-        <div class="section-label">10 вопросов · слушай и выбирай</div>
+        <div class="section-label">∞ вопросов · слушай и выбирай</div>
         <button class="btn-level" data-mode="audioquiz" style="background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;box-shadow:0 5px 20px rgba(14,165,233,.4)">
-            <span class="lv-left"><span class="lv-name">🔊 Запустить</span><span class="lv-sub">Слово на слух · 4 варианта · немецкий TTS</span></span>
+            <span class="lv-left"><span class="lv-name">🔊 Запустить</span><span class="lv-sub">Слово на слух · 4 варианта · TTS</span></span>
             <span class="lv-right"><span class="lv-xp">до 60 XP</span><span class="lv-record" id="rcaq"></span></span>
+        </button>
+    </div>
+
+    <div class="level-section" id="lbs-wordsearch" style="display:none">
+        <div class="section-label">найди слова · горизонталь · вертикаль</div>
+        <button class="btn-level lv1" data-mode="wordsearch" data-ws-hard="0">
+            <span class="lv-left"><span class="lv-name">🟢 Лёгкий</span><span class="lv-sub">5 слов · сетка 8×8</span></span>
+            <span class="lv-right"><span class="lv-xp">до 50 XP</span><span class="lv-record" id="rcws-e"></span></span>
+        </button>
+        <button class="btn-level lv3" data-mode="wordsearch" data-ws-hard="1" style="background:linear-gradient(135deg,#0f766e,#0ea5e9);color:#fff;box-shadow:0 5px 16px rgba(15,118,110,.4)">
+            <span class="lv-left"><span class="lv-name">🔴 Сложный</span><span class="lv-sub">10 слов · сетка 12×12</span></span>
+            <span class="lv-right"><span class="lv-xp">до 100 XP</span><span class="lv-record" id="rcws-h"></span></span>
         </button>
     </div>
 
@@ -1406,6 +1556,21 @@ body{
     <button id="aq-exit-btn">🏁 Завершить</button>
 
     <button class="aq-sound-btn" id="btn-sound-aq" title="Звук">🔊</button>
+</div>
+
+<!-- ═══ WORD SEARCH ═══ -->
+<div id="ws-wrap">
+    <div id="ws-hud">
+        <div id="ws-timer">⏱ 0:00</div>
+        <div id="ws-found">0 / 7</div>
+        <div id="ws-streak-hud">🔥 0</div>
+    </div>
+    <div id="ws-grid-wrap"><div id="ws-grid"></div></div>
+    <div id="ws-words"></div>
+    <div id="ws-btns">
+        <button id="ws-hint-btn">💡 Помощь</button>
+        <button id="ws-exit-btn">🏁 Завершить</button>
+    </div>
 </div>
 
 <script>
@@ -1871,9 +2036,10 @@ const MODE_DESCS = {
     classic: '<b>🎯 Классика</b> — найди все пары. Считается время и точность. Чем быстрее — тем больше XP.',
     sprint:  '<b>⚡ Спринт</b> — 60 секунд, бесконечный поток слов. Выбери уровень: 3, 6 или 8 пар одновременно. Угадай как можно больше!',
     blaster: '<b>🫧 Бластер</b> — 60 секунд! Мыльные пузыри с переводами летают по экрану. Нажми на правильный — рогатка стреляет и пузырь лопается! Комбо до ×2.0.',
-    anagram: '<b>🔤 Анаграмма</b> — 5 слов! Буквы немецкого слова летают как пузыри. Нажимай на них по порядку — собери слово. Внизу подсказка — русский перевод. Чем быстрее — тем больше XP!',
-    swiper:     '<b>👈 Свайпер</b> — карточка с парой слов. Верный перевод — свайп вправо, неверный — влево. 3 секунды на карточку. Три ошибки или тайм-аут — игра окончена!',
-    audioquiz:  '<b>🔊 Аудио-Викторина</b> — слово произносится голосом, текст скрыт. Выбери правильный перевод из 4 вариантов. 10 вопросов. Тренирует восприятие на слух!',
+    anagram: '<b>🔤 Анаграмма</b> — 5 слов! Буквы немецкого слова летают как пузыри. Нажимай на них по порядку — собери слово. Чем быстрее — тем больше XP!',
+    swiper:     '<b>👈 Свайпер</b> — карточка с парой слов. Верный перевод — свайп вправо, неверный — влево. 3 секунды на карточку.',
+    audioquiz:  '<b>🔊 Аудио-Викторина</b> — слово произносится голосом, текст скрыт. Выбери правильный перевод из 4 вариантов. Тренирует восприятие на слух!',
+    wordsearch: '<b>🔍 Поиск слов</b> — сетка 10×10. Найди 7 спрятанных слов горизонтально или вертикально. Направление подсказано. Чем быстрее — тем больше XP!',
 };
 let currentMode = 'classic';
 let currentPairs = 4;
@@ -1883,16 +2049,18 @@ function setMode(m) {
     document.getElementById('btn-mc').className  = 'mode-btn'+(m==='classic'    ?' active-classic':'');
     document.getElementById('btn-ms').className  = 'mode-btn'+(m==='sprint'     ?' active-sprint' :'');
     document.getElementById('btn-mb').className  = 'mode-btn'+(m==='blaster'    ?' active-blaster':'');
-    document.getElementById('btn-ma').className  = 'mode-btn'+(m==='anagram'    ?' active-classic':'');
+    document.getElementById('btn-ma').className  = 'mode-btn'+(m==='anagram'    ?' active-anagram':'');
     document.getElementById('btn-msw').className = 'mode-btn'+(m==='swiper'     ?' active-swiper'  :'');
     document.getElementById('btn-maq').className = 'mode-btn'+(m==='audioquiz'  ?' active-audioquiz':'');
+    document.getElementById('btn-mws').className = 'mode-btn'+(m==='wordsearch' ?' active-wordsearch':'');
     document.getElementById('mode-desc').innerHTML = MODE_DESCS[m]||'';
-    document.getElementById('lbs-classic').style.display   = m==='classic'   ?'':'none';
-    document.getElementById('lbs-sprint').style.display    = m==='sprint'    ?'':'none';
-    document.getElementById('lbs-blaster').style.display   = m==='blaster'   ?'':'none';
-    document.getElementById('lbs-anagram').style.display   = m==='anagram'   ?'':'none';
-    document.getElementById('lbs-swiper').style.display    = m==='swiper'    ?'':'none';
-    document.getElementById('lbs-audioquiz').style.display = m==='audioquiz' ?'':'none';
+    document.getElementById('lbs-classic').style.display    = m==='classic'    ?'':'none';
+    document.getElementById('lbs-sprint').style.display     = m==='sprint'     ?'':'none';
+    document.getElementById('lbs-blaster').style.display    = m==='blaster'    ?'':'none';
+    document.getElementById('lbs-anagram').style.display    = m==='anagram'    ?'':'none';
+    document.getElementById('lbs-swiper').style.display     = m==='swiper'     ?'':'none';
+    document.getElementById('lbs-audioquiz').style.display  = m==='audioquiz'  ?'':'none';
+    document.getElementById('lbs-wordsearch').style.display = m==='wordsearch' ?'':'none';
 }
 setMode('classic');
 updateRecordLabels();
@@ -1901,15 +2069,16 @@ updateRecordLabels();
    RECORD LABELS
 ════════════════════════════════════════════ */
 function updateRecordLabels() {
-    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram',rcsw:'swiper',rcaq:'audioquiz'};
+    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram',rcsw:'swiper',rcaq:'audioquiz','rcws-e':'wordsearch-e','rcws-h':'wordsearch-h'};
     for(const [id,key] of Object.entries(map)) {
         const el=document.getElementById(id); if(!el) continue;
         const v=getBest(key);
         if(v===null){el.textContent='';continue;}
         if(key.startsWith('sprint')||key.startsWith('blaster')||key==='anagram')
             el.textContent=`🏆 ${v} слов`;
-        else if(key==='swiper')    el.textContent=`🏆 ${v} карт`;
-        else if(key==='audioquiz') el.textContent=`🏆 ${v}/10`;
+        else if(key==='swiper')     el.textContent=`🏆 ${v} карт`;
+        else if(key==='audioquiz')  el.textContent=`🏆 ${v} отв.`;
+        else if(key.startsWith('wordsearch')) el.textContent=`🏆 ${fmt(v)}`;
         else if(key==='cl-8h') el.textContent=`🏆 ${fmt(v)}`;
         else el.textContent=`🏆 ${fmt(v)}`;
     }
@@ -1930,6 +2099,7 @@ document.querySelectorAll('.btn-level').forEach(btn => {
         else if(m==='anagram') startAnagram();
         else if(m==='swiper') startSwiper();
         else if(m==='audioquiz') startAudioQuiz();
+        else if(m==='wordsearch') startWordSearch(btn.dataset.wsHard==='1');
         else startBlaster(rev);
     });
 });
@@ -1952,6 +2122,7 @@ function hideAll() {
     document.getElementById('anagram-wrap').classList.remove('visible');
     document.getElementById('swiper-wrap').classList.remove('visible');
     document.getElementById('aq-wrap').classList.remove('visible');
+    document.getElementById('ws-wrap').classList.remove('visible');
 }
 
 function goToMenu() {
@@ -1962,6 +2133,7 @@ function goToMenu() {
     cancelAnimationFrame(agRAF); agRunning=false;
     swStop();
     aqStop();
+    wsStop();
     hideAll();
     document.getElementById('start-screen').style.display='flex';
     document.getElementById('btn-hint').style.display='none';
@@ -2626,14 +2798,36 @@ function endSprint(){
 ════════════════════════════════════════════ */
 const BL_SECS    = 60;
 const BALL_ZONES = {top:148, bottom:110};
-const BL_COLORS  = [
-    {fill:'#a8d8f0',glow:'#6ab4e8',text:'#1a3a5c',rim:'#e8f8ff'},
-    {fill:'#f0b8d8',glow:'#e87aaa',text:'#5c1a3a',rim:'#fff0f8'},
-    {fill:'#f0e8a8',glow:'#d4c040',text:'#3a3000',rim:'#fffff0'},
-    {fill:'#a8f0c8',glow:'#50d090',text:'#0a3a20',rim:'#f0fff8'},
-    {fill:'#c8a8f0',glow:'#a060e0',text:'#2a0a5c',rim:'#f8f0ff'},
-    {fill:'#f0c8a8',glow:'#e09050',text:'#3a1a00',rim:'#fff8f0'},
+const BL_COLORS_LIGHT = [
+    {fill:'#a8d8f0',glow:'#6ab4e8',text:'#1a3a5c'},
+    {fill:'#f0b8d8',glow:'#e87aaa',text:'#5c1a3a'},
+    {fill:'#f0e8a8',glow:'#d4c040',text:'#3a3000'},
+    {fill:'#a8f0c8',glow:'#50d090',text:'#0a3a20'},
+    {fill:'#c8a8f0',glow:'#a060e0',text:'#2a0a5c'},
+    {fill:'#f0c8a8',glow:'#e09050',text:'#3a1a00'},
 ];
+const BL_COLORS_DARK = [
+    {fill:'rgba(30,80,160,.7)',  glow:'rgba(56,189,248,1)',  text:'#e0f4ff'},
+    {fill:'rgba(140,30,100,.7)', glow:'rgba(244,114,182,1)', text:'#ffe0f4'},
+    {fill:'rgba(120,100,20,.7)', glow:'rgba(251,191,36,1)',  text:'#fff8d0'},
+    {fill:'rgba(20,110,70,.7)',  glow:'rgba(52,211,153,1)',  text:'#d0fff0'},
+    {fill:'rgba(80,30,160,.7)',  glow:'rgba(167,139,250,1)', text:'#ede0ff'},
+    {fill:'rgba(160,70,20,.7)',  glow:'rgba(251,146,60,1)',  text:'#fff0e0'},
+];
+const BL_COLORS_NEON = [
+    {fill:'rgba(0,255,231,.1)',  glow:'rgba(0,255,231,1)',   text:'#00ffe7'},
+    {fill:'rgba(255,0,170,.1)',  glow:'rgba(255,0,170,1)',   text:'#ff00aa'},
+    {fill:'rgba(255,220,0,.1)',  glow:'rgba(255,220,0,1)',   text:'#ffdd00'},
+    {fill:'rgba(0,200,255,.1)',  glow:'rgba(0,200,255,1)',   text:'#00c8ff'},
+    {fill:'rgba(180,0,255,.1)',  glow:'rgba(180,0,255,1)',   text:'#c000ff'},
+    {fill:'rgba(255,100,0,.1)',  glow:'rgba(255,100,0,1)',   text:'#ff6400'},
+];
+function blGetColors(){
+    const t=document.documentElement.getAttribute('data-theme')||'light';
+    if(t==='neon') return BL_COLORS_NEON;
+    if(t==='dark') return BL_COLORS_DARK;
+    return BL_COLORS_LIGHT;
+}
 
 /* ── Audio ── */
 let _sndCtx = null;
@@ -2889,7 +3083,7 @@ function blSpawnBalls(){
     const correctText = blReverseMode ? allData[blCurIdx].w : allData[blCurIdx].t;
     const wrongPool   = allData.filter((_,i)=>i!==blCurIdx).map(d => blReverseMode ? d.w : d.t);
     const wrong       = shuffle(wrongPool).slice(0, n-1);
-    const cols=shuffle([...BL_COLORS]).slice(0,n);
+    const cols=shuffle([...blGetColors()]).slice(0,n);
     const cpos=0|Math.random()*n;
     blBalls=[]; let wi=0;
 
@@ -2973,33 +3167,61 @@ function blUpdateBalls(dt){
 
 /* ── Draw bubble ── */
 function blDrawBubble(ctx, x, y, r, col, text) {
+    const theme = document.documentElement.getAttribute('data-theme')||'light';
+    const isNeon = theme==='neon';
+    const isDark = theme==='dark';
     ctx.save();
-    ctx.shadowColor = col.glow; ctx.shadowBlur = 20;
+    ctx.shadowColor = col.glow; ctx.shadowBlur = isNeon ? 32 : 20;
     // body
     const body = ctx.createRadialGradient(x-r*.25, y-r*.3, r*.04, x, y, r);
-    body.addColorStop(0, col.rim + 'dd'); body.addColorStop(0.35, col.fill + 'bb');
-    body.addColorStop(0.8, col.fill + '77'); body.addColorStop(1, col.glow + '44');
+    if(isNeon){
+        body.addColorStop(0, col.fill);
+        body.addColorStop(0.5, col.fill);
+        body.addColorStop(1, 'rgba(0,0,0,0)');
+    } else if(isDark){
+        body.addColorStop(0, col.fill.replace(/[\d.]+\)$/, '.9)'));
+        body.addColorStop(0.4, col.fill);
+        body.addColorStop(0.85, col.fill.replace(/[\d.]+\)$/, '.35)'));
+        body.addColorStop(1, 'rgba(0,0,0,0)');
+    } else {
+        // light: hex colors — build rgba manually
+        body.addColorStop(0, col.fill + 'ee');
+        body.addColorStop(0.35, col.fill + 'bb');
+        body.addColorStop(0.8, col.fill + '66');
+        body.addColorStop(1, col.glow + '33');
+    }
     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
     ctx.fillStyle = body; ctx.fill(); ctx.shadowBlur = 0;
-    // rainbow rim
-    const rim = ctx.createLinearGradient(x-r, y-r, x+r, y+r);
-    rim.addColorStop(0,'rgba(255,160,160,.6)'); rim.addColorStop(0.25,'rgba(160,255,160,.5)');
-    rim.addColorStop(0.5,'rgba(160,160,255,.6)'); rim.addColorStop(0.75,'rgba(255,255,160,.5)');
-    rim.addColorStop(1,'rgba(255,160,255,.6)');
-    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
-    ctx.strokeStyle = rim; ctx.lineWidth = r*0.09; ctx.stroke();
-    // top-left highlight
-    const hi = ctx.createRadialGradient(x-r*.35, y-r*.38, 0, x-r*.22, y-r*.26, r*.5);
-    hi.addColorStop(0,'rgba(255,255,255,.9)'); hi.addColorStop(.5,'rgba(255,255,255,.2)');
-    hi.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fillStyle=hi; ctx.fill();
-    // bottom-right shimmer
-    const hi2 = ctx.createRadialGradient(x+r*.32, y+r*.32, 0, x+r*.32, y+r*.32, r*.2);
-    hi2.addColorStop(0,'rgba(255,255,255,.55)'); hi2.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fillStyle=hi2; ctx.fill();
+    // rim
+    if(isNeon){
+        // Neon: bright glowing stroke instead of rainbow rim
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+        ctx.strokeStyle = col.glow; ctx.lineWidth = r*0.1;
+        ctx.shadowColor = col.glow; ctx.shadowBlur = 20; ctx.stroke(); ctx.shadowBlur=0;
+    } else {
+        // rainbow rim
+        const rim = ctx.createLinearGradient(x-r, y-r, x+r, y+r);
+        rim.addColorStop(0,'rgba(255,160,160,.6)'); rim.addColorStop(0.25,'rgba(160,255,160,.5)');
+        rim.addColorStop(0.5,'rgba(160,160,255,.6)'); rim.addColorStop(0.75,'rgba(255,255,160,.5)');
+        rim.addColorStop(1,'rgba(255,160,255,.6)');
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+        ctx.strokeStyle = rim; ctx.lineWidth = r*0.09; ctx.stroke();
+    }
+    // top-left highlight (skip in neon)
+    if(!isNeon){
+        const hi = ctx.createRadialGradient(x-r*.35, y-r*.38, 0, x-r*.22, y-r*.26, r*.5);
+        hi.addColorStop(0,'rgba(255,255,255,.9)'); hi.addColorStop(.5,'rgba(255,255,255,.2)');
+        hi.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fillStyle=hi; ctx.fill();
+        // bottom-right shimmer
+        const hi2 = ctx.createRadialGradient(x+r*.32, y+r*.32, 0, x+r*.32, y+r*.32, r*.2);
+        hi2.addColorStop(0,'rgba(255,255,255,.55)'); hi2.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fillStyle=hi2; ctx.fill();
+    }
     // text multiline
     if(text){
         ctx.fillStyle = col.text; ctx.textAlign='center'; ctx.textBaseline='middle';
+        if(isNeon){ ctx.shadowColor=col.glow; ctx.shadowBlur=12; }
         const maxC = Math.max(4, Math.floor(r/6));
         const words2 = text.split(' ');
         const lines = []; let cur='';
@@ -3016,6 +3238,7 @@ function blDrawBubble(ctx, x, y, r, col, text) {
         ctx.font=`700 ${fz}px 'Exo 2',sans-serif`;
         const lh=fz*1.22, totalH=lines.length*lh;
         lines.forEach((line,i)=>ctx.fillText(line, x, y-totalH/2+lh*(i+.5)));
+        ctx.shadowBlur=0;
     }
     ctx.restore();
 }
@@ -3424,6 +3647,7 @@ document.getElementById('btn-restart').addEventListener('click',()=>{
     else if(currentMode==='anagram') startAnagram();
     else if(currentMode==='swiper') startSwiper();
     else if(currentMode==='audioquiz') startAudioQuiz();
+    else if(currentMode==='wordsearch') startWordSearch(wsHardMode);
     else startBlaster(blReverseMode);
 });
 document.getElementById('btn-menu').addEventListener('click',goToMenu);
@@ -4302,6 +4526,224 @@ try {
 
 
 
+
+/* ════════════════════════════════════════════
+   WORD SEARCH ENGINE
+════════════════════════════════════════════ */
+let wsN=10, wsWordsN=7, wsHardMode=false;
+let wsGrid=[], wsPlaced=[], wsTimer=null, wsSecs=0, wsFoundN=0, wsHints=0;
+let wsDrag=false, wsCells=[];
+
+function wsStop(){ clearInterval(wsTimer); wsTimer=null; }
+
+function startWordSearch(hard=false){
+    currentMode='wordsearch';
+    wsHardMode=hard;
+    wsN = hard ? 12 : 8;
+    wsWordsN = hard ? 10 : 5;
+    wsFoundN=0; wsSecs=0; wsDrag=false; wsCells=[]; wsHints=0;
+    resetStreak();
+    hideAll();
+    document.getElementById('ws-wrap').classList.add('visible');
+    document.getElementById('btn-hint').style.display='none';
+    wsBuildGrid(); wsRenderGrid(); wsRenderList(); wsUpdateHUD();
+    wsTimer=setInterval(()=>{
+        wsSecs++;
+        const m=0|wsSecs/60, s=String(wsSecs%60).padStart(2,'0');
+        document.getElementById('ws-timer').textContent='⏱ '+m+':'+s;
+    },1000);
+}
+
+function wsBuildGrid(){
+    wsGrid=Array.from({length:wsN},()=>Array(wsN).fill(''));
+    wsPlaced=[];
+    const pool=shuffle(allData).slice(0,wsWordsN*3);
+    for(const item of pool){
+        if(wsPlaced.length>=wsWordsN) break;
+        const w=item.w.toUpperCase().replace(/[^A-ZÄÖÜ]/g,'');
+        if(w.length<2||w.length>wsN) continue;
+        const dir=Math.random()<0.5?'H':'V';
+        const pos=wsPlaceWord(w,dir);
+        if(pos) wsPlaced.push({word:w, trans:item.t, dir, ...pos, found:false});
+    }
+    const alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for(let r=0;r<wsN;r++)
+        for(let c=0;c<wsN;c++)
+            if(!wsGrid[r][c]) wsGrid[r][c]=alpha[Math.floor(Math.random()*alpha.length)];
+}
+
+function wsPlaceWord(word,dir){
+    for(let t=0;t<120;t++){
+        const r=dir==='H'?Math.floor(Math.random()*wsN):Math.floor(Math.random()*(wsN-word.length+1));
+        const c=dir==='H'?Math.floor(Math.random()*(wsN-word.length+1)):Math.floor(Math.random()*wsN);
+        let ok=true;
+        for(let i=0;i<word.length;i++){
+            const nr=dir==='H'?r:r+i, nc=dir==='H'?c+i:c;
+            if(wsGrid[nr][nc]&&wsGrid[nr][nc]!==word[i]){ok=false;break;}
+        }
+        if(ok){
+            for(let i=0;i<word.length;i++){
+                const nr=dir==='H'?r:r+i, nc=dir==='H'?c+i:c;
+                wsGrid[nr][nc]=word[i];
+            }
+            return {row:r,col:c};
+        }
+    }
+    return null;
+}
+
+function wsRenderGrid(){
+    const g=document.getElementById('ws-grid');
+    const maxW=Math.min(window.innerWidth-20, 420);
+    const cw=Math.floor(maxW/wsN);
+    g.style.gridTemplateColumns='repeat('+wsN+','+cw+'px)';
+    g.innerHTML='';
+    for(let r=0;r<wsN;r++)
+        for(let c=0;c<wsN;c++){
+            const el=document.createElement('div');
+            el.className='ws-cell';
+            el.textContent=wsGrid[r][c];
+            el.style.width=el.style.height=cw+'px';
+            el.style.fontSize=Math.max(9,cw*.42)+'px';
+            el.dataset.r=r; el.dataset.c=c;
+            g.appendChild(el);
+        }
+    g.addEventListener('pointerdown',wsDown);
+    g.addEventListener('pointermove',wsMove);
+    g.addEventListener('pointerup',wsUp);
+    g.addEventListener('pointercancel',wsUp);
+}
+
+function wsRenderList(){
+    const el=document.getElementById('ws-words');
+    el.innerHTML='';
+    wsPlaced.forEach((w,i)=>{
+        const d=document.createElement('div');
+        d.className='ws-item'+(w.found?' done':'');
+        d.id='wsi'+i;
+        // Only show Russian translation + direction; German hidden until found
+        d.innerHTML='<span class="ws-dir">'+(w.dir==='H'?'→':'↓')+'</span>'+
+            '<span class="ws-ru">'+w.trans+'</span>'+
+            '<span class="ws-de">'+w.word+'</span>';
+        el.appendChild(d);
+    });
+}
+
+function wsUpdateHUD(){
+    document.getElementById('ws-found').textContent=wsFoundN+' / '+wsPlaced.length;
+    document.getElementById('ws-streak-hud').textContent='🔥 '+(currentStreak||0);
+}
+
+function wsCellAt(e){
+    const el=document.elementFromPoint(e.clientX,e.clientY);
+    return el&&el.classList.contains('ws-cell')?el:null;
+}
+function wsDown(e){e.preventDefault();wsDrag=true;wsCells=[];const c=wsCellAt(e);if(c)wsAddCell(c);}
+function wsMove(e){if(!wsDrag)return;const c=wsCellAt(e);if(c)wsAddCell(c);}
+function wsUp(){
+    if(!wsDrag)return; wsDrag=false;
+    wsCheck();
+    document.querySelectorAll('.ws-cell.hl').forEach(c=>c.classList.remove('hl'));
+    wsCells=[];
+}
+function wsAddCell(cell){
+    if(wsCells.length){
+        const f=wsCells[0];
+        const dr=+cell.dataset.r-+f.dataset.r, dc=+cell.dataset.c-+f.dataset.c;
+        if(dr!==0&&dc!==0) return;
+    }
+    if(wsCells.includes(cell)) return;
+    wsCells.push(cell);
+    cell.classList.add('hl');
+}
+function wsCheck(){
+    if(wsCells.length<2) return;
+    const word=wsCells.map(c=>c.textContent).join('');
+    const rev=word.split('').reverse().join('');
+    wsPlaced.forEach((w,i)=>{
+        if(w.found) return;
+        if(word===w.word||rev===w.word){
+            w.found=true; wsFoundN++;
+            addStreak(); sndMatch();
+            if(tg&&tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            wsCells.forEach(c=>c.classList.add('found'));
+            const item=document.getElementById('wsi'+i);
+            if(item) item.classList.add('done'); // triggers CSS reveal of .ws-de
+            wsUpdateHUD();
+            if(wsFoundN===wsPlaced.length) setTimeout(wsEnd,500);
+        }
+    });
+}
+function wsEnd(){
+    wsStop(); sndWin();
+    document.getElementById('ws-wrap').classList.remove('visible');
+    const recKey='wordsearch-'+(wsHardMode?'h':'e');
+    const prev=getBest(recKey);
+    const isNew=prev===null||wsSecs<prev;
+    if(isNew) saveRec(recKey,wsSecs);
+    const baseXP=wsFoundN*(wsHardMode?10:8);
+    const hintPenalty=wsHints*5;
+    const timeBonus=wsFoundN===wsPlaced.length?Math.max(0,(wsHardMode?60:40)-Math.floor(wsSecs/5)):0;
+    const streakBonus=Math.round((baseXP+timeBonus)*(streakMultiplier()-1));
+    const roundXP=Math.max(0,baseXP+timeBonus+streakBonus-hintPenalty+(isNew?20:0));
+    showWin({
+        title:wsFoundN===wsPlaced.length?'🏆 Все слова!':wsFoundN>=Math.ceil(wsPlaced.length/2)?'🎉 Неплохо!':'💪 Продолжай!',
+        badgeCls:'lv3',badgeText:'🔍 Поиск слов · '+(wsHardMode?'Сложный':'Лёгкий'),
+        base:baseXP,showAcc:false,
+        bonusLabel:'⚡ Скорость'+(streakBonus>0?' + 🔥×'+streakMultiplier():'')+(hintPenalty>0?' − 💡'+hintPenalty:''),
+        bonus:timeBonus+streakBonus-hintPenalty,
+        recBonus:20,roundXP,
+        stats:'Время: '+fmt(wsSecs)+' · Найдено: '+wsFoundN+'/'+wsPlaced.length+' · Рекорд: '+(prev!==null?fmt(prev):'нет'),
+        isNew,recVal:fmt(wsSecs),
+    });
+    isNew?setTimeout(celebrateRecord,120):celebrateWin();
+    updateRecordLabels();
+}
+function wsHint(){
+    // Найти первое не найденное слово
+    const target = wsPlaced.find(w=>!w.found);
+    if(!target) return;
+    wsHints++;
+    // Подсветить ячейки слова в сетке
+    const cells = document.querySelectorAll('.ws-cell');
+    const highlighted = [];
+    for(let i=0;i<target.word.length;i++){
+        const r = target.dir==='H' ? target.row : target.row+i;
+        const c = target.dir==='H' ? target.col+i : target.col;
+        const cell = cells[r*wsN+c];
+        if(cell){ cell.classList.add('hint-hl'); highlighted.push(cell); }
+    }
+    // Открыть немецкое слово в списке досрочно
+    const idx = wsPlaced.indexOf(target);
+    const item = document.getElementById('wsi'+idx);
+    if(item) item.classList.add('hint-revealed');
+
+    // Убрать подсветку через 2.5 сек
+    setTimeout(()=>{
+        highlighted.forEach(c=>c.classList.remove('hint-hl'));
+    }, 2500);
+
+    // Кнопка: кулдаун 8 сек
+    const btn = document.getElementById('ws-hint-btn');
+    btn.disabled = true;
+    let cd = 8;
+    btn.textContent = '💡 '+cd+'с';
+    const t = setInterval(()=>{
+        cd--;
+        if(cd<=0){
+            clearInterval(t);
+            btn.disabled = false;
+            btn.textContent = '💡 Помощь';
+        } else {
+            btn.textContent = '💡 '+cd+'с';
+        }
+    },1000);
+}
+
+document.getElementById('ws-hint-btn').addEventListener('click', wsHint);
+document.getElementById("ws-exit-btn").addEventListener("click",wsEnd);
+
 </script>
 </body>
 </html>
+<!-- ws-engine injected -->
