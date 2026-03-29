@@ -640,99 +640,15 @@ body{
    XP PROGRESS BAR (persistent level)
 ═══════════════════════════════════════ */
 #xp-progress-bar{
-    width:100%;max-width:380px;padding:8px 16px 4px;
+    width:100%;max-width:380px;padding:10px 16px 4px;
+    display:flex;flex-direction:column;gap:4px;
 }
-#xp-avatar-row{
-    display:flex;align-items:center;gap:10px;
-}
-#xp-avatar-wrap{
-    position:relative;flex-shrink:0;
-    display:flex;align-items:center;justify-content:center;
-}
-#xp-avatar{
-    display:block;line-height:1;
-    transition:font-size .5s cubic-bezier(.34,1.56,.64,1),
-               filter .5s ease, text-shadow .5s ease;
-    font-size:1.6rem;
-    filter:grayscale(1) brightness(.6);
-    position:relative;z-index:1;
-}
-/* Кольцо деталей вокруг мозга */
-#xp-avatar-ring{
-    position:absolute;inset:-4px;border-radius:50%;
-    border:2px solid transparent;
-    transition:border-color .5s ease, box-shadow .5s ease;
-    pointer-events:none;
-}
-/* Стадии роста */
-#xp-avatar-wrap.stage-1 #xp-avatar{font-size:1.4rem;filter:grayscale(1) brightness(.5);}
-#xp-avatar-wrap.stage-2 #xp-avatar{font-size:1.8rem;filter:grayscale(.5) brightness(.75);}
-#xp-avatar-wrap.stage-2 #xp-avatar-ring{border-color:rgba(99,102,241,.3);}
-#xp-avatar-wrap.stage-3 #xp-avatar{font-size:2.2rem;filter:grayscale(0) brightness(1);}
-#xp-avatar-wrap.stage-3 #xp-avatar-ring{
-    border-color:rgba(99,102,241,.6);
-    box-shadow:0 0 8px rgba(99,102,241,.35);
-}
-#xp-avatar-wrap.stage-4 #xp-avatar{
-    font-size:2.6rem;
-    filter:drop-shadow(0 0 6px rgba(129,140,248,.7));
-}
-#xp-avatar-wrap.stage-4 #xp-avatar-ring{
-    border-color:rgba(129,140,248,.8);
-    box-shadow:0 0 14px rgba(129,140,248,.5),0 0 28px rgba(99,102,241,.3);
-    animation:brainRingPulse 2s ease-in-out infinite;
-}
-#xp-avatar-wrap.stage-5 #xp-avatar{
-    font-size:3rem;
-    filter:drop-shadow(0 0 10px rgba(251,191,36,.9)) drop-shadow(0 0 20px rgba(129,140,248,.6));
-}
-#xp-avatar-wrap.stage-5 #xp-avatar-ring{
-    border-color:rgba(251,191,36,.9);
-    box-shadow:0 0 20px rgba(251,191,36,.6),0 0 40px rgba(129,140,248,.4);
-    animation:brainRingPulse 1.2s ease-in-out infinite;
-}
-@keyframes brainRingPulse{
-    0%,100%{box-shadow:0 0 14px rgba(129,140,248,.5),0 0 28px rgba(99,102,241,.25);}
-    50%    {box-shadow:0 0 24px rgba(129,140,248,.8),0 0 44px rgba(99,102,241,.45);}
-}
-/* Искры при повышении */
-#xp-avatar-wrap.stage-5 @keyframes brainRingPulse{
-    0%,100%{box-shadow:0 0 20px rgba(251,191,36,.6),0 0 40px rgba(129,140,248,.35);}
-    50%    {box-shadow:0 0 34px rgba(251,191,36,.9),0 0 60px rgba(129,140,248,.6);}
-}
-/* Поп-анимация при росте */
-#xp-avatar.levelup-pop{
-    animation:avatarLevelUp .65s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes avatarLevelUp{
-    0%  {transform:scale(1) rotate(0deg);}
-    30% {transform:scale(1.6) rotate(-8deg);}
-    60% {transform:scale(1.3) rotate(5deg);}
-    100%{transform:scale(1) rotate(0deg);}
-}
-#xp-bar-col{flex:1;display:flex;flex-direction:column;gap:3px;}
 .xp-pb-top{display:flex;justify-content:space-between;font-size:.72rem;font-weight:700;opacity:.65;}
-.xp-pb-track{
-    width:100%;height:8px;background:rgba(0,0,0,.08);
-    border-radius:6px;overflow:hidden;position:relative;
-}
+.xp-pb-track{width:100%;height:8px;background:rgba(0,0,0,.08);border-radius:6px;overflow:hidden;}
 .xp-pb-fill{
     height:100%;border-radius:6px;
     background:linear-gradient(90deg,#10b981,#3b82f6);
     transition:width .6s cubic-bezier(.22,1,.36,1);
-}
-
-/* XP number flying to bar */
-.xp-fly{
-    position:fixed;pointer-events:none;z-index:9999;
-    font-size:.9rem;font-weight:900;color:#10b981;
-    text-shadow:0 0 8px rgba(16,185,129,.5);
-    white-space:nowrap;
-}
-@keyframes xpFlyAnim{
-    0%  {opacity:1;transform:translate(0,0) scale(1);}
-    60% {opacity:1;}
-    100%{opacity:0;transform:translate(var(--fx),var(--fy)) scale(.6);}
 }
 
 /* ═══════════════════════════════════════
@@ -931,6 +847,17 @@ body{
 }
 #bl-shield.shield-used{opacity:.28;pointer-events:none;}
 @keyframes shieldPulse{0%,100%{box-shadow:0 0 18px rgba(0,229,255,.5)}50%{box-shadow:0 0 36px rgba(0,229,255,1)}}
+#bl-exit-btn{
+    position:absolute;bottom:68px;right:14px;z-index:20;
+    width:52px;height:52px;border-radius:50%;
+    border:2px solid rgba(255,255,255,.2);
+    background:rgba(10,20,40,.65);
+    font-size:1.3rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(6px);
+    transition:transform .12s,background .15s;
+}
+#bl-exit-btn:active{transform:scale(.90);background:rgba(255,80,80,.25);}
 #bl-shield-flash{
     position:absolute;inset:0;z-index:9;pointer-events:none;
     opacity:0;transition:opacity .07s;
@@ -1375,14 +1302,18 @@ body{
     </div>
 
     <div class="level-section" id="lbs-blaster" style="display:none">
-        <div class="section-label">60 секунд · аркада</div>
+        <div class="section-label">аркада · лопай пузыри</div>
         <button class="btn-level blstr" data-mode="blaster" data-reverse="0">
-            <span class="lv-left"><span class="lv-name">🫧 Запустить</span><span class="lv-sub">4→6 пузырей · комбо · рогатка</span></span>
+            <span class="lv-left"><span class="lv-name">🫧 60 сек</span><span class="lv-sub">4→6 пузырей · комбо · рогатка</span></span>
             <span class="lv-right"><span class="lv-xp">до 60+ XP</span><span class="lv-record" id="rcb"></span></span>
         </button>
         <button class="btn-level blstr-rev" data-mode="blaster" data-reverse="1">
-            <span class="lv-left"><span class="lv-name">🔄 Наоборот</span><span class="lv-sub">Рус → Нем · сложнее!</span></span>
+            <span class="lv-left"><span class="lv-name">🔄 Наоборот</span><span class="lv-sub">Рус → Нем · 60 сек</span></span>
             <span class="lv-right"><span class="lv-xp">до 60+ XP</span><span class="lv-record" id="rcbr"></span></span>
+        </button>
+        <button class="btn-level blstr" data-mode="blaster" data-reverse="0" data-infinite="1" style="background:linear-gradient(135deg,#7c3aed,#ec4899);box-shadow:0 5px 20px rgba(124,58,237,.4)">
+            <span class="lv-left"><span class="lv-name">∞ Бесконечно</span><span class="lv-sub">Без таймера · пока не закончишь</span></span>
+            <span class="lv-right"><span class="lv-xp">до 150+ XP</span><span class="lv-record" id="rcb-inf"></span></span>
         </button>
     </div>
 
@@ -1432,19 +1363,11 @@ body{
 
     <!-- XP Progress Bar -->
     <div id="xp-progress-bar">
-        <div id="xp-avatar-row">
-        <div id="xp-avatar-wrap" class="stage-1">
-            <span id="xp-avatar">🧠</span>
-            <div id="xp-avatar-ring"></div>
+        <div class="xp-pb-top">
+            <span id="xp-level-label">Уровень 1</span>
+            <span id="xp-level-total">0 / 100 XP</span>
         </div>
-            <div id="xp-bar-col">
-                <div class="xp-pb-top">
-                    <span id="xp-level-label">Уровень 1</span>
-                    <span id="xp-level-total">0 / 100 XP</span>
-                </div>
-                <div class="xp-pb-track"><div class="xp-pb-fill" id="xp-pb-fill" style="width:0%"></div></div>
-            </div>
-        </div>
+        <div class="xp-pb-track"><div class="xp-pb-fill" id="xp-pb-fill" style="width:0%"></div></div>
     </div>
 </div>
 
@@ -1561,6 +1484,7 @@ body{
     <div id="bl-flash"></div>
     <div id="bl-shield-flash"></div>
     <button id="bl-shield" title="Щит (1 раз)">🛡️</button>
+    <button id="bl-exit-btn" title="Завершить">🏁</button>
     <button class="bl-sound-btn" id="btn-sound-bl" title="Звук">🔊</button>
     <div id="bl-mode-badge">🔄 НАОБОРОТ</div>
 </div>
@@ -1884,45 +1808,8 @@ function getBest(k)   { return getRecs()[k]??null; }
 ════════════════════════════════════════════ */
 const XP_KEY = 'mp_total_xp_v1';
 function getTotalXP()   { return parseInt(localStorage.getItem(XP_KEY)||'0'); }
-/* ── Avatar progression ── */
-/* ── Brain growth stages ── */
-// Стадия определяется уровнем — мозг растёт и светится
-const BRAIN_STAGES = [
-    {lv:1,  stage:1, label:'Новичок'},
-    {lv:5,  stage:2, label:'Ученик'},
-    {lv:10, stage:3, label:'Знаток'},
-    {lv:20, stage:4, label:'Мастер'},
-    {lv:35, stage:5, label:'Гений'},
-];
-function getBrainStage(level){
-    let s = BRAIN_STAGES[0];
-    for(const b of BRAIN_STAGES) if(level>=b.lv) s=b; else break;
-    return s;
-}
-
-/* ── Avatar progression ── */
-const XP_AVATARS = [
-    {lv:1,  emoji:'🫥'},
-    {lv:2,  emoji:'🐣'},
-    {lv:4,  emoji:'🐥'},
-    {lv:7,  emoji:'🧒'},
-    {lv:10, emoji:'📖'},
-    {lv:14, emoji:'🎓'},
-    {lv:18, emoji:'🔬'},
-    {lv:22, emoji:'🧠'},
-    {lv:28, emoji:'💡'},
-    {lv:35, emoji:'⚡'},
-    {lv:45, emoji:'👑'},
-    {lv:60, emoji:'🌟'},
-];
-function getAvatar(level){
-    let av=XP_AVATARS[0];
-    for(const a of XP_AVATARS){ if(level>=a.lv) av=a; else break; }
-    return av;
-}
-
 function addTotalXP(n)  { localStorage.setItem(XP_KEY, getTotalXP()+n); updateXPBar(); }
-function xpForLevel(lv) { return lv * 100; }
+function xpForLevel(lv) { return lv * 100; } // each level requires lv*100 XP
 function getLevel(total){
     let lv=1, rem=total;
     while(rem >= xpForLevel(lv)){ rem -= xpForLevel(lv); lv++; }
@@ -1931,66 +1818,23 @@ function getLevel(total){
 function updateXPBar(){
     const total = getTotalXP();
     const {level, current, needed} = getLevel(total);
-    const el   = document.getElementById('xp-level-label');
-    const elT  = document.getElementById('xp-level-total');
+    const el = document.getElementById('xp-level-label');
+    const elT = document.getElementById('xp-level-total');
     const fill = document.getElementById('xp-pb-fill');
-    const avEl = document.getElementById('xp-avatar');
     const prevLevel = fill ? parseInt(fill.dataset.level||'0') : 0;
-    const levelled  = level > prevLevel && prevLevel > 0;
-    if(el)  el.textContent = `Уровень ${level}`;
-    if(elT) elT.textContent= `${current} / ${needed} XP`;
+    if(el)  el.textContent  = `Уровень ${level}`;
+    if(elT) elT.textContent = `${current} / ${needed} XP`;
     if(fill){
         const pct = Math.min(100, Math.round(current/needed*100));
         fill.style.width = pct+'%';
         fill.dataset.level = level;
-        if(levelled){
+        if(level > prevLevel && prevLevel > 0){
             fill.classList.remove('levelup');
             requestAnimationFrame(()=>fill.classList.add('levelup'));
         }
     }
-    if(avEl){
-        const bs = getBrainStage(level);
-        const wrap = document.getElementById('xp-avatar-wrap');
-        const prevStage = wrap ? parseInt(wrap.dataset.stage||'0') : 0;
-        if(wrap){
-            wrap.className = 'stage-'+bs.stage;
-            wrap.dataset.stage = bs.stage;
-            wrap.title = `${bs.label} · Уровень ${level}`;
-        }
-        if(levelled){
-            avEl.classList.remove('levelup-pop');
-            requestAnimationFrame(()=>avEl.classList.add('levelup-pop'));
-            // Искры если новая стадия
-            if(bs.stage > prevStage) spawnBrainSparks(wrap||avEl);
-        }
-    }
 }
 updateXPBar();
-
-/* ── Brain sparks on new stage ── */
-function spawnBrainSparks(el){
-    if(!el) return;
-    const r = el.getBoundingClientRect();
-    const cx = r.left + r.width/2, cy = r.top + r.height/2;
-    const SPARKS = ['✨','⚡','💫','🌟','💥'];
-    for(let i=0;i<8;i++){
-        const s = document.createElement('div');
-        s.style.cssText='position:fixed;pointer-events:none;z-index:9999;'+
-            'font-size:'+(0.8+Math.random()*0.6)+'rem;'+
-            'left:'+cx+'px;top:'+cy+'px;transform:translate(-50%,-50%);';
-        s.textContent = SPARKS[i%SPARKS.length];
-        document.body.appendChild(s);
-        const angle=(i/8)*Math.PI*2;
-        const dist=40+Math.random()*40;
-        const tx=Math.cos(angle)*dist, ty=Math.sin(angle)*dist;
-        const anim=s.animate([
-            {transform:'translate(-50%,-50%) scale(0)',opacity:1},
-            {transform:'translate(calc(-50% + '+tx+'px),calc(-50% + '+ty+'px)) scale(1)',opacity:1,offset:.5},
-            {transform:'translate(calc(-50% + '+(tx*1.6)+'px),calc(-50% + '+(ty*1.6+30)+'px)) scale(.3)',opacity:0},
-        ],{duration:700+Math.random()*300,easing:'ease-out',delay:i*40});
-        anim.onfinish=()=>s.remove();
-    }
-}
 
 /* ════════════════════════════════════════════
    STREAK
@@ -2241,7 +2085,7 @@ updateRecordLabels();
    RECORD LABELS
 ════════════════════════════════════════════ */
 function updateRecordLabels() {
-    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram',rcsw:'swiper',rcaq:'audioquiz','rcws-e':'wordsearch-e','rcws-h':'wordsearch-h'};
+    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev','rcb-inf':'blaster-inf',rcag:'anagram',rcsw:'swiper',rcaq:'audioquiz','rcws-e':'wordsearch-e','rcws-h':'wordsearch-h'};
     for(const [id,key] of Object.entries(map)) {
         const el=document.getElementById(id); if(!el) continue;
         const v=getBest(key);
@@ -2272,7 +2116,7 @@ document.querySelectorAll('.btn-level').forEach(btn => {
         else if(m==='swiper') startSwiper();
         else if(m==='audioquiz') startAudioQuiz();
         else if(m==='wordsearch') startWordSearch(btn.dataset.wsHard==='1');
-        else startBlaster(rev);
+        else startBlaster(rev, btn.dataset.infinite==='1');
     });
 });
 
@@ -2342,14 +2186,6 @@ function animateCount(el, target, suffix='', dur=700){
 function showWin({title,badgeCls,badgeText,base,showAcc,acc,bonusLabel,bonus,recBonus,roundXP,stats,isNew,recVal}) {
     sessionXP += roundXP;
     addTotalXP(roundXP);
-    // Запускаем полёт XP к бару с небольшой задержкой (после показа экрана)
-    if(roundXP > 0){
-        setTimeout(()=>{
-            const src = document.getElementById('xp-total') ||
-                        document.getElementById('win-screen');
-            if(src) spawnXPFlyToBar(src, roundXP);
-        }, 900);
-    }
     document.getElementById('win-title').textContent = title;
     const badge=document.getElementById('win-badge');
     badge.textContent=badgeText; badge.className=`level-badge ${badgeCls}`;
@@ -2445,41 +2281,11 @@ function celebrateWin(){
     const cx=innerWidth/2,cy=innerHeight/2;
     launchRing(cx,cy,'#38bdf8',160);launchConfetti(cx,cy,45);launchStars(cx,cy,6);
 }
-function spawnXPFloat(el, txt){
-    const r = el.getBoundingClientRect();
-    const d = document.createElement('div');
-    d.classList.add('xp-float');
-    d.textContent = txt;
-    const sx = r.left + r.width/2 - 20;
-    const sy = r.top + window.scrollY - 10;
-    d.style.left = sx+'px';
-    d.style.top  = sy+'px';
-    document.body.appendChild(d);
-    setTimeout(()=>d.remove(), 950);
-}
-
-function spawnXPFlyToBar(el, xpAmount){
-    if(!xpAmount || xpAmount <= 0) return;
-    const barEl = document.getElementById('xp-pb-fill');
-    if(!barEl) return;
-    const barR = barEl.getBoundingClientRect();
-    const srcR = el.getBoundingClientRect();
-
-    const d = document.createElement('div');
-    d.className = 'xp-fly';
-    d.textContent = '+'+xpAmount+' XP';
-    const sx = srcR.left + srcR.width/2;
-    const sy = srcR.top + srcR.height/2;
-    d.style.left = sx+'px';
-    d.style.top  = sy+'px';
-    // target: center of XP bar
-    const tx = barR.left + barR.width/2 - sx;
-    const ty = barR.top  + barR.height/2 - sy;
-    d.style.setProperty('--fx', tx+'px');
-    d.style.setProperty('--fy', ty+'px');
-    d.style.animation = 'xpFlyAnim .75s cubic-bezier(.4,0,.2,1) forwards';
-    document.body.appendChild(d);
-    setTimeout(()=>d.remove(), 780);
+function spawnXPFloat(el,txt){
+    const r=el.getBoundingClientRect();
+    const d=document.createElement('div');d.classList.add('xp-float');
+    d.textContent=txt;d.style.left=r.left+r.width/2-20+'px';d.style.top=r.top+scrollY-10+'px';
+    document.body.appendChild(d);setTimeout(()=>d.remove(),950);
 }
 
 /* ════════════════════════════════════════════
@@ -2713,7 +2519,6 @@ function onClassicClick(){
         if(tg) tg.HapticFeedback?.impactOccurred('light');
         spawnXPFloat(B,'✨');
         spawnCardConfetti(B);
-        spawnXPFlyToBar(B, 5);
         if(matchedPairs===currentPairs) setTimeout(winClassic,450);
     } else {
         lockBoard=true;A.classList.add('wrong');B.classList.add('wrong');
@@ -2905,7 +2710,6 @@ function checkSprintPair(){
         if(tg) tg.HapticFeedback?.impactOccurred('light');
         spawnXPFloat(R.el,'✨');
         spawnCardConfetti(R.el);
-        spawnXPFlyToBar(R.el, 3);
         updateSprintSpeedIndicator();
         // 2. Через 300мс — осыпаемся осколками
         setTimeout(()=>{
@@ -3168,6 +2972,7 @@ function sndSprintTick() {
 /* ── State ── */
 let blCanvas, blCtx, blW, blH;
 let blRunning=false, blTimeLeft=BL_SECS, blTicker=null;
+let blInfinite=false;
 let blScore=0, blWords=0, blShots=0, blCombo=0, blMaxCombo=0;
 let blWordQueue=[], blQPos=0, blCurIdx=0;
 let blBalls=[], blParticles=[], blLaser=null;
@@ -3193,9 +2998,10 @@ function blResize(){
 }
 
 /* ── Start / Stop ── */
-function startBlaster(reverse=false){
+function startBlaster(reverse=false, infinite=false){
     currentMode='blaster';
     blReverseMode=!!reverse;
+    blInfinite=!!infinite;
     if(!blCanvas) blInit();
     blRunning=false;cancelAnimationFrame(blRAF);clearInterval(blTicker);
     blScore=0;blWords=0;blShots=0;blCombo=0;blMaxCombo=0;
@@ -3211,6 +3017,11 @@ function startBlaster(reverse=false){
     // mode badge
     const badge=document.getElementById('bl-mode-badge');
     badge.style.display = blReverseMode ? 'block' : 'none';
+    // infinite mode: скрываем таймерный круг, показываем счётчик слов вместо
+    const timerSvg = document.querySelector('#bl-hud .bl-box:nth-child(2)');
+    if(timerSvg) timerSvg.style.opacity = blInfinite ? '0.2' : '1';
+    const timeTxt = document.getElementById('bl-time-txt');
+    if(timeTxt) timeTxt.textContent = blInfinite ? '∞' : BL_SECS;
     blResize();
     document.getElementById('bl-score').textContent='0';
     document.getElementById('bl-words').textContent='0';
@@ -3218,13 +3029,18 @@ function startBlaster(reverse=false){
     blUpdateTimer();blNextWord();
     blRunning=true;
     blStartAmbient();
-    blTicker=setInterval(()=>{
-        blTimeLeft--;blUpdateTimer();
-        blUpdateAmbient(blTimeLeft);
-        if(blTimeLeft<=10 && blTimeLeft!==blPrevTime) blSndTick();
-        blPrevTime=blTimeLeft;
-        if(blTimeLeft<=0) blEnd();
-    },1000);
+    if(!blInfinite){
+        blTicker=setInterval(()=>{
+            blTimeLeft--;blUpdateTimer();
+            blUpdateAmbient(blTimeLeft);
+            if(blTimeLeft<=10 && blTimeLeft!==blPrevTime) blSndTick();
+            blPrevTime=blTimeLeft;
+            if(blTimeLeft<=0) blEnd();
+        },1000);
+    } else {
+        // В бесконечном режиме тикаем вверх (для статистики)
+        blTicker=setInterval(()=>{ blTimeLeft--; },1000);
+    }
     blLastT=performance.now();
     blRAF=requestAnimationFrame(blLoop);
 }
@@ -3736,6 +3552,13 @@ function blUpdateTimer(){
     const arc=document.getElementById('bl-arc');
     const txt=document.getElementById('bl-time-txt');
     if(!arc||!txt) return;
+    if(blInfinite){
+        arc.setAttribute('stroke-dashoffset', 0);
+        arc.setAttribute('stroke','#a78bfa');
+        txt.setAttribute('fill','#a78bfa');
+        txt.textContent='∞';
+        return;
+    }
     const pct=blTimeLeft/BL_SECS;
     arc.setAttribute('stroke-dashoffset',(2*Math.PI*20)*(1-pct));
     const col=blTimeLeft<=10?'#ff4060':blTimeLeft<=20?'#ffd93d':'#4d96ff';
@@ -3789,17 +3612,18 @@ function blEnd(){
     const snap=[...blBalls]; blBalls=[];
     blBurstAll(snap,()=>{
         blStop();
-        const recKey = blReverseMode ? 'blaster-rev' : 'blaster';
+        const recKey = blInfinite ? 'blaster-inf' : (blReverseMode ? 'blaster-rev' : 'blaster');
         const prev=getBest(recKey);
         const isNew=prev===null||blWords>prev;
         if(isNew) saveRec(recKey,blWords);
         const acc=blShots>0?Math.round(blWords/blShots*100):0;
         const comboXP=Math.max(0,(blMaxCombo-1))*5;
         const roundXP=blScore+comboXP+(isNew?20:0);
-        const modeLabel = blReverseMode ? '🔄 Наоборот' : '🫧 Бластер';
-        const badgeCls  = blReverseMode ? 'blstr-rev'   : 'blstr';
+        const modeLabel = blInfinite ? '∞ Бесконечно' : (blReverseMode ? '🔄 Наоборот' : '🫧 Бластер');
+        const badgeCls  = blReverseMode ? 'blstr-rev' : 'blstr';
+        const title     = blInfinite ? '🏁 Завершено!' : '⏰ Время!';
         showWin({
-            title:'⏰ Время!', badgeCls, badgeText:modeLabel,
+            title, badgeCls, badgeText:modeLabel,
             base:blScore,showAcc:false,acc,
             bonusLabel:'🔥 Комбо-бонус',bonus:comboXP,
             recBonus:20,roundXP,
@@ -3829,6 +3653,7 @@ function toggleSound() {
 }
 document.getElementById('btn-sound').addEventListener('click', toggleSound);
 document.getElementById('btn-sound-bl').addEventListener('click', toggleSound);
+document.getElementById('bl-exit-btn').addEventListener('click', ()=>{ if(blRunning) blEnd(); });
 
 /* ════════════════════════════════════════════
    BUTTONS
@@ -3860,7 +3685,7 @@ document.getElementById('btn-restart').addEventListener('click',()=>{
     else if(currentMode==='swiper') startSwiper();
     else if(currentMode==='audioquiz') startAudioQuiz();
     else if(currentMode==='wordsearch') startWordSearch(wsHardMode);
-    else startBlaster(blReverseMode);
+    else startBlaster(blReverseMode, blInfinite);
 });
 document.getElementById('btn-menu').addEventListener('click',goToMenu);
 
@@ -4758,7 +4583,6 @@ function startWordSearch(hard=false){
     hideAll();
     document.getElementById('ws-wrap').classList.add('visible');
     document.getElementById('btn-hint').style.display='none';
-    document.getElementById('streak-badge').style.display='none'; // прячем глобальный бейдж
     wsBuildGrid(); wsRenderGrid(); wsRenderList(); wsUpdateHUD();
     wsTimer=setInterval(()=>{
         wsSecs++;
@@ -4843,10 +4667,8 @@ function wsRenderList(){
 }
 
 function wsUpdateHUD(){
-    document.getElementById('ws-found').textContent = wsFoundN+' / '+wsPlaced.length;
-    const s = currentStreak||0;
-    const hud = document.getElementById('ws-streak-hud');
-    hud.textContent = s >= 2 ? '🔥 Серия '+s+'×' : '';
+    document.getElementById('ws-found').textContent=wsFoundN+' / '+wsPlaced.length;
+    document.getElementById('ws-streak-hud').textContent='🔥 '+(currentStreak||0);
 }
 
 function wsCellAt(e){
@@ -4892,7 +4714,6 @@ function wsCheck(){
 function wsEnd(){
     wsStop(); sndWin();
     document.getElementById('ws-wrap').classList.remove('visible');
-    document.getElementById('streak-badge').style.display=''; // восстанавливаем
     const recKey='wordsearch-'+(wsHardMode?'h':'e');
     const prev=getBest(recKey);
     const isNew=prev===null||wsSecs<prev;
