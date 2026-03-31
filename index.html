@@ -195,11 +195,24 @@ body{
 #start-screen h1{font-size:2rem;text-align:center;}
 .tagline{font-size:.9rem;opacity:.55;text-align:center;}
 
+.games-block{
+    width:100%;
+    background:var(--card-bg);
+    border-radius:16px;
+    padding:10px 10px 10px;
+    border:1.5px solid rgba(99,102,241,.22);
+    box-shadow:0 2px 16px rgba(99,102,241,.08);
+}
+.games-block-label{
+    font-size:.7rem;font-weight:800;
+    letter-spacing:.12em;text-transform:uppercase;
+    color:var(--primary);opacity:.7;
+    margin-bottom:8px;padding-left:2px;
+}
 .mode-toggle{
     display:grid;grid-template-columns:1fr 1fr 1fr;
-    width:100%;background:var(--card-bg);
-    border-radius:14px;padding:4px;gap:4px;
-    box-shadow:0 2px 8px rgba(0,0,0,.07);
+    width:100%;
+    border-radius:10px;padding:2px;gap:4px;
 }
 .mode-sep{
     grid-column:1/-1;height:1px;
@@ -847,17 +860,6 @@ body{
 }
 #bl-shield.shield-used{opacity:.28;pointer-events:none;}
 @keyframes shieldPulse{0%,100%{box-shadow:0 0 18px rgba(0,229,255,.5)}50%{box-shadow:0 0 36px rgba(0,229,255,1)}}
-#bl-exit-btn{
-    position:absolute;bottom:68px;right:14px;z-index:20;
-    width:52px;height:52px;border-radius:50%;
-    border:2px solid rgba(255,255,255,.2);
-    background:rgba(10,20,40,.65);
-    font-size:1.3rem;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    backdrop-filter:blur(6px);
-    transition:transform .12s,background .15s;
-}
-#bl-exit-btn:active{transform:scale(.90);background:rgba(255,80,80,.25);}
 #bl-shield-flash{
     position:absolute;inset:0;z-index:9;pointer-events:none;
     opacity:0;transition:opacity .07s;
@@ -1028,6 +1030,13 @@ body{
 /* Tap buttons */
 #sw-btns{
     display:flex;gap:24px;padding:16px 0 24px;
+}
+#sw-exit-btn{
+    position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
+    padding:11px 36px;border-radius:20px;border:none;cursor:pointer;
+    font-size:.9rem;font-weight:800;font-family:'Exo 2',sans-serif;
+    background:rgba(255,255,255,.07);color:#94a3b8;
+    border:1px solid rgba(255,255,255,.12);z-index:10;
 }
 .sw-btn{
     width:130px;height:130px;border-radius:20px;border:none;
@@ -1251,6 +1260,8 @@ body{
 <div id="start-screen">
     <div><h1>🧠 Match Pairs</h1><p class="tagline">Выбери режим и уровень</p></div>
 
+    <div class="games-block">
+        <div class="games-block-label">🎮 7 мини-игр</div>
     <div class="mode-toggle">
         <button class="mode-btn active-classic" id="btn-mc"  onclick="setMode('classic')">🎯 Классика</button>
         <button class="mode-btn"               id="btn-ms"  onclick="setMode('sprint')">⚡ Спринт</button>
@@ -1261,6 +1272,7 @@ body{
         <button class="mode-btn"               id="btn-maq" onclick="setMode('audioquiz')">🔊 Аудио</button>
         <div class="mode-sep"></div>
         <button class="mode-btn"               id="btn-mws" onclick="setMode('wordsearch')">🔍 Поиск слов</button>
+    </div>
     </div>
 
     <div class="mode-desc" id="mode-desc"></div>
@@ -1302,18 +1314,14 @@ body{
     </div>
 
     <div class="level-section" id="lbs-blaster" style="display:none">
-        <div class="section-label">аркада · лопай пузыри</div>
+        <div class="section-label">60 секунд · аркада</div>
         <button class="btn-level blstr" data-mode="blaster" data-reverse="0">
-            <span class="lv-left"><span class="lv-name">🫧 60 сек</span><span class="lv-sub">4→6 пузырей · комбо · рогатка</span></span>
+            <span class="lv-left"><span class="lv-name">🫧 Запустить</span><span class="lv-sub">4→6 пузырей · комбо · рогатка</span></span>
             <span class="lv-right"><span class="lv-xp">до 60+ XP</span><span class="lv-record" id="rcb"></span></span>
         </button>
         <button class="btn-level blstr-rev" data-mode="blaster" data-reverse="1">
-            <span class="lv-left"><span class="lv-name">🔄 Наоборот</span><span class="lv-sub">Рус → Нем · 60 сек</span></span>
+            <span class="lv-left"><span class="lv-name">🔄 Наоборот</span><span class="lv-sub">Рус → Нем · сложнее!</span></span>
             <span class="lv-right"><span class="lv-xp">до 60+ XP</span><span class="lv-record" id="rcbr"></span></span>
-        </button>
-        <button class="btn-level blstr" data-mode="blaster" data-reverse="0" data-infinite="1" style="background:linear-gradient(135deg,#7c3aed,#ec4899);box-shadow:0 5px 20px rgba(124,58,237,.4)">
-            <span class="lv-left"><span class="lv-name">∞ Бесконечно</span><span class="lv-sub">Без таймера · пока не закончишь</span></span>
-            <span class="lv-right"><span class="lv-xp">до 150+ XP</span><span class="lv-record" id="rcb-inf"></span></span>
         </button>
     </div>
 
@@ -1326,9 +1334,13 @@ body{
     </div>
 
     <div class="level-section" id="lbs-swiper" style="display:none">
-        <div class="section-label">∞ карточек · 3 жизни</div>
-        <button class="btn-level" data-mode="swiper" style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;box-shadow:0 5px 20px rgba(99,102,241,.4)">
-            <span class="lv-left"><span class="lv-name">👈 Запустить</span><span class="lv-sub">Верно/Неверно · свайп · 3 сек/карта</span></span>
+        <div class="section-label">∞ карточек · верно или неверно</div>
+        <button class="btn-level lv1" data-mode="swiper" data-sw-light="1" style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;box-shadow:0 5px 20px rgba(99,102,241,.4)">
+            <span class="lv-left"><span class="lv-name">🌤 Лёгкий</span><span class="lv-sub">Без таймера · 3 жизни · свайп</span></span>
+            <span class="lv-right"><span class="lv-xp">до 80 XP</span><span class="lv-record" id="rcsw-l"></span></span>
+        </button>
+        <button class="btn-level" data-mode="swiper" data-sw-light="0" style="background:linear-gradient(135deg,#dc2626,#7c3aed);color:#fff;box-shadow:0 5px 20px rgba(220,38,38,.4)">
+            <span class="lv-left"><span class="lv-name">⚡ Хард</span><span class="lv-sub">3 сек/карта · 3 жизни · свайп</span></span>
             <span class="lv-right"><span class="lv-xp">до 100+ XP</span><span class="lv-record" id="rcsw"></span></span>
         </button>
     </div>
@@ -1484,7 +1496,6 @@ body{
     <div id="bl-flash"></div>
     <div id="bl-shield-flash"></div>
     <button id="bl-shield" title="Щит (1 раз)">🛡️</button>
-    <button id="bl-exit-btn" title="Завершить">🏁</button>
     <button class="bl-sound-btn" id="btn-sound-bl" title="Звук">🔊</button>
     <div id="bl-mode-badge">🔄 НАОБОРОТ</div>
 </div>
@@ -1545,9 +1556,8 @@ body{
         <button class="sw-btn" id="sw-btn-right">✓</button>
     </div>
     <button class="sw-sound-btn" id="btn-sound-sw" title="Звук">🔊</button>
+    <button id="sw-exit-btn">🏁 Выйти</button>
 </div>
-
-<!-- ═══ SPRINT SHARD CANVAS ═══ -->
 <canvas id="sprint-shard-canvas"></canvas>
 
 <!-- ═══ AUDIO QUIZ OVERLAY ═══ -->
@@ -2085,7 +2095,7 @@ updateRecordLabels();
    RECORD LABELS
 ════════════════════════════════════════════ */
 function updateRecordLabels() {
-    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev','rcb-inf':'blaster-inf',rcag:'anagram',rcsw:'swiper',rcaq:'audioquiz','rcws-e':'wordsearch-e','rcws-h':'wordsearch-h'};
+    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram',rcsw:'swiper','rcsw-l':'swiper-light',rcaq:'audioquiz','rcws-e':'wordsearch-e','rcws-h':'wordsearch-h'};
     for(const [id,key] of Object.entries(map)) {
         const el=document.getElementById(id); if(!el) continue;
         const v=getBest(key);
@@ -2113,10 +2123,10 @@ document.querySelectorAll('.btn-level').forEach(btn => {
         if(m==='classic') startClassic(p, hard);
         else if(m==='sprint') startSprint(rows);
         else if(m==='anagram') startAnagram();
-        else if(m==='swiper') startSwiper();
+        else if(m==='swiper') startSwiper(btn.dataset.swLight==='1');
         else if(m==='audioquiz') startAudioQuiz();
         else if(m==='wordsearch') startWordSearch(btn.dataset.wsHard==='1');
-        else startBlaster(rev, btn.dataset.infinite==='1');
+        else startBlaster(rev);
     });
 });
 
@@ -2972,7 +2982,6 @@ function sndSprintTick() {
 /* ── State ── */
 let blCanvas, blCtx, blW, blH;
 let blRunning=false, blTimeLeft=BL_SECS, blTicker=null;
-let blInfinite=false;
 let blScore=0, blWords=0, blShots=0, blCombo=0, blMaxCombo=0;
 let blWordQueue=[], blQPos=0, blCurIdx=0;
 let blBalls=[], blParticles=[], blLaser=null;
@@ -2998,10 +3007,9 @@ function blResize(){
 }
 
 /* ── Start / Stop ── */
-function startBlaster(reverse=false, infinite=false){
+function startBlaster(reverse=false){
     currentMode='blaster';
     blReverseMode=!!reverse;
-    blInfinite=!!infinite;
     if(!blCanvas) blInit();
     blRunning=false;cancelAnimationFrame(blRAF);clearInterval(blTicker);
     blScore=0;blWords=0;blShots=0;blCombo=0;blMaxCombo=0;
@@ -3017,11 +3025,6 @@ function startBlaster(reverse=false, infinite=false){
     // mode badge
     const badge=document.getElementById('bl-mode-badge');
     badge.style.display = blReverseMode ? 'block' : 'none';
-    // infinite mode: скрываем таймерный круг, показываем счётчик слов вместо
-    const timerSvg = document.querySelector('#bl-hud .bl-box:nth-child(2)');
-    if(timerSvg) timerSvg.style.opacity = blInfinite ? '0.2' : '1';
-    const timeTxt = document.getElementById('bl-time-txt');
-    if(timeTxt) timeTxt.textContent = blInfinite ? '∞' : BL_SECS;
     blResize();
     document.getElementById('bl-score').textContent='0';
     document.getElementById('bl-words').textContent='0';
@@ -3029,18 +3032,13 @@ function startBlaster(reverse=false, infinite=false){
     blUpdateTimer();blNextWord();
     blRunning=true;
     blStartAmbient();
-    if(!blInfinite){
-        blTicker=setInterval(()=>{
-            blTimeLeft--;blUpdateTimer();
-            blUpdateAmbient(blTimeLeft);
-            if(blTimeLeft<=10 && blTimeLeft!==blPrevTime) blSndTick();
-            blPrevTime=blTimeLeft;
-            if(blTimeLeft<=0) blEnd();
-        },1000);
-    } else {
-        // В бесконечном режиме тикаем вверх (для статистики)
-        blTicker=setInterval(()=>{ blTimeLeft--; },1000);
-    }
+    blTicker=setInterval(()=>{
+        blTimeLeft--;blUpdateTimer();
+        blUpdateAmbient(blTimeLeft);
+        if(blTimeLeft<=10 && blTimeLeft!==blPrevTime) blSndTick();
+        blPrevTime=blTimeLeft;
+        if(blTimeLeft<=0) blEnd();
+    },1000);
     blLastT=performance.now();
     blRAF=requestAnimationFrame(blLoop);
 }
@@ -3552,13 +3550,6 @@ function blUpdateTimer(){
     const arc=document.getElementById('bl-arc');
     const txt=document.getElementById('bl-time-txt');
     if(!arc||!txt) return;
-    if(blInfinite){
-        arc.setAttribute('stroke-dashoffset', 0);
-        arc.setAttribute('stroke','#a78bfa');
-        txt.setAttribute('fill','#a78bfa');
-        txt.textContent='∞';
-        return;
-    }
     const pct=blTimeLeft/BL_SECS;
     arc.setAttribute('stroke-dashoffset',(2*Math.PI*20)*(1-pct));
     const col=blTimeLeft<=10?'#ff4060':blTimeLeft<=20?'#ffd93d':'#4d96ff';
@@ -3612,18 +3603,17 @@ function blEnd(){
     const snap=[...blBalls]; blBalls=[];
     blBurstAll(snap,()=>{
         blStop();
-        const recKey = blInfinite ? 'blaster-inf' : (blReverseMode ? 'blaster-rev' : 'blaster');
+        const recKey = blReverseMode ? 'blaster-rev' : 'blaster';
         const prev=getBest(recKey);
         const isNew=prev===null||blWords>prev;
         if(isNew) saveRec(recKey,blWords);
         const acc=blShots>0?Math.round(blWords/blShots*100):0;
         const comboXP=Math.max(0,(blMaxCombo-1))*5;
         const roundXP=blScore+comboXP+(isNew?20:0);
-        const modeLabel = blInfinite ? '∞ Бесконечно' : (blReverseMode ? '🔄 Наоборот' : '🫧 Бластер');
-        const badgeCls  = blReverseMode ? 'blstr-rev' : 'blstr';
-        const title     = blInfinite ? '🏁 Завершено!' : '⏰ Время!';
+        const modeLabel = blReverseMode ? '🔄 Наоборот' : '🫧 Бластер';
+        const badgeCls  = blReverseMode ? 'blstr-rev'   : 'blstr';
         showWin({
-            title, badgeCls, badgeText:modeLabel,
+            title:'⏰ Время!', badgeCls, badgeText:modeLabel,
             base:blScore,showAcc:false,acc,
             bonusLabel:'🔥 Комбо-бонус',bonus:comboXP,
             recBonus:20,roundXP,
@@ -3653,7 +3643,6 @@ function toggleSound() {
 }
 document.getElementById('btn-sound').addEventListener('click', toggleSound);
 document.getElementById('btn-sound-bl').addEventListener('click', toggleSound);
-document.getElementById('bl-exit-btn').addEventListener('click', ()=>{ if(blRunning) blEnd(); });
 
 /* ════════════════════════════════════════════
    BUTTONS
@@ -3682,10 +3671,10 @@ document.getElementById('btn-restart').addEventListener('click',()=>{
     if(currentMode==='classic') startClassic(currentPairs, classicHardMode);
     else if(currentMode==='sprint') startSprint(SPRINT_ROWS);
     else if(currentMode==='anagram') startAnagram();
-    else if(currentMode==='swiper') startSwiper();
+    else if(currentMode==='swiper') startSwiper(swLightMode);
     else if(currentMode==='audioquiz') startAudioQuiz();
     else if(currentMode==='wordsearch') startWordSearch(wsHardMode);
-    else startBlaster(blReverseMode, blInfinite);
+    else startBlaster(blReverseMode);
 });
 document.getElementById('btn-menu').addEventListener('click',goToMenu);
 
@@ -3715,8 +3704,9 @@ document.getElementById('btn-sound-sw').addEventListener('click',toggleSound);
 /* ════════════════════════════════════════════
    SWIPER ENGINE
 ════════════════════════════════════════════ */
-const SW_SECS    = 3;    // seconds per card
+const SW_SECS    = 3;
 const SW_LIVES   = 3;
+let swLightMode  = false;
 
 let swLives=SW_LIVES, swScore=0, swStreak=0, swBestStreak=0;
 let swQueue=[], swQPos=0;
@@ -3726,14 +3716,17 @@ let swLocked=false;
 // swipe tracking
 let swDragStartX=0, swDragStartY=0, swDragging=false;
 
-function startSwiper(){
+function startSwiper(light=false){
     currentMode='swiper';
+    swLightMode = light;
     swLives=SW_LIVES; swScore=0; swStreak=0; swBestStreak=0;
     swQueue=shuffle(allData.map((_,i)=>i)); swQPos=0;
     swLocked=false;
     hideAll();
     document.getElementById('swiper-wrap').classList.add('visible');
     document.getElementById('btn-hint').style.display='none';
+    // таймер скрыт в лёгком режиме
+    document.getElementById('sw-timer-wrap').style.opacity = light ? '0' : '1';
     resetStreak();
     swUpdateHUD();
     swNextCard();
@@ -3819,7 +3812,8 @@ function swNextCard(){
     swLocked=false;
     const data=swMakeCardData();
     swBuildCard(data);
-    swStartTimer();
+    if(!swLightMode) swStartTimer();
+    else clearInterval(swTicker);
 }
 
 /* ── judgment ── */
@@ -3920,15 +3914,16 @@ function swEnd(){
     swStop();
     sndWin();
     document.getElementById('swiper-wrap').classList.remove('visible');
-    const prev=getBest('swiper');
+    const recKey = swLightMode ? 'swiper-light' : 'swiper';
+    const prev=getBest(recKey);
     const isNew=prev===null||swScore>prev;
-    if(isNew) saveRec('swiper',swScore);
+    if(isNew) saveRec(recKey,swScore);
     const baseXP=swScore*3;
     const streakBonus=Math.round(baseXP*(streakMultiplier()-1));
     const roundXP=Math.max(0,baseXP+streakBonus+(isNew?20:0));
     showWin({
         title: swScore>=20?'🏆 Легенда!':swScore>=10?'🎉 Отлично!':'💪 Неплохо!',
-        badgeCls:'lv3', badgeText:'👈 Свайпер',
+        badgeCls:'lv3', badgeText: swLightMode ? '🌤 Свайпер Лёгкий' : '⚡ Свайпер Хард',
         base:baseXP, showAcc:false,
         bonusLabel:`🔥 Серия${streakBonus>0?` ×${streakMultiplier()}`:''}`,
         bonus:streakBonus,
@@ -3944,6 +3939,7 @@ function swEnd(){
 // button controls
 document.getElementById('sw-btn-wrong').addEventListener('click',()=>swJudge(false));
 document.getElementById('sw-btn-right').addEventListener('click',()=>swJudge(true));
+document.getElementById('sw-exit-btn').addEventListener('click',swEnd);
 
 
 /* ════════════════════════════════════════════
