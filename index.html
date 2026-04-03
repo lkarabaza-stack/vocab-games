@@ -860,6 +860,17 @@ body{
 }
 #bl-shield.shield-used{opacity:.28;pointer-events:none;}
 @keyframes shieldPulse{0%,100%{box-shadow:0 0 18px rgba(0,229,255,.5)}50%{box-shadow:0 0 36px rgba(0,229,255,1)}}
+#bl-exit-btn{
+    position:absolute;bottom:68px;right:14px;z-index:20;
+    width:52px;height:52px;border-radius:50%;
+    border:2px solid rgba(255,255,255,.2);
+    background:rgba(10,20,40,.65);
+    font-size:1.3rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(6px);
+    transition:transform .12s,background .15s;
+}
+#bl-exit-btn:active{transform:scale(.90);background:rgba(255,80,80,.25);}
 #bl-shield-flash{
     position:absolute;inset:0;z-index:9;pointer-events:none;
     opacity:0;transition:opacity .07s;
@@ -1314,14 +1325,18 @@ body{
     </div>
 
     <div class="level-section" id="lbs-blaster" style="display:none">
-        <div class="section-label">60 секунд · аркада</div>
-        <button class="btn-level blstr" data-mode="blaster" data-reverse="0">
-            <span class="lv-left"><span class="lv-name">🫧 Запустить</span><span class="lv-sub">4→6 пузырей · комбо · рогатка</span></span>
+        <div class="section-label">аркада · лопай пузыри</div>
+        <button class="btn-level blstr" data-mode="blaster" data-reverse="0" data-infinite="0">
+            <span class="lv-left"><span class="lv-name">🫧 60 сек</span><span class="lv-sub">4→6 пузырей · комбо · рогатка</span></span>
             <span class="lv-right"><span class="lv-xp">до 60+ XP</span><span class="lv-record" id="rcb"></span></span>
         </button>
-        <button class="btn-level blstr-rev" data-mode="blaster" data-reverse="1">
-            <span class="lv-left"><span class="lv-name">🔄 Наоборот</span><span class="lv-sub">Рус → Нем · сложнее!</span></span>
+        <button class="btn-level blstr-rev" data-mode="blaster" data-reverse="1" data-infinite="0">
+            <span class="lv-left"><span class="lv-name">🔄 Наоборот</span><span class="lv-sub">Рус → Нем · 60 сек</span></span>
             <span class="lv-right"><span class="lv-xp">до 60+ XP</span><span class="lv-record" id="rcbr"></span></span>
+        </button>
+        <button class="btn-level blstr" data-mode="blaster" data-reverse="0" data-infinite="1" style="background:linear-gradient(135deg,#7c3aed,#ec4899);box-shadow:0 5px 20px rgba(124,58,237,.4)">
+            <span class="lv-left"><span class="lv-name">∞ Бесконечно</span><span class="lv-sub">Без таймера · пока не закончишь</span></span>
+            <span class="lv-right"><span class="lv-xp">до 150+ XP</span><span class="lv-record" id="rcb-inf"></span></span>
         </button>
     </div>
 
@@ -1496,6 +1511,7 @@ body{
     <div id="bl-flash"></div>
     <div id="bl-shield-flash"></div>
     <button id="bl-shield" title="Щит (1 раз)">🛡️</button>
+    <button id="bl-exit-btn" title="Завершить">🏁</button>
     <button class="bl-sound-btn" id="btn-sound-bl" title="Звук">🔊</button>
     <div id="bl-mode-badge">🔄 НАОБОРОТ</div>
 </div>
@@ -2095,7 +2111,7 @@ updateRecordLabels();
    RECORD LABELS
 ════════════════════════════════════════════ */
 function updateRecordLabels() {
-    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram',rcsw:'swiper','rcsw-l':'swiper-light',rcaq:'audioquiz','rcws-e':'wordsearch-e','rcws-h':'wordsearch-h'};
+    const map = {rc4:'cl-4',rc6:'cl-6',rc8:'cl-8',rc8h:'cl-8h',rcs:'sprint',rcb:'blaster',rcbr:'blaster-rev',rcag:'anagram',rcsw:'swiper','rcsw-l':'swiper-light','rcb-inf':'blaster-inf',rcaq:'audioquiz','rcws-e':'wordsearch-e','rcws-h':'wordsearch-h'};
     for(const [id,key] of Object.entries(map)) {
         const el=document.getElementById(id); if(!el) continue;
         const v=getBest(key);
@@ -2126,7 +2142,7 @@ document.querySelectorAll('.btn-level').forEach(btn => {
         else if(m==='swiper') startSwiper(btn.dataset.swLight==='1');
         else if(m==='audioquiz') startAudioQuiz();
         else if(m==='wordsearch') startWordSearch(btn.dataset.wsHard==='1');
-        else startBlaster(rev);
+        else startBlaster(rev, btn.dataset.infinite==='1');
     });
 });
 
@@ -2982,6 +2998,7 @@ function sndSprintTick() {
 /* ── State ── */
 let blCanvas, blCtx, blW, blH;
 let blRunning=false, blTimeLeft=BL_SECS, blTicker=null;
+let blInfinite=false;
 let blScore=0, blWords=0, blShots=0, blCombo=0, blMaxCombo=0;
 let blWordQueue=[], blQPos=0, blCurIdx=0;
 let blBalls=[], blParticles=[], blLaser=null;
@@ -3007,9 +3024,10 @@ function blResize(){
 }
 
 /* ── Start / Stop ── */
-function startBlaster(reverse=false){
+function startBlaster(reverse=false, infinite=false){
     currentMode='blaster';
     blReverseMode=!!reverse;
+    blInfinite=!!infinite;
     if(!blCanvas) blInit();
     blRunning=false;cancelAnimationFrame(blRAF);clearInterval(blTicker);
     blScore=0;blWords=0;blShots=0;blCombo=0;blMaxCombo=0;
@@ -3022,7 +3040,6 @@ function startBlaster(reverse=false){
     hideAll();
     document.getElementById('blaster-wrap').classList.add('visible');
     document.getElementById('btn-hint').style.display='none';
-    // mode badge
     const badge=document.getElementById('bl-mode-badge');
     badge.style.display = blReverseMode ? 'block' : 'none';
     blResize();
@@ -3032,13 +3049,17 @@ function startBlaster(reverse=false){
     blUpdateTimer();blNextWord();
     blRunning=true;
     blStartAmbient();
-    blTicker=setInterval(()=>{
-        blTimeLeft--;blUpdateTimer();
-        blUpdateAmbient(blTimeLeft);
-        if(blTimeLeft<=10 && blTimeLeft!==blPrevTime) blSndTick();
-        blPrevTime=blTimeLeft;
-        if(blTimeLeft<=0) blEnd();
-    },1000);
+    if(!blInfinite){
+        blTicker=setInterval(()=>{
+            blTimeLeft--;blUpdateTimer();
+            blUpdateAmbient(blTimeLeft);
+            if(blTimeLeft<=10 && blTimeLeft!==blPrevTime) blSndTick();
+            blPrevTime=blTimeLeft;
+            if(blTimeLeft<=0) blEnd();
+        },1000);
+    } else {
+        blTicker=setInterval(()=>{ blTimeLeft--; },1000);
+    }
     blLastT=performance.now();
     blRAF=requestAnimationFrame(blLoop);
 }
@@ -3550,6 +3571,13 @@ function blUpdateTimer(){
     const arc=document.getElementById('bl-arc');
     const txt=document.getElementById('bl-time-txt');
     if(!arc||!txt) return;
+    if(blInfinite){
+        arc.setAttribute('stroke-dashoffset',0);
+        arc.setAttribute('stroke','#a78bfa');
+        txt.setAttribute('fill','#a78bfa');
+        txt.textContent='∞';
+        return;
+    }
     const pct=blTimeLeft/BL_SECS;
     arc.setAttribute('stroke-dashoffset',(2*Math.PI*20)*(1-pct));
     const col=blTimeLeft<=10?'#ff4060':blTimeLeft<=20?'#ffd93d':'#4d96ff';
@@ -3603,17 +3631,18 @@ function blEnd(){
     const snap=[...blBalls]; blBalls=[];
     blBurstAll(snap,()=>{
         blStop();
-        const recKey = blReverseMode ? 'blaster-rev' : 'blaster';
+        const recKey = blInfinite ? 'blaster-inf' : (blReverseMode ? 'blaster-rev' : 'blaster');
         const prev=getBest(recKey);
         const isNew=prev===null||blWords>prev;
         if(isNew) saveRec(recKey,blWords);
         const acc=blShots>0?Math.round(blWords/blShots*100):0;
         const comboXP=Math.max(0,(blMaxCombo-1))*5;
         const roundXP=blScore+comboXP+(isNew?20:0);
-        const modeLabel = blReverseMode ? '🔄 Наоборот' : '🫧 Бластер';
-        const badgeCls  = blReverseMode ? 'blstr-rev'   : 'blstr';
+        const modeLabel = blInfinite ? '∞ Бесконечно' : (blReverseMode ? '🔄 Наоборот' : '🫧 Бластер');
+        const badgeCls  = blReverseMode ? 'blstr-rev' : 'blstr';
+        const title     = blInfinite ? '🏁 Завершено!' : '⏰ Время!';
         showWin({
-            title:'⏰ Время!', badgeCls, badgeText:modeLabel,
+            title, badgeCls, badgeText:modeLabel,
             base:blScore,showAcc:false,acc,
             bonusLabel:'🔥 Комбо-бонус',bonus:comboXP,
             recBonus:20,roundXP,
@@ -3643,6 +3672,7 @@ function toggleSound() {
 }
 document.getElementById('btn-sound').addEventListener('click', toggleSound);
 document.getElementById('btn-sound-bl').addEventListener('click', toggleSound);
+document.getElementById('bl-exit-btn').addEventListener('click',()=>{ if(blRunning) blEnd(); });
 
 /* ════════════════════════════════════════════
    BUTTONS
@@ -3674,7 +3704,7 @@ document.getElementById('btn-restart').addEventListener('click',()=>{
     else if(currentMode==='swiper') startSwiper(swLightMode);
     else if(currentMode==='audioquiz') startAudioQuiz();
     else if(currentMode==='wordsearch') startWordSearch(wsHardMode);
-    else startBlaster(blReverseMode);
+    else startBlaster(blReverseMode, blInfinite);
 });
 document.getElementById('btn-menu').addEventListener('click',goToMenu);
 
