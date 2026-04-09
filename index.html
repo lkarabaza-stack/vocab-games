@@ -645,7 +645,7 @@ body{
    STREAK BADGE
 ═══════════════════════════════════════ */
 #streak-badge{
-    display:none;position:fixed;top:60px;right:14px;z-index:210;
+    display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:210;
     background:linear-gradient(135deg,#f59e0b,#ef4444);
     color:#fff;border-radius:20px;padding:5px 13px;
     font-size:.82rem;font-weight:800;box-shadow:0 4px 14px rgba(245,158,11,.4);
@@ -5153,14 +5153,16 @@ function tetCollide(shape, ox, oy) {
 
 function tetLock() {
     const {shape, color, x, y} = tetCurrent;
+    let lockedAny = false;
     for (let r = 0; r < shape.length; r++)
         for (let c = 0; c < shape[r].length; c++) {
             if (!shape[r][c]) continue;
             const ny = y + r;
             if (ny < 0) { tetGameOver(); return; }
             tetBoard[ny][x + c] = color;
+            lockedAny = true;
         }
-    tetCheckLines();
+    if (lockedAny) tetCheckLines();
 }
 
 function tetCheckLines() {
@@ -5304,16 +5306,28 @@ function tetShowQuizRetry(frozenRows) {
 }
 
 function tetApplyPenalty(frozenRows) {
-    // Restore frozen rows as red penalty blocks
+    // Restore frozen rows as red penalty blocks (they stay as obstacles)
     frozenRows.forEach(r => {
         for (let c = 0; c < TET_COLS; c++)
             tetBoard[r][c] = TET_PENALTY_COLOR;
     });
-    // Add one penalty row at top
-    tetBoard.unshift(Array(TET_COLS).fill(TET_PENALTY_COLOR));
-    tetBoard.pop();
+
+    // Add penalty row at BOTTOM with random gaps (1-2 holes) — аркадный стиль
+    const penaltyRow = Array(TET_COLS).fill(TET_PENALTY_COLOR);
+    // 2 random holes in the row
+    const holes = shuffle([...Array(TET_COLS).keys()]).slice(0, 2);
+    holes.forEach(c => { penaltyRow[c] = 0; });
+
+    // Shift board UP by 1 (drop top row), add penalty at bottom
+    tetBoard.shift();
+    tetBoard.push(penaltyRow);
+
+    // Move current piece up by 1 to compensate if it collides
+    if (tetCurrent) {
+        tetCurrent.y = Math.max(0, tetCurrent.y - 1);
+    }
+
     tetDraw();
-    // Note: игра НЕ заканчивается от штрафа, только при реальном game over
 }
 
 function tetClearLines(rows) {
