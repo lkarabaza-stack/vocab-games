@@ -324,6 +324,34 @@ body{
     max-width:120px;opacity:.5;color:#fbbf24;
 }
 
+/* Word Search light theme */
+[data-theme="light"] #ws-wrap{background:linear-gradient(180deg,#dbeafe 0%,#eff6ff 100%);}
+[data-theme="light"] #ws-timer{color:#1e3a5f;}
+[data-theme="light"] #ws-found{color:#0369a1;}
+[data-theme="light"] #ws-streak-hud{color:#92400e;}
+[data-theme="light"] #ws-grid-wrap{background:rgba(30,58,100,.06);border-color:rgba(30,58,100,.2);}
+[data-theme="light"] .ws-cell{background:rgba(30,58,100,.06);color:#1e3a5f;border-color:rgba(30,58,100,.15);}
+[data-theme="light"] .ws-cell.hl{background:rgba(37,99,235,.3);color:#1e3a5f;}
+[data-theme="light"] .ws-cell.found{background:rgba(22,163,74,.3)!important;color:#15803d!important;border-color:rgba(22,163,74,.55)!important;}
+[data-theme="light"] .ws-cell.found.hl{background:rgba(22,163,74,.5)!important;}
+[data-theme="light"] .ws-item{background:rgba(30,58,100,.06);border-color:rgba(30,58,100,.12);}
+[data-theme="light"] .ws-ru{color:#1e3a5f;}
+[data-theme="light"] .ws-de{color:#0369a1;}
+[data-theme="light"] #ws-hint-btn{background:rgba(180,130,20,.12);color:#92400e;border-color:rgba(180,130,20,.3);}
+[data-theme="light"] #ws-exit-btn{background:rgba(30,58,100,.08);color:#475569;border-color:rgba(30,58,100,.2);}
+[data-theme="light"] #ws-btns{} /* inherited */
+
+/* Word Search neon theme */
+[data-theme="neon"] #ws-wrap{background:#050010;}
+[data-theme="neon"] #ws-timer{color:#00ffe7;}
+[data-theme="neon"] #ws-found{color:#ff00aa;}
+[data-theme="neon"] .ws-cell{background:rgba(0,255,231,.04);color:#94a3b8;border-color:rgba(0,255,231,.12);}
+[data-theme="neon"] .ws-cell.hl{background:rgba(0,255,231,.25);color:#00ffe7;border-color:rgba(0,255,231,.6);}
+[data-theme="neon"] .ws-cell.found{background:rgba(0,255,170,.22)!important;color:#00ffaa!important;border-color:rgba(0,255,170,.55)!important;}
+[data-theme="neon"] .ws-cell.found.hl{background:rgba(0,255,170,.4)!important;}
+[data-theme="neon"] .ws-item{background:rgba(0,255,231,.05);border-color:rgba(0,255,231,.1);}
+[data-theme="neon"] .ws-ru{color:#e2e8f0;}
+
 .mode-desc{
     width:100%;background:var(--card-bg);border-radius:14px;
     padding:12px 16px;font-size:.86rem;line-height:1.55;
@@ -1298,16 +1326,16 @@ body{
 
 /* Controls */
 #tet-controls{
-    position:fixed;bottom:70px;left:0;right:0;
-    display:none;
-    justify-content:center;align-items:center;
-    gap:10px;padding:6px 12px;
-    z-index:55;
+    position:fixed;bottom:64px;left:0;right:0;
+    display:none;flex-direction:column;align-items:center;gap:6px;
+    padding:4px 12px 6px;z-index:55;
 }
 #tet-controls.show{display:flex;}
+#tet-ctrl-row1{display:flex;gap:12px;justify-content:center;align-items:center;}
+#tet-ctrl-row2{display:flex;justify-content:center;}
 .tet-btn{
-    width:54px;height:54px;border-radius:13px;border:none;cursor:pointer;
-    font-size:1.3rem;
+    width:64px;height:54px;border-radius:13px;border:none;cursor:pointer;
+    font-size:1.4rem;
     background:rgba(30,58,100,.85);color:#e2e8f0;
     border:1.5px solid rgba(56,189,248,.35);
     transition:background .1s,transform .1s;
@@ -1315,7 +1343,15 @@ body{
     -webkit-tap-highlight-color:transparent;
 }
 .tet-btn:active{background:rgba(56,189,248,.35);transform:scale(.9);}
-#tet-btn-drop{width:72px;background:rgba(99,102,241,.55);border-color:rgba(129,140,248,.55);}
+.tet-btn-rot-main{width:72px;height:62px;font-size:1.6rem;background:rgba(99,102,241,.6);border-color:rgba(129,140,248,.6);}
+.tet-btn-down{width:72px;height:46px;font-size:1.2rem;background:rgba(99,102,241,.4);border-color:rgba(129,140,248,.4);}
+
+/* HUD boxes */
+.tet-hud-box{display:flex;flex-direction:column;align-items:center;}
+.tet-xp-box #tet-xp-counter{color:#4ade80;font-size:1.1rem;}
+#tet-xp-counter{font-size:1.1rem;font-weight:800;color:#4ade80;transition:transform .15s;}
+#tet-xp-counter.bump{animation:tetXPBump .3s ease;}
+@keyframes tetXPBump{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
 
 /* Utility bar: pause / sound / exit */
 #tet-util-bar{
@@ -1763,9 +1799,10 @@ body{
 <!-- ═══ TETRIS ═══ -->
 <div id="tetris-wrap">
     <div id="tetris-hud">
-        <div><div id="tet-score-lbl">Очки</div><div id="tet-score">0</div></div>
-        <div id="tet-level">Ур. 1</div>
-        <div id="tet-lines">0 линий</div>
+        <div class="tet-hud-box"><div id="tet-score-lbl">Очки</div><div id="tet-score">0</div></div>
+        <div class="tet-hud-box"><div id="tet-score-lbl">Ур.</div><div id="tet-level">1</div></div>
+        <div class="tet-hud-box"><div id="tet-score-lbl">Линий</div><div id="tet-lines">0</div></div>
+        <div class="tet-hud-box tet-xp-box"><div id="tet-score-lbl">XP</div><div id="tet-xp-counter">0</div></div>
     </div>
     <div id="tetris-board-wrap">
         <canvas id="tetris-canvas"></canvas>
@@ -1777,15 +1814,18 @@ body{
         <div id="tet-quiz-word"></div>
         <div id="tet-quiz-opts"></div>
     </div>
-    <!-- Controls row 1: movement -->
+    <!-- Controls: ◀  ↻  ▶  with ▼ below ↻ -->
     <div id="tet-controls" class="show">
-        <button class="tet-btn" id="tet-btn-left">◀</button>
-        <button class="tet-btn" id="tet-btn-rot">↻</button>
-        <button class="tet-btn" id="tet-btn-drop">▼▼</button>
-        <button class="tet-btn" id="tet-btn-rot2">↺</button>
-        <button class="tet-btn" id="tet-btn-right">▶</button>
+        <div id="tet-ctrl-row1">
+            <button class="tet-btn" id="tet-btn-left">◀</button>
+            <button class="tet-btn tet-btn-rot-main" id="tet-btn-rot">↻</button>
+            <button class="tet-btn" id="tet-btn-right">▶</button>
+        </div>
+        <div id="tet-ctrl-row2">
+            <button class="tet-btn tet-btn-down" id="tet-btn-drop">▼</button>
+        </div>
     </div>
-    <!-- Controls row 2: utility -->
+    <!-- Utility bar -->
     <div id="tet-util-bar">
         <button class="tet-util-btn" id="tet-btn-pause">⏸</button>
         <button class="tet-util-btn" id="tet-btn-sound">🔊</button>
@@ -5030,14 +5070,20 @@ const TET_PENALTY_COLOR = 'rgba(239,68,68,.5)';
 
 function tetStop() {
     tetRunning = false;
-    cancelAnimationFrame(tetRAF);
+    tetPaused = false;
+    tetQuizActive = false;
+    if (tetRAF) { cancelAnimationFrame(tetRAF); tetRAF = null; }
+    if (tetScoreAnim) { cancelAnimationFrame(tetScoreAnim); tetScoreAnim = null; }
 }
 
 function startTetris(speed = 1) {
+    // Полный сброс — защита от зависания при рестарте
+    tetStop();
     currentMode = 'tetris';
     tetSpeed = speed;
     tetScore = 0; tetLines = 0; tetLevel = 1;
     tetTotalScore = 0; tetCorrectStreak = 0; tetParticles = [];
+    tetDisplayScore = 0;
     tetBoard = Array.from({length: TET_ROWS}, () => Array(TET_COLS).fill(0));
     tetFrozenRows = [];
     tetQuizActive = false;
@@ -5053,11 +5099,14 @@ function startTetris(speed = 1) {
     document.getElementById('tet-controls').classList.add('show');
     document.getElementById('tet-util-bar').classList.add('show');
     document.getElementById('tet-pause-overlay').classList.remove('show');
+    document.getElementById('tet-btn-pause').textContent = '⏸';
+    document.getElementById('tet-btn-pause').classList.remove('paused');
+    document.getElementById('tet-xp-counter').textContent = '0';
 
-    // Init canvas — учитываем HUD сверху и две панели снизу
+    // Init canvas
     tetCanvas = document.getElementById('tetris-canvas');
     tetCtx = tetCanvas.getContext('2d');
-    const maxH = window.innerHeight - 60 - 64 - 70; // hud + utilbar + controls
+    const maxH = window.innerHeight - 60 - 64 - 120;
     const maxW = window.innerWidth - 8;
     tetCellSize = Math.min(Math.floor(maxW / TET_COLS), Math.floor(maxH / TET_ROWS));
     tetCanvas.width  = tetCellSize * TET_COLS;
@@ -5164,57 +5213,75 @@ function tetShowQuiz(lineCount) {
     document.getElementById('tet-controls').classList.remove('show');
 }
 
-function tetAnswer(correct, lineCount, word, btn, optsEl) {
+function tetAnswer(isCorrect, lineCount, word, btn, optsEl) {
     if (!tetQuizActive) return;
     tetQuizActive = false;
+    Array.from(optsEl.children).forEach(b => b.disabled = true);
 
-    if (correct) {
+    if (isCorrect) {
         btn.classList.add('correct');
-        // Explode frozen lines, then clear
+        addStreak();
+        sndMatch();
+        if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+        // +10 XP per line
+        const xp = lineCount * 10;
+        const streakXP = currentStreak >= 3 ? Math.floor(xp * (streakMultiplier() - 1)) : 0;
+        tetScore += xp + streakXP;
+        tetTotalScore += xp + streakXP;
+        tetUpdateHUDAnimated(xp + streakXP);
+
+        // XP floats
+        tetSpawnXPFloat(xp, false);
+        if (streakXP > 0) setTimeout(() => tetSpawnXPFloat(streakXP, true), 350);
+
+        // Explode rows immediately
         tetExplodeRows(tetFrozenRows);
+
+        // 2 seconds: card stays green, player reads
         setTimeout(() => {
-            tetClearLines(tetFrozenRows);
-            tetFrozenRows = [];
-            const pts = lineCount * 100 * tetLevel;
-            tetScore += pts;
-            tetTotalScore += pts;
-            tetLines += lineCount;
-            tetLevel = Math.max(1, Math.floor(tetLines / 10) + 1);
-            tetInterval = Math.max(100, 800 - (tetSpeed-1)*300 - (tetLevel-1)*50);
-            tetCorrectStreak++;
-            addStreak();
-            sndMatch();
-            if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-            tetUpdateHUD();
             document.getElementById('tet-quiz').classList.remove('show');
             document.getElementById('tet-controls').classList.add('show');
-            tetPaused = false;
-            tetSpawnNext();
-        }, 250);
+            const frozenCopy = [...tetFrozenRows];
+            tetFrozenRows = [];
+
+            // Remove frozen rows from board instantly (particles already flying)
+            tetClearLines(frozenCopy);
+
+            // Now animate the blocks above falling down smoothly
+            tetAnimateFall(frozenCopy.length, () => {
+                tetLines += lineCount;
+                tetLevel = Math.max(1, Math.floor(tetLines / 10) + 1);
+                tetInterval = Math.max(100, 800 - (tetSpeed - 1) * 300 - (tetLevel - 1) * 50);
+                tetCorrectStreak++;
+                tetUpdateHUD();
+                tetPaused = false;
+                tetSpawnNext();
+            });
+        }, 2000);
+
     } else {
         btn.classList.add('wrong');
-        // Highlight correct
-        Array.from(optsEl.children).forEach(b => { if (b !== btn) b.classList.add('correct'); });
+        // Show correct highlighted
+        Array.from(optsEl.children).forEach(b => {
+            if (b !== btn) b.classList.add('correct');
+        });
         resetStreak();
         sndMismatch();
         if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        tetCorrectStreak = 0;
-        // Penalty: add a row of blocks at top + restore frozen rows to locked blocks
+
+        // -5 XP penalty
+        tetScore = Math.max(0, tetScore - 5);
+        tetUpdateHUDAnimated(-5);
+        tetSpawnXPFloat(-5, 'penalty');
+
+        // 2 seconds: card stays red, player reads correct answer
+        // Game continues (tetromino keeps falling — tetPaused stays true for quiz, but loop runs)
         setTimeout(() => {
             tetApplyPenalty(tetFrozenRows);
-            tetUpdateHUD();
-            // Show quiz again with same lines
             tetQuizActive = true;
-            // Re-enable clicking
-            Array.from(optsEl.children).forEach(b => {
-                b.classList.remove('correct','wrong');
-                const newBtn = b.cloneNode(true);
-                const isCorrectOpt = b.classList.contains('correct') || b.textContent === b.textContent;
-                b.parentNode.replaceChild(newBtn, b);
-            });
-            // Rebuild quiz
             tetShowQuizRetry(tetFrozenRows);
-        }, 700);
+        }, 2000);
     }
 }
 
@@ -5237,20 +5304,16 @@ function tetShowQuizRetry(frozenRows) {
 }
 
 function tetApplyPenalty(frozenRows) {
-    // Restore frozen rows as solid blocks (penalty color)
+    // Restore frozen rows as red penalty blocks
     frozenRows.forEach(r => {
         for (let c = 0; c < TET_COLS; c++)
             tetBoard[r][c] = TET_PENALTY_COLOR;
     });
-    // Add one penalty row at top: shift everything down, add row of blocks
+    // Add one penalty row at top
     tetBoard.unshift(Array(TET_COLS).fill(TET_PENALTY_COLOR));
     tetBoard.pop();
-    // Check if game over after penalty
-    if (tetBoard[0].some(c => c !== 0) && tetCurrent && tetCollide(tetCurrent.shape, tetCurrent.x, tetCurrent.y)) {
-        tetGameOver();
-    } else {
-        tetDraw();
-    }
+    tetDraw();
+    // Note: игра НЕ заканчивается от штрафа, только при реальном game over
 }
 
 function tetClearLines(rows) {
@@ -5321,30 +5384,49 @@ function tetTick() {
 }
 
 // ── Draw ──
+function tetDrawWalls() {
+    const theme = document.documentElement.getAttribute('data-theme')||'dark';
+    const isLight = theme==='light';
+    tetCtx.strokeStyle = isLight ? 'rgba(30,58,100,.25)' : 'rgba(255,255,255,.08)';
+    tetCtx.lineWidth = isLight ? 0.5 : 0.3;
+    for(let r=0;r<TET_ROWS;r++){
+        tetCtx.beginPath(); tetCtx.moveTo(0,r*tetCellSize); tetCtx.lineTo(tetCanvas.width,r*tetCellSize); tetCtx.stroke();
+    }
+    for(let c=0;c<=TET_COLS;c++){
+        tetCtx.beginPath(); tetCtx.moveTo(c*tetCellSize,0); tetCtx.lineTo(c*tetCellSize,tetCanvas.height); tetCtx.stroke();
+    }
+    // Border
+    tetCtx.strokeStyle = isLight ? 'rgba(30,58,100,.5)' : 'rgba(99,162,255,.3)';
+    tetCtx.lineWidth = 2;
+    tetCtx.strokeRect(1,1,tetCanvas.width-2,tetCanvas.height-2);
+}
+
 function tetDraw() {
     if (!tetCtx) return;
     const cs = tetCellSize;
+    const theme = document.documentElement.getAttribute('data-theme')||'dark';
     tetCtx.clearRect(0, 0, tetCanvas.width, tetCanvas.height);
 
     // Grid background
-    tetCtx.fillStyle = 'rgba(255,255,255,.03)';
+    const isLight = theme==='light';
+    tetCtx.fillStyle = isLight ? 'rgba(30,58,100,.04)' : 'rgba(255,255,255,.025)';
     for (let r = 0; r < TET_ROWS; r++)
         for (let c = 0; c < TET_COLS; c++)
             if ((r+c) % 2 === 0) tetCtx.fillRect(c*cs, r*cs, cs, cs);
 
+    tetDrawWalls();
+
     // Board cells
     for (let r = 0; r < TET_ROWS; r++)
         for (let c = 0; c < TET_COLS; c++)
-            if (tetBoard[r][c]) {
-                tetDrawCell(tetCtx, c, r, tetBoard[r][c], cs);
-            }
+            if (tetBoard[r][c]) tetDrawCell(tetCtx, c, r, tetBoard[r][c], cs);
 
     // Ghost piece
     if (tetCurrent && !tetPaused) {
         let gy = tetCurrent.y;
         while (!tetCollide(tetCurrent.shape, tetCurrent.x, gy + 1)) gy++;
         tetCurrent.shape.forEach((row, dr) => row.forEach((v, dc) => {
-            if (v) tetDrawCell(tetCtx, tetCurrent.x+dc, gy+dr, 'rgba(255,255,255,.08)', cs);
+            if (v) tetDrawCell(tetCtx, tetCurrent.x+dc, gy+dr, isLight?'rgba(30,58,100,.12)':'rgba(255,255,255,.07)', cs);
         }));
     }
 
@@ -5388,11 +5470,7 @@ function tetDrawCell(ctx, c, r, color, cs) {
     ctx.fillRect(x+1, y+1, w-2, Math.max(2, cs*0.15));
 }
 
-function tetUpdateHUD() {
-    document.getElementById('tet-score').textContent = tetScore;
-    document.getElementById('tet-level').textContent = 'Ур. ' + tetLevel;
-    document.getElementById('tet-lines').textContent = tetLines + ' лин.';
-}
+
 
 // ── Controls ──
 function tetMoveLeft()  { if(tetCurrent&&!tetCollide(tetCurrent.shape,tetCurrent.x-1,tetCurrent.y)) tetCurrent.x--; }
@@ -5419,7 +5497,6 @@ function tetHardDrop() {
 document.getElementById('tet-btn-left').addEventListener('click',  e=>{ e.stopPropagation(); if(!tetPaused&&tetRunning) tetMoveLeft(); });
 document.getElementById('tet-btn-right').addEventListener('click', e=>{ e.stopPropagation(); if(!tetPaused&&tetRunning) tetMoveRight(); });
 document.getElementById('tet-btn-rot').addEventListener('click',   e=>{ e.stopPropagation(); if(!tetPaused&&tetRunning) tetRotateCW(); });
-document.getElementById('tet-btn-rot2').addEventListener('click',  e=>{ e.stopPropagation(); if(!tetPaused&&tetRunning) tetRotateCCW(); });
 document.getElementById('tet-btn-drop').addEventListener('click',  e=>{ e.stopPropagation(); if(!tetPaused&&tetRunning) tetHardDrop(); });
 
 document.getElementById('tet-btn-pause').addEventListener('click', e=>{
@@ -5468,109 +5545,224 @@ document.getElementById('tet-btn-exit').addEventListener('click', e=>{ e.stopPro
     }, {passive:true});
 })();
 
-// ── Freeze effect: блоки мигают и "замерзают" ──
+// ── Freeze effect ──
 function tetAnimateFreeze(rows, onDone) {
     let frame = 0;
-    const FRAMES = 24; // ~400ms at 60fps
-    // Цвета заморозки: от оригинального к ледяному синему
-    const ICY = [
-        'rgba(186,230,253,.95)',
-        'rgba(147,197,253,.95)',
-        'rgba(56,189,248,.95)',
-        'rgba(186,230,253,.95)',
-        'rgba(224,242,254,1)',
-        'rgba(56,189,248,.95)',
-    ];
+    const FRAMES = 30;
+    const ICY = ['rgba(186,230,253,.95)','rgba(147,197,253,.95)','rgba(56,189,248,.95)','rgba(224,242,254,1)','rgba(56,189,248,.95)','rgba(186,230,253,.95)'];
     const anim = () => {
         if (!tetRunning) { onDone(); return; }
         rows.forEach(r => {
-            for (let c = 0; c < TET_COLS; c++) {
+            for (let c = 0; c < TET_COLS; c++)
                 if (tetBoard[r][c]) tetBoard[r][c] = ICY[frame % ICY.length];
-            }
         });
-        // Glow effect — draw extra bright rect on frozen rows
         tetDraw();
-        if (frame < FRAMES) {
-            frame++;
-            setTimeout(() => requestAnimationFrame(anim), 16);
-        } else {
-            rows.forEach(r => {
-                for (let c = 0; c < TET_COLS; c++)
-                    if (tetBoard[r][c]) tetBoard[r][c] = TET_FROZEN_COLOR;
-            });
-            tetDraw();
-            onDone();
+        if (frame < FRAMES) { frame++; setTimeout(() => requestAnimationFrame(anim), 16); }
+        else {
+            rows.forEach(r => { for (let c=0;c<TET_COLS;c++) if(tetBoard[r][c]) tetBoard[r][c]=TET_FROZEN_COLOR; });
+            tetDraw(); onDone();
         }
     };
     requestAnimationFrame(anim);
 }
 
-// ── Explode: блоки светятся и разрываются на частицы ──
+// ── Explode: LOTS of particles falling down ──
 function tetExplodeRows(rows) {
     const cs = tetCellSize;
     rows.forEach(r => {
         for (let c = 0; c < TET_COLS; c++) {
             if (!tetBoard[r][c]) continue;
-            const x = c * cs + cs / 2, y = r * cs + cs / 2;
-            // Крупные осколки блока
-            for (let i = 0; i < 5; i++) {
-                const angle = (i / 5) * Math.PI * 2 + Math.random() * 0.5;
-                const speed = 2.5 + Math.random() * 4;
+            const x = c * cs + cs/2, y = r * cs + cs/2;
+            const col = tetBoard[r][c];
+            // Big chunk pieces — fall down
+            for (let i = 0; i < 4; i++) {
                 tetParticles.push({
-                    x, y,
-                    vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed - 1.5 - Math.random() * 2,
-                    life: 1, decay: 0.025 + Math.random() * 0.02,
-                    size: cs * 0.35 + Math.random() * cs * 0.2,
-                    color: 'rgba(147,197,253,1)',
-                    glow: true,
+                    x: x + (Math.random()-0.5)*cs*0.5,
+                    y: y + (Math.random()-0.5)*cs*0.5,
+                    vx: (Math.random()-0.5)*3,
+                    vy: 1 + Math.random()*4, // mostly downward
+                    life: 1, decay: 0.02+Math.random()*0.015,
+                    size: cs*0.3+Math.random()*cs*0.25,
+                    color: col, glow: false, rot: Math.random()*Math.PI*2,
                 });
             }
-            // Мелкие искры
-            for (let i = 0; i < 8; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const speed = 1 + Math.random() * 6;
+            // Ice shards — scatter wide
+            for (let i = 0; i < 6; i++) {
+                const angle = (i/6)*Math.PI*2 + Math.random()*0.8;
+                const spd = 2+Math.random()*5;
                 tetParticles.push({
                     x, y,
-                    vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed - Math.random() * 3,
-                    life: 1, decay: 0.04 + Math.random() * 0.04,
-                    size: 1.5 + Math.random() * 3,
-                    color: Math.random() > 0.5 ? 'rgba(224,242,254,1)' : 'rgba(56,189,248,1)',
-                    glow: false,
+                    vx: Math.cos(angle)*spd,
+                    vy: Math.sin(angle)*spd + 1,
+                    life: 1, decay: 0.03+Math.random()*0.03,
+                    size: 2+Math.random()*4,
+                    color: 'rgba(147,197,253,1)', glow: true, rot: 0,
+                });
+            }
+            // Sparkles
+            for (let i = 0; i < 5; i++) {
+                tetParticles.push({
+                    x: x+(Math.random()-0.5)*cs,
+                    y: y+(Math.random()-0.5)*cs,
+                    vx: (Math.random()-0.5)*4,
+                    vy: -1-Math.random()*3,
+                    life: 1, decay: 0.05+Math.random()*0.04,
+                    size: 1+Math.random()*2.5,
+                    color: 'rgba(224,242,254,1)', glow: true, rot: 0,
                 });
             }
         }
     });
 }
 
+// ── Animated falling: blocks fall smoothly wave left→right ──
+function tetAnimateFall(clearedCount, onDone) {
+    if (clearedCount === 0) { onDone(); return; }
+    // Board already has lines removed. We animate each column's blocks
+    // falling into their final positions via interpolation.
+    // Snapshot the FINAL board state
+    const finalBoard = tetBoard.map(r => [...r]);
+
+    // Per-cell: store (finalRow, finalCol, color) for blocks that moved
+    // We re-read from finalBoard and animate them falling from their old positions
+    // Old position: finalRow - clearedCount (approx)
+    const FRAMES = 18;
+    let frame = 0;
+
+    const anim = () => {
+        if (!tetRunning) { onDone(); return; }
+        const cs = tetCellSize;
+        tetCtx.clearRect(0, 0, tetCanvas.width, tetCanvas.height);
+
+        // Grid bg
+        const isLight = (document.documentElement.getAttribute('data-theme')||'') === 'light';
+        tetCtx.fillStyle = isLight ? 'rgba(30,58,100,.04)' : 'rgba(255,255,255,.025)';
+        for (let r = 0; r < TET_ROWS; r++)
+            for (let c = 0; c < TET_COLS; c++)
+                if ((r + c) % 2 === 0) tetCtx.fillRect(c*cs, r*cs, cs, cs);
+        tetDrawWalls();
+
+        const progress = frame / FRAMES;
+
+        for (let c = 0; c < TET_COLS; c++) {
+            // Wave delay: column c starts moving after waveStart fraction
+            const waveStart = (c / TET_COLS) * 0.4;
+            const colProg = Math.max(0, Math.min(1, (progress - waveStart) / (1 - waveStart * 0.5)));
+            // smooth ease-out
+            const ease = 1 - Math.pow(1 - colProg, 3);
+
+            for (let r = 0; r < TET_ROWS; r++) {
+                const cell = finalBoard[r][c];
+                if (!cell) continue;
+                // This cell fell from (r - clearedCount) to r
+                const fromRow = r - clearedCount;
+                const currentDrawR = fromRow + (r - fromRow) * ease;
+                const y = currentDrawR * cs;
+                if (y < -cs) continue; // off screen top
+                tetDrawCellRaw(tetCtx, c * cs, y, cs, cell);
+            }
+        }
+
+        tetUpdateParticles();
+        tetDrawParticles();
+        frame++;
+        if (frame <= FRAMES) requestAnimationFrame(anim);
+        else { tetDraw(); onDone(); }
+    };
+    requestAnimationFrame(anim);
+}
+
+function tetDrawCellRaw(ctx, px, py, cs, color) {
+    const pad = 1;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(px+pad, py+pad, cs-pad*2, cs-pad*2, 3);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.25)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(px+pad, py+pad, cs-pad*2, cs-pad*2, 3);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.22)';
+    ctx.fillRect(px+pad+1, py+pad+1, cs-pad*2-2, Math.max(2, cs*0.15));
+}
+
+// Animated score counter
+let tetDisplayScore = 0;
+let tetScoreAnim = null;
+function tetUpdateHUDAnimated(delta) {
+    if (tetScoreAnim) cancelAnimationFrame(tetScoreAnim);
+    const start = tetDisplayScore;
+    const target = tetScore;
+    const dur = 600;
+    const t0 = performance.now();
+    const step = () => {
+        const t = Math.min(1, (performance.now() - t0) / dur);
+        tetDisplayScore = Math.round(start + (target - start) * (1 - Math.pow(1-t, 3)));
+        const el = document.getElementById('tet-score');
+        if (el) el.textContent = tetDisplayScore;
+        if (t < 1) tetScoreAnim = requestAnimationFrame(step);
+        else { tetDisplayScore = target; if (el) el.textContent = target; }
+    };
+    tetScoreAnim = requestAnimationFrame(step);
+}
+
+function tetUpdateHUD() {
+    document.getElementById('tet-score').textContent = tetScore;
+    tetDisplayScore = tetScore;
+    document.getElementById('tet-level').textContent = tetLevel;
+    document.getElementById('tet-lines').textContent = tetLines;
+    const xpEl = document.getElementById('tet-xp-counter');
+    if (xpEl) xpEl.textContent = tetScore;
+}
+
+// ── XP float in tetris ──
+function tetSpawnXPFloat(amount, type) {
+    const rect = tetCanvas ? tetCanvas.getBoundingClientRect() : {left:0,top:0,width:200,height:400};
+    const d = document.createElement('div');
+    const isPenalty = type === 'penalty' || amount < 0;
+    const isBonus   = type === true || type === 'bonus';
+    const col = isPenalty ? '#f87171' : isBonus ? '#fbbf24' : '#4ade80';
+    const glow = isPenalty ? 'rgba(248,113,113,.6)' : isBonus ? 'rgba(251,191,36,.6)' : 'rgba(74,222,128,.6)';
+    d.style.cssText = `position:fixed;pointer-events:none;z-index:200;
+        left:${rect.left + rect.width/2 - 35}px;
+        top:${rect.top + rect.height * (isPenalty ? 0.45 : 0.35)}px;
+        font-family:'Exo 2',sans-serif;font-size:1.15rem;font-weight:900;
+        color:${col};text-shadow:0 0 10px ${glow};
+        animation:floatUp .9s ease forwards;white-space:nowrap;`;
+    d.textContent = (amount > 0 ? '+' : '') + amount + ' XP';
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 950);
+}
+
+
+
 function tetUpdateParticles(){
-    tetParticles = tetParticles.filter(p => p.life > 0);
-    tetParticles.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
-        p.vy += 0.18;
-        p.vx *= 0.93;
-        p.life -= p.decay;
+    tetParticles = tetParticles.filter(p=>p.life>0);
+    tetParticles.forEach(p=>{
+        p.x+=p.vx; p.y+=p.vy;
+        p.vy+=0.22;
+        p.vx*=0.92;
+        p.life-=p.decay;
     });
 }
 
 function tetDrawParticles(){
-    if (!tetCtx || tetParticles.length === 0) return;
-    tetParticles.forEach(p => {
-        const a = Math.max(0, p.life);
-        tetCtx.globalAlpha = a;
-        if (p.glow) {
-            tetCtx.shadowColor = 'rgba(147,197,253,1)';
-            tetCtx.shadowBlur = 12;
-        }
-        tetCtx.fillStyle = p.color;
+    if(!tetCtx||!tetParticles.length) return;
+    tetParticles.forEach(p=>{
+        const a=Math.max(0,p.life);
+        tetCtx.globalAlpha=a;
+        if(p.glow){ tetCtx.shadowColor='rgba(147,197,253,1)'; tetCtx.shadowBlur=10; }
+        tetCtx.fillStyle=p.color;
         tetCtx.beginPath();
-        tetCtx.roundRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size, 2);
+        tetCtx.roundRect(p.x-p.size/2, p.y-p.size/2, p.size, p.size, 2);
         tetCtx.fill();
-        if (p.glow) { tetCtx.shadowBlur = 0; tetCtx.shadowColor = 'transparent'; }
+        if(p.glow){ tetCtx.shadowBlur=0; }
     });
-    tetCtx.globalAlpha = 1;
+    tetCtx.globalAlpha=1; tetCtx.shadowBlur=0;
 }
+
+
 
 </script>
 </body>
